@@ -1,0 +1,133 @@
+{% extends 'layout.html' %}
+
+{% block title %}My Page{% endblock %}
+
+{% block head %}
+  {% parent %}
+  <script src="/lib/scrypt.js"></script>
+{% endblock %}
+
+{% block content %}
+{{ foo }}
+
+
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href=""><img class="mainlogo" src="/images/logo.png"></a>
+
+        <ul>
+        {% if admin %}
+            <li><a href="/admin">Admin</a></li>
+        {% endif %}
+            <li class="pure-menu-selected"><a href="/">Account</a></li>
+            <li><a href="/projects">Projects</a></li>
+            <li><a href="/logout">logout</a></li>
+        </ul>
+    </div>
+</div>
+
+
+
+<div class="content-wrapper-top">
+    <div class="content">
+
+        <div class="pure-g">
+            
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <h3 class="content-subhead">
+                    <i class="fa fa-mobile"></i>
+                    Account
+                </h3>
+                <p>
+                    <b>username:</b> {{username}}<br>
+                    <b>email:</b> {{email}}<br>
+
+                <form action="/account" class="pure-form pure-form-stacked" method="post">
+                    <fieldset>
+
+                        <b>Company name:</b> {{userdb.companyname}}
+                        <input id="companyname" type="text" name="companyname" value="{{userdb.companyname}}" placeholder="{{userdb.companyname}}">
+
+                        <b>Physical address:</b> {{userdb.address}}
+                        <input id="address" type="text" name="address" value="{{userdb.address}}" placeholder="{{userdb.address}}">
+
+                        <b>Phone number:</b> {{userdb.phonenumber}}
+                        <input id="phonenumber" type="text" name="phonenumber" value="{{userdb.phonenumber}}" placeholder="{{userdb.phonenumber}}">
+
+                        <b>Mobile number:</b> {{userdb.mobile}}
+                        <input id="mobile" type="text" name="mobile" value="{{userdb.mobile}}" placeholder="{{userdb.mobile}}">
+
+                        <b>Website:</b> {{userdb.website}}
+                        <input id="website" type="text" name="website" value="{{userdb.website}}" placeholder="{{userdb.website}}">
+
+                        <button type="submit" class="pure-button" value="Submit">Update</button>
+                    </fieldset>
+                </form>
+
+
+                </p>
+            </div>
+
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+
+                <h3 class="content-subhead">
+                    <i class="fa fa-rocket"></i>
+                    Projects
+                </h3>
+                <p>
+                    no projects yet<br>
+                </p>
+            </div>
+            
+            
+
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <h3 class="content-subhead">
+                    <i class="fa fa-th-large"></i>
+                    Billing
+                </h3>
+                <p>
+                    no upcoming bills
+                </p>
+            </div>
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <h3 class="content-subhead">
+                    <i class="fa fa-check-square-o"></i>
+                    Support
+                </h3>
+                <p>
+                    no open tickets
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+    
+
+    
+
+</div>
+
+
+
+
+<script>
+	var scrypt = scrypt_module_factory();
+
+	$('#login').submit(function() {
+    // get all the inputs into an array.
+    	// not sure if you wanted this, but I thought I'd add it.
+    	// get an associative array of just the values.
+
+	    //console.log($('#username').val());
+	    //console.log($('#password').val());
+	   	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8($('#username').val()), scrypt.encode_utf8($('#password').val()), 16384, 8, 1, 32);
+		console.log(scrypt.to_hex(encrypted))
+		$('#password').val(scrypt.to_hex(encrypted));
+		return 1;
+	});
+</script>
+{% endblock %}
