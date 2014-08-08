@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}My Page{% endblock %}
+{% block title %}LaunchLab New Project{% endblock %}
 
 {% block head %}
   {% parent %}
@@ -224,13 +224,27 @@
 			$('.backgroundbtn').click( function() {
 
 				$('.backgroundinputs').each( function(a){
-					entry[$(this).data("backgroundinfo")] = $(this).val()
-					
+					entry[$(this).data("backgroundinfo")] = $(this).val();
 				})
 				briefdata.backgroundinfo = entry
 				console.log(entry)
-				briefdata.step += 1;
-				renderbrief();
+				$.post( "/projects/new", briefdata, function( data ) {
+				  console.log(data)
+
+
+				  var briefhtml = "";
+					briefhtml += '<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">';
+
+					briefhtml += '<h3 class="content-subhead">Created!</h3><p><b>Project Type: </b>'+briefdata.brieftype+'</p></div>';
+					
+					briefhtml += '<div class="l-box pure-u-1 pure-u-md-2-3 pure-u-lg-2-3">'					
+					briefhtml += '<h4>project has been created</h4>';				
+					briefhtml += '</div>'
+
+				  $('#brief').html(briefhtml)
+				});
+				//briefdata.step += 1;
+				//renderbrief();
 			});
 
 

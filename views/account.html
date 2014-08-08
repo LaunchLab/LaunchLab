@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}My Page{% endblock %}
+{% block title %}LaunchLab Account{% endblock %}
 
 {% block head %}
   {% parent %}
@@ -72,10 +72,27 @@
 
                 <h3 class="content-subhead">
                     <i class="fa fa-rocket"></i>
-                    Projects
+                    Your Projects
                 </h3>
                 <p>
-                    no projects yet<br>
+                     {% for project in projects %}
+
+                    creator: {{ project.creator }}<br>
+                    created: {{ project.created }}<br>
+                    step: {{ project.step }}<br>
+                    brieftype: {{ project.brieftype }}<br>
+                    <b>backgroundinfo</b><br>
+                    companyname: {{ project.backgroundinfo.companyname }}<br>
+                    overview: {{ project.backgroundinfo.overview }}<br>
+                    objectives: {{ project.backgroundinfo.objectives }}<br>
+                    timeframe: {{ project.backgroundinfo.timeframe }}<br>
+                    budget: {{ project.backgroundinfo.budget }}<br>
+                    audience: {{ project.backgroundinfo.audience }}<br>
+                    competitors: {{ project.backgroundinfo.competitors }}<br>
+                    purpose: {{ project.backgroundinfo.purpose }}<br>
+                    tone: {{ project.backgroundinfo.tone }}<br>
+                    <hr>
+                    {% endfor %}
                 </p>
             </div>
             

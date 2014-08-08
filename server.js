@@ -13,7 +13,7 @@ var cookieParser = require('cookie-parser')
 var session = require('cookie-session')
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "external", "talk", "reports"]
+var collections = ["users", "projects", "external", "talk", "reports"]
 var db = require("mongojs").connect(databaseUrl, collections);
 
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
@@ -229,7 +229,14 @@ app.get('/', function (req, res) {
 	if (req.session.username == "rouan") {
 		data.admin = true
 	}
-  	res.render('account', data);
+
+	db.projects.find({"creator": req.session.username}, function(err, projects) {
+		console.log(projects);
+		data.projects = projects;
+		res.render('account', data);
+	})
+
+  	
 });
 
 app.get('/projects', function (req, res) {
@@ -237,7 +244,24 @@ app.get('/projects', function (req, res) {
 });
 
 app.get('/projects/new', function (req, res) {
+	//NEW PROJECT FORM
   res.render('projects_new', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+});
+
+app.post('/projects/new', function (req, res) {
+	//CREATE NEW PROJECT
+	console.log(req.body)
+	res.end("it worked")
+	var project = req.body;
+	project.creator = req.session.username;
+	project.created = Date.now();
+
+	db.projects.save( project, function(err, saved) {
+		socketlog("NEW PROJECT CREATED: "+req.body.username );
+		console.log("NEW PROJECT CREATED");		
+		//res.render('projects_new', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+		res.write("NEW PROJECT CREATED")
+	});
 });
 
 app.get('/talk', function (req, res) {
