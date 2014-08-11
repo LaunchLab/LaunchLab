@@ -19,8 +19,7 @@ var db = mongojs.connect(databaseUrl, collections);
 
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
 
-app.use(function(req, res, next){
-
+app.use(function(req, res, next) {
   console.log('================================================================');
   console.log('%s %s', req.method, req.url);
   next();
