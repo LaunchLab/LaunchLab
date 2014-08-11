@@ -13,31 +13,51 @@
 
 <div class="header">
     <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
-        <a class="pure-menu-heading" href=""><img class="mainlogo" src="/images/logo.png"></a>
-
+				
+	      <a class="pure-menu-heading" href=""><img class="mainlogo" src="/images/logo.png"></a>
+				
         <ul>
-            <li class="pure-menu-selected"><a href="#">Home</a></li>
+            <li class="pure-menu-selected"><a href="#top">Home</a></li>
             <li><a href="#tour">Tour</a></li>
-            <li><a href="#door">Signup</a></li>
-            <li><a href="#door">Login</a></li>
+            <li><a href="#start">Signup</a></li>
+            <li><a href="#start">Login</a></li>
         </ul>
     </div>
 </div>
-
+<a name="top" id="top"></a>
 <div class="splash-container">
     <div class="splash">
-        <h1 class="splash-head">launch your idea</h1>
-        <p class="splash-subhead">
-            Click below to get started with your free instant quote
-        </p>
-        <p>
-            <a href="#door" class="pure-button pure-button-primary launchbutton">Get started</a>
-        </p>
+    
+    
+        
+        
+            <div class="l-box-lrg pure-u-1 pure-u-md-5-5" style="background: rgb(255, 255, 255);">
+                <form action="/" class="pure-form pure-form-stacked" method="post">
+                    <fieldset>
+
+                        <label for="name">Username</label>
+                        <input id="username" type="text" name="username" placeholder="Your Username">
+
+
+                        <label for="email">Your Email</label>
+                        <input id="email" type="email" name="email" placeholder="Your Email">
+
+                        <label for="password">Your Password</label>
+                        <input id="password" type="password" name="password" placeholder="Your Password">
+
+                        <button type="submit" class="pure-button" value="Submit">Sign Up or Login</button>
+                    </fieldset>
+                </form>
+            </div>
+            
+            
+        
     </div>
 </div>
 
 <div class="content-wrapper">
     <div class="content">
+		    <a name="tour" id="tour"></a><br>
         <h2 class="content-head is-center"><a name="tour"></a>Why you'll love LaunchLab.</h2>
 
         <div class="pure-g">
@@ -87,8 +107,8 @@
     </div>
 
     <div class="ribbon l-box-lrg pure-g">
-        <div class="l-box-lrg is-center pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
-            <img class="pure-img-responsive" width="300" src="/images/sample.png">
+        <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
+            <img class="pure-img-responsive" src="/images/sample.png">
         </div>
         <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
 
@@ -100,12 +120,19 @@
     </div>
 
 
+    <div class="ribbon l-box-lrg pure-g" style="background: rgb(45, 45, 45);">
+		    <h2 class="content-head is-center" style="color: rgb(255, 255, 255); ><a name="tour"></a>who uses launchlab</h2>
+        
+        
+        
+        
+    </div>
+
     <div class="content">
         
 
         <div class="pure-g">
             <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
-            <a name="door"></a>
                 <form action="/" class="pure-form pure-form-stacked" method="post">
                     <fieldset>
 
@@ -125,7 +152,8 @@
             </div>
 
             <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
-                <h2 class="content-head is-left">Quick signup or login</h2>
+            		<a name="start" id="start"></a>
+                <h2 class="content-head is-left">Get started</h2>
                 <p>
                     We need you to signup so we can process your requests and contact you. Please make sure the email you provide is correct.
                 </p>
@@ -148,6 +176,13 @@
 
 <script>
 	var scrypt = scrypt_module_factory();
+
+$('a').click(function(){
+    $('html, body').animate({
+        scrollTop: $( $(this).attr('href') ).offset().top
+    }, 500);
+    return false;
+});
 
 	$('#login').submit(function() {
     // get all the inputs into an array.
