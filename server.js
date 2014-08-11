@@ -254,10 +254,18 @@ app.get('/project/*', function (req, res) {
 		console.log(project)
 		var a = project._id
 		console.log(a)
-		project._id = JSON.stringify(project._id);
-		project._id.replace("\"", "")
+		project.id = project._id.toHexString();
+		//project._id = JSON.stringify(project._id);
 
-		res.render('project', project);
+		var data = {}
+
+		data.username = req.session.username;
+		data.password = req.session.password; 
+		data.socketserver = socketconnect;
+
+		data.project = project;
+
+		res.render('project', data);
 	})
 
     
@@ -496,6 +504,7 @@ io.sockets.on('connection', function (socket) {
 		console.log("SOCKET User auth: "+user.username)
 		socket.username = user.username;
 		socket.password = user.password;
+		socket.emit('authed', {auth:true})
   	});
 	//to arduino
 	socket.on('arduino', function (data) {
