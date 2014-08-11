@@ -14,7 +14,8 @@ var session = require('cookie-session')
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
 var collections = ["users", "projects", "external", "talk", "reports"]
-var db = require("mongojs").connect(databaseUrl, collections);
+var mongojs = require("mongojs");
+var db = mongojs.connect(databaseUrl, collections);
 
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
 
@@ -213,8 +214,6 @@ app.post('/account', function(req, res){
 	console.log("account detail update:")
 	console.log(req.body)
 	console.log("-----")
-	
-
 
 	db.users.update({username: req.session.username}, {'$set' : req.body }, function (err, user) {
 		console.log(user)
@@ -233,10 +232,35 @@ app.get('/', function (req, res) {
 	db.projects.find({"creator": req.session.username}, function(err, projects) {
 		console.log(projects);
 		data.projects = projects;
+
+		for (var project in projects) {
+			projects[project]._id = JSON.stringify( projects[project]._id ).replace("\"", "").replace("\"", "");
+		}
+
 		res.render('account', data);
 	})
 
   	
+});
+
+app.get('/project/*', function (req, res) {
+	console.log("!!")
+	var projectid = req.url.slice(9);
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.projects.findOne({"_id": ObjectId(projectid)}, function(err, project) {
+		console.log("FOUND!!")
+		console.log(project)
+		var a = project._id
+		console.log(a)
+		project._id = JSON.stringify(project._id);
+		project._id.replace("\"", "")
+
+		res.render('project', project);
+	})
+
+    
 });
 
 app.get('/projects', function (req, res) {

@@ -76,7 +76,7 @@
                 </h3>
                 <p>
                      {% for project in projects %}
-
+                     <a href="/project/{{ project._id }}">Link</a><br>
                     creator: {{ project.creator }}<br>
                     created: {{ project.created }}<br>
                     step: {{ project.step }}<br>
