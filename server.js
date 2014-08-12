@@ -282,16 +282,21 @@ app.get('/projects/new', function (req, res) {
 app.post('/projects/new', function (req, res) {
 	//CREATE NEW PROJECT
 	console.log(req.body)
-	res.end("it worked")
+	//res.end("it worked")
 	var project = req.body;
 	project.creator = req.session.username;
 	project.created = Date.now();
 
 	db.projects.save( project, function(err, saved) {
-		socketlog("NEW PROJECT CREATED: "+req.body.username );
+		
 		console.log("NEW PROJECT CREATED");		
+		console.log(saved)
+		console.log("====================");		
+		var projectid = saved._id.toHexString();
+		socketlog("NEW PROJECT CREATED: "+projectid);
 		//res.render('projects_new', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-		res.write("NEW PROJECT CREATED")
+		//res.write(projectid)
+		//res.redirect('/project/'+projectid);
 	});
 });
 
