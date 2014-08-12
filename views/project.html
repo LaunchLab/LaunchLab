@@ -151,6 +151,11 @@ var rendermessage = function(data) {
     //APPENDS INTO THE DOM
     $("#talkstream").append(htmlmessage)
     $("abbr.timeago").timeago();
+    
+    $("img").error(function () { 
+        //$(this).hide();
+        $(this).css({visibility:"hidden"}); 
+    });
 }
 
 var rendermessages = function () {
