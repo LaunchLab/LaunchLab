@@ -156,6 +156,8 @@ var rendermessage = function(data) {
         //$(this).hide();
         $(this).css({visibility:"hidden"}); 
     });
+    
+    $("html, body").animate({ scrollTop: $(document).height() }, 1000);
 }
 
 var rendermessages = function () {
@@ -183,52 +185,7 @@ socket.on('message', function (data) {
     //console.log(data)
     messages.push(data)
     rendermessage(data);
-    /*
-
-    var htmlperson = 
-    '<div class="person">'
-        +'<img src="/images/avatar_1.png" class="avatarimg">'
-        
-        +'<div class="persondata">'
-            +'<div class="personname">'+data.message.username+'</div>'
-            +'<div class="persontitle">title <span class="persontask">task</span> </div>'
-            +'<div class="persononline">online</div>'
-        +'</div>'
-    +'</div>';
-
-    var left = '';
-    var right = '';
-    var side = '';
-    if (data.message.username == user.username) {
-        //We sent this so left align
-        left = htmlperson;
-        side = 'message_l';
-    } else {
-        //Someone sent this to us, so right align.
-        right = htmlperson;
-        side = 'message_r';
-    }
     
-
-    var htmlmessage = 
-     '<div class="pure-g-r">'
-        +'<div class="pure-u-1-3">'+left+'</div>'
-        
-        +'<div class="pure-u-1-3">'
-            +'<div class="message '+side+'">'
-                +'<div class="messagetext">'+data.message.text+'</div>'
-                +'<div class="timeago"><abbr class="timeago" title="'+data.message.timestamp+'">'+data.message.timeformatted+'</abbr></div>'
-            +'</div>'
-        +'</div>'
-
-        +'<div class="pure-u-1-3">'+right+'</div>'
-    +'</div>'
-    
-    //APPENDS INTO THE DOM
-    $("#talkstream").append(htmlmessage)
-    $("abbr.timeago").timeago();
-
-    */
 });
 
 $("#roomconnect").click( function() {
