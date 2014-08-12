@@ -103,6 +103,7 @@
 var user = {}
 user.username = '{{ username }}';
 user.password = '{{ password }}'; 
+user.email = '{{ email }}';
 user.roomname = "{{ project.id }}";
 
 var messages = {{ messagearray|raw }}
@@ -110,7 +111,7 @@ var messages = {{ messagearray|raw }}
 var rendermessage = function(data) {
     var htmlperson = 
     '<div class="person">'
-        +'<img src="/images/avatar_1.png" class="avatarimg">'
+        +'<img src="'+data.message.avatar+'" class="avatarimg">'
         
         +'<div class="persondata">'
             +'<div class="personname">'+data.message.username+'</div>'
@@ -162,7 +163,7 @@ var rendermessages = function () {
 socket.on('connect', function() {
    // Connected, let's authenticate over sockets.
    console.log("AUTH")
-   socket.emit('authenticate', {username: user.username, password: user.password });
+   socket.emit('authenticate', {username: user.username, email: user.email, password: user.password });
 
 });
 

@@ -158,6 +158,7 @@ app.post('/', function(req, res){
 
 
 
+var gravatar = require('gravatar');
 
 //CHECKS IF USER IS LOGGED IN
 //IF NOT THEN SHOW FORM ELSE CONTINUES
@@ -193,6 +194,10 @@ function checkAuth(req, res, next) {
 			console.log("--------------")
 			if (users.length == 1) { 
 				req.session.db = users[0];
+				//gravatar
+				// https://github.com/emerleite/node-gravatar
+				var avatar = gravatar.url(req.session.db.email, {s: '200', r: 'pg', d: '404'});
+				req.session.avatar = avatar;
 				next(); 
 			}
 			if (users.length == 0) { res.render('login', { foo: "wrong username and password. check your CAPSLOCK" }); }
@@ -264,6 +269,7 @@ app.get('/project/*', function (req, res) {
 
 			data.username = req.session.username;
 			data.password = req.session.password; 
+			data.email = req.session.email;
 			data.socketserver = socketconnect;
 
 			data.project = project;
@@ -271,6 +277,17 @@ app.get('/project/*', function (req, res) {
 			console.log("searching for messages")
 			db.messages.find( { "message.room" : project.id}, function (err, messages) {
 				console.log("FOUND MESSAGES:")
+				//avatars
+				for (var num in messages) {
+					if (messages[num].message.email) {
+						var avatar = gravatar.url(messages[num].message.email, {s: '200', r: 'pg', d: '404'});
+						messages[num].message.avatar = avatar;
+					} else {
+						messages[num].message.avatar = '/images/avatar_1.png';
+					}
+					
+				}
+
 				data.messagearray = JSON.stringify(messages);
 				console.log(messages)
 				console.log("#############")
@@ -525,6 +542,7 @@ io.sockets.on('connection', function (socket) {
 		console.log("SOCKET User auth: "+user.username)
 		socket.username = user.username;
 		socket.password = user.password;
+		socket.email = user.email
 		socket.emit('authed', {auth:true})
   	});
 	//to arduino
@@ -561,7 +579,10 @@ io.sockets.on('connection', function (socket) {
 
     var messagedata = {}
 
-    messagedata.message = { username: socket.username, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
+	var avatar = gravatar.url(socket.email, {s: '200', r: 'pg', d: '404'});
+							
+
+    messagedata.message = { username: socket.username, avatar: avatar, email: socket.email, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
     io.sockets.in(socket.room).emit('message', messagedata);
 
     db.messages.save(messagedata)
