@@ -37,6 +37,17 @@ label {
     color: #333;
 }
 
+.projectlink {
+    background: rgb(225,225,225);
+    padding: 10px;
+}
+
+.projectlink:hover {
+    background: rgb(225,125,125);
+    padding: 10px;
+cursor: pointer;
+}
+
 .pure-img-responsive {
     max-width: 100%;
     height: auto;

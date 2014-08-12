@@ -244,28 +244,42 @@ app.get('/', function (req, res) {
 
 app.get('/project/*', function (req, res) {
 	console.log("!!")
+
+	//bugfix chop to correct length
 	var projectid = req.url.slice(9);
+	projectid = projectid.slice(0,"53e48f68832871c41306702d".length)
+
 
 	var ObjectId = mongojs.ObjectId;
 
 	db.projects.findOne({"_id": ObjectId(projectid)}, function(err, project) {
-		console.log("FOUND!!")
-		console.log(project)
-		project.id = project._id.toHexString();
-		//project._id = JSON.stringify(project._id);
 
-		var data = {}
+		if (project) {
+			console.log("FOUND!!")
+			console.log(project)
+			project.id = project._id.toHexString();
+			//project._id = JSON.stringify(project._id);
 
-		data.username = req.session.username;
-		data.password = req.session.password; 
-		data.socketserver = socketconnect;
+			var data = {}
 
-		data.project = project;
+			data.username = req.session.username;
+			data.password = req.session.password; 
+			data.socketserver = socketconnect;
 
-		db.messages.find( {room : project.id}, function (messages) {
-			data.messagearray = messages;
-			res.render('project', data);
-		} )
+			data.project = project;
+
+			console.log("searching for messages")
+			db.messages.find( { "message.room" : project.id}, function (err, messages) {
+				console.log("FOUND MESSAGES:")
+				data.messagearray = JSON.stringify(messages);
+				console.log(messages)
+				console.log("#############")
+				res.render('project', data);
+			} )
+		} else {
+			res.render('project');
+		}
+		
 
 		
 	})

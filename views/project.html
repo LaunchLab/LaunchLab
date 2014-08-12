@@ -31,21 +31,12 @@
 
     <div class="content">
         <div class="pure-g">
-            <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
-                
-				<h3 class="content-subhead">
-                    <i class="fa fa-rocket"></i>
-                    Project Page
-                </h3>
-                <p>
-                    <a href="/projects/new">create new project</a><br>
-                    <a href="/projects/join">join a project</a><br>
-                    <a href="/projects/public">list all projects</a><br>
-                </p>
 
-            </div>
 
-            <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
+            <div class="l-box-lrg pure-u-1 pure-u-md-1-1">
+
+                <script>
+                /*
                 <h4>{{ created }}</h4>
                 <p>
                     _id: {{ project._id }}<br>
@@ -64,12 +55,8 @@
                     purpose: {{ project.backgroundinfo.purpose }}<br>
                     tone: {{ project.backgroundinfo.tone }}<br>
                 </p>
-
-                
-
-
-
-
+                */
+                </script>
 
                 <div id="talkstream">
 
@@ -101,6 +88,8 @@
 
 
             </div>
+
+           
         </div>
 
     </div>
@@ -116,24 +105,9 @@ user.username = '{{ username }}';
 user.password = '{{ password }}'; 
 user.roomname = "{{ project.id }}";
 
-//var messages = {{ messagearray }}
+var messages = {{ messagearray|raw }}
 
-socket.on('connect', function() {
-   // Connected, let's authenticate over sockets.
-   console.log("AUTH")
-   socket.emit('authenticate', {username: user.username, password: user.password });
-   
-});
-
-socket.on('authed', function (data) {
-    if (data.auth == true) {
-        socket.emit('room', {room: "{{ project.id }}" });     
-    }
-});
-
-socket.on('message', function (data) {
-    //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.
-    console.log(data)
+var rendermessage = function(data) {
     var htmlperson = 
     '<div class="person">'
         +'<img src="/images/avatar_1.png" class="avatarimg">'
@@ -176,6 +150,79 @@ socket.on('message', function (data) {
     //APPENDS INTO THE DOM
     $("#talkstream").append(htmlmessage)
     $("abbr.timeago").timeago();
+}
+
+var rendermessages = function () {
+   for (var msgnum in messages ) {
+        var curdata = messages[msgnum];
+        rendermessage(curdata);        
+    }
+}
+
+socket.on('connect', function() {
+   // Connected, let's authenticate over sockets.
+   console.log("AUTH")
+   socket.emit('authenticate', {username: user.username, password: user.password });
+
+});
+
+socket.on('authed', function (data) {
+    if (data.auth == true) {
+        socket.emit('room', {room: "{{ project.id }}" });     
+    }
+});
+
+socket.on('message', function (data) {
+    //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.
+    //console.log(data)
+    messages.push(data)
+    rendermessage(data);
+    /*
+
+    var htmlperson = 
+    '<div class="person">'
+        +'<img src="/images/avatar_1.png" class="avatarimg">'
+        
+        +'<div class="persondata">'
+            +'<div class="personname">'+data.message.username+'</div>'
+            +'<div class="persontitle">title <span class="persontask">task</span> </div>'
+            +'<div class="persononline">online</div>'
+        +'</div>'
+    +'</div>';
+
+    var left = '';
+    var right = '';
+    var side = '';
+    if (data.message.username == user.username) {
+        //We sent this so left align
+        left = htmlperson;
+        side = 'message_l';
+    } else {
+        //Someone sent this to us, so right align.
+        right = htmlperson;
+        side = 'message_r';
+    }
+    
+
+    var htmlmessage = 
+     '<div class="pure-g-r">'
+        +'<div class="pure-u-1-3">'+left+'</div>'
+        
+        +'<div class="pure-u-1-3">'
+            +'<div class="message '+side+'">'
+                +'<div class="messagetext">'+data.message.text+'</div>'
+                +'<div class="timeago"><abbr class="timeago" title="'+data.message.timestamp+'">'+data.message.timeformatted+'</abbr></div>'
+            +'</div>'
+        +'</div>'
+
+        +'<div class="pure-u-1-3">'+right+'</div>'
+    +'</div>'
+    
+    //APPENDS INTO THE DOM
+    $("#talkstream").append(htmlmessage)
+    $("abbr.timeago").timeago();
+
+    */
 });
 
 $("#roomconnect").click( function() {
@@ -190,6 +237,9 @@ $("#chatsend").click( function(data) {
     var messagetextinput = $("#chatmessage").val();
     socket.emit('message', {messagetext: messagetextinput} );
 })
+    
+    //do first render
+    rendermessages();
 
 </script>
 

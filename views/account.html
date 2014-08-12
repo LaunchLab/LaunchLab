@@ -76,21 +76,28 @@
                 </h3>
                 <p>
                      {% for project in projects %}
-                     <a href="/project/{{ project._id }}">Link</a><br>
-                    creator: {{ project.creator }}<br>
-                    created: {{ project.created }}<br>
-                    step: {{ project.step }}<br>
-                    brieftype: {{ project.brieftype }}<br>
-                    <b>backgroundinfo</b><br>
-                    companyname: {{ project.backgroundinfo.companyname }}<br>
-                    overview: {{ project.backgroundinfo.overview }}<br>
-                    objectives: {{ project.backgroundinfo.objectives }}<br>
-                    timeframe: {{ project.backgroundinfo.timeframe }}<br>
-                    budget: {{ project.backgroundinfo.budget }}<br>
-                    audience: {{ project.backgroundinfo.audience }}<br>
-                    competitors: {{ project.backgroundinfo.competitors }}<br>
-                    purpose: {{ project.backgroundinfo.purpose }}<br>
-                    tone: {{ project.backgroundinfo.tone }}<br>
+                     <a href="/project/{{ project._id }}" >
+                        <div class="projectlink">
+                            {{ project.brieftype }}<br>
+                            {{ project.backgroundinfo.companyname }}<br>
+                            creator: {{ project.creator }}<br>
+                            created: {{ project.created }}<br>
+                            step: {{ project.step }}<br>
+                            brieftype: <br>
+                            <b>backgroundinfo</b><br>
+                            companyname: <br>
+                            overview: {{ project.backgroundinfo.overview }}<br>
+                            objectives: {{ project.backgroundinfo.objectives }}<br>
+                            timeframe: {{ project.backgroundinfo.timeframe }}<br>
+                            budget: {{ project.backgroundinfo.budget }}<br>
+                            audience: {{ project.backgroundinfo.audience }}<br>
+                            competitors: {{ project.backgroundinfo.competitors }}<br>
+                            purpose: {{ project.backgroundinfo.purpose }}<br>
+                            tone: {{ project.backgroundinfo.tone }}<br>
+                        </div>                     
+                     </a><br>
+
+ 
                     <hr>
                     {% endfor %}
                 </p>
