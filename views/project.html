@@ -149,15 +149,15 @@ var rendermessage = function(data) {
     +'</div>'
     
     //APPENDS INTO THE DOM
-    $("#talkstream").append(htmlmessage)
+    $("#talkstream").append(htmlmessage);
     $("abbr.timeago").timeago();
     
     $("img").error(function () { 
         //$(this).hide();
         $(this).css({visibility:"hidden"}); 
     });
+
     
-    $("html, body").animate({ scrollTop: $(document).height() }, 1000);
 }
 
 var rendermessages = function () {
@@ -185,7 +185,7 @@ socket.on('message', function (data) {
     //console.log(data)
     messages.push(data)
     rendermessage(data);
-    
+    $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
 });
 
 $("#roomconnect").click( function() {
@@ -203,6 +203,7 @@ $("#chatsend").click( function(data) {
     
     //do first render
     rendermessages();
+    $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
 
     $("img").error(function () { 
         //$(this).hide();
