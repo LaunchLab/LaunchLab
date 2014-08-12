@@ -131,7 +131,7 @@ a.pure-button-primary {
 
 .home-menu .pure-menu-selected a {
     color: #fff;
-    background: #F38A00;
+    background: #F38A00;    
 }
 
 .home-menu a {
@@ -151,7 +151,7 @@ a.pure-button-primary {
  */
 
 .splash-container {
-    background: #1f8dd6 url("/images/big.jpg");
+    background: #F38A00 url("/images/big.jpg");
     z-index: 1;
     overflow: hidden;
     /* The following styles are required for the "scroll-over" effect */

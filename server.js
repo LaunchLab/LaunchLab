@@ -13,7 +13,7 @@ var cookieParser = require('cookie-parser')
 var session = require('cookie-session')
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "projects", "external", "talk", "reports"]
+var collections = ["users", "projects", "messages","external", "talk", "reports"]
 var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
@@ -251,8 +251,6 @@ app.get('/project/*', function (req, res) {
 	db.projects.findOne({"_id": ObjectId(projectid)}, function(err, project) {
 		console.log("FOUND!!")
 		console.log(project)
-		var a = project._id
-		console.log(a)
 		project.id = project._id.toHexString();
 		//project._id = JSON.stringify(project._id);
 
@@ -264,7 +262,12 @@ app.get('/project/*', function (req, res) {
 
 		data.project = project;
 
-		res.render('project', data);
+		db.messages.find( {room : project.id}, function (messages) {
+			data.messagearray = messages;
+			res.render('project', data);
+		} )
+
+		
 	})
 
     
@@ -295,7 +298,7 @@ app.post('/projects/new', function (req, res) {
 		var projectid = saved._id.toHexString();
 		socketlog("NEW PROJECT CREATED: "+projectid);
 		//res.render('projects_new', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-		//res.write(projectid)
+		res.end(projectid)
 		//res.redirect('/project/'+projectid);
 	});
 });
@@ -542,7 +545,13 @@ io.sockets.on('connection', function (socket) {
     var nowdate = new Date;
     var formatteddate = formatDate(nowdate);
 
-    io.sockets.in(socket.room).emit('message', {message: { username: socket.username, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }});
+    var messagedata = {}
+
+    messagedata.message = { username: socket.username, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
+    io.sockets.in(socket.room).emit('message', messagedata);
+
+    db.messages.save(messagedata)
+    
   });
   
 });

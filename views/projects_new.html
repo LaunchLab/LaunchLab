@@ -228,8 +228,9 @@
 				})
 				briefdata.backgroundinfo = entry
 				console.log(entry)
-				$.post( "/projects/new", briefdata, function( data ) {
-				  console.log(data)
+				$.post( "/projects/new", briefdata, function( projectid ) {
+				  console.log("success! created.. project id is:")
+				  console.log(projectid)
 
 
 				  var briefhtml = "";
@@ -239,9 +240,13 @@
 					
 					briefhtml += '<div class="l-box pure-u-1 pure-u-md-2-3 pure-u-lg-2-3">'					
 					briefhtml += '<h4>project has been created</h4>';				
+					briefhtml += '<p>Your project can be found at <a href="/project/'+projectid+'">/project/'+projectid+'</a></p>';				
 					briefhtml += '</div>'
 
 				  $('#brief').html(briefhtml)
+				  //window.location.href = "http://stackoverflow.com"; //similar to click
+				  window.location.replace("/project/"+projectid); //similar to redirect
+
 				});
 				//briefdata.step += 1;
 				//renderbrief();

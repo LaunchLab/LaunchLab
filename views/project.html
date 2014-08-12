@@ -114,7 +114,9 @@
 var user = {}
 user.username = '{{ username }}';
 user.password = '{{ password }}'; 
-user.roomname = "{{ id }}";
+user.roomname = "{{ project.id }}";
+
+//var messages = {{ messagearray }}
 
 socket.on('connect', function() {
    // Connected, let's authenticate over sockets.
@@ -125,7 +127,7 @@ socket.on('connect', function() {
 
 socket.on('authed', function (data) {
     if (data.auth == true) {
-        socket.emit('room', {room: "{{ id }}" });     
+        socket.emit('room', {room: "{{ project.id }}" });     
     }
 });
 
