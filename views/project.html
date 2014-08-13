@@ -199,6 +199,8 @@ $("#chatsend").click( function(data) {
     console.log("Sending "+ $("#chatmessage").val() +" to "+ $("#roomname").val() )
     var messagetextinput = $("#chatmessage").val();
     socket.emit('message', {messagetext: messagetextinput} );
+    $("#chatmessage").val("")
+    $("#chatmessage").focus();
 })
     
     //do first render
