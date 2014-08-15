@@ -72,6 +72,8 @@ app.get('/logout', function (req, res) {
   res.redirect('/');
 });
 
+var mailbot = require('./lib/email')
+
 //HANDLES LOGIN FORM DATA
 app.post('/', function(req, res){
 	  var minute = 60 * 1000;
@@ -353,6 +355,20 @@ function checkAdmin(req, res, next) {
 }
 
 app.get('/admin', function (req, res) {
+
+	//test email sending
+	var email = {}
+	email.from = "noreplay@launchlabapp.com"
+	email.fromname = "LaunchLab"
+	email.rcpt = "rouan@8bo.org"
+	email.rcptname = "Rouan van der Ende"
+	
+	console.log("SENDING EMAIL ==================")
+	mailbot.sendemail(email, function (data) {
+		console.log("SENT EMAIL !! SUCCESS!")
+		console.log(data)
+	})
+
 	db.users.find({}, function(err, users) {
 		console.log("ADMIN")
 		res.render('admin', { username: req.session.username, password: req.session.password, socketserver: socketconnect, users: users });
