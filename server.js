@@ -216,7 +216,38 @@ function checkAuth(req, res, next) {
 /////////////////////////////////////////////////////////////////////
 //EVERYTHING BELOW IS FOR LOGGED IN USERS ONLY
 
+//OPENWINDOW TEST
 
+app.get('/tow/attendance', function (req, res) {
+	var data = {}
+	data.username = req.session.username;
+	data.password = req.session.password; 
+	data.email = req.session.email;
+	data.socketserver = socketconnect;
+	data.students = []
+
+	data.studentcounttotal = 15;
+	data.studentcountpresent = 0;
+	data.studentcountabsent = 0;
+	data.studentcountexempt = 0;
+	data.studentcountwork = 0;
+
+	for (var a = 0; a < data.studentcounttotal; a++) {
+		var student = {}
+		student.name = "Name"
+		student.surname = "Surname"
+		student.count = a+1;
+		student.number = 46400 + Math.round(Math.random()*500)
+		data.students.push(student)
+	}
+
+	res.render('tow_attendance', data)
+});
+
+
+
+
+//LAUNCHLAB MAIN
 //handles account updates
 app.post('/account', function(req, res){
 	console.log("account detail update:")
@@ -544,7 +575,7 @@ var socketlog = function(message) {
 	console.log(message)
 }
 
-var server = app.listen(80, function() {
+var server = app.listen(3000, function() {
 	console.log(server.address())
     console.log('Listening on port %d', server.address().port);
 });
