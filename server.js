@@ -73,6 +73,8 @@ app.get('/logout', function (req, res) {
 });
 
 var mailbot = require('./lib/email')
+mailbot.debug = false;	
+
 
 //HANDLES LOGIN FORM DATA
 app.post('/', function(req, res){
@@ -358,15 +360,15 @@ app.get('/admin', function (req, res) {
 
 	//test email sending
 	var email = {}
-	email.from = "noreplay@launchlabapp.com"
-	email.fromname = "LaunchLab"
-	email.rcpt = "rouan@8bo.org"
-	email.rcptname = "Rouan van der Ende"
-	
-	console.log("SENDING EMAIL ==================")
+	email.from = "noreply@launchlabapp.com";
+	email.fromname = "LaunchLab";
+	email.rcpt = "rouan@8bo.org";
+	email.rcptname = "Rouan van der Ende";
+	email.subject = "Welcome to LaunchLab";
+	email.body = "Hi "+req.session.username+" we welcome you to http://launchlabapp.com";
+
 	mailbot.sendemail(email, function (data) {
-		console.log("SENT EMAIL !! SUCCESS!")
-		console.log(data)
+		console.log("EMAIL SENT")
 	})
 
 	db.users.find({}, function(err, users) {
