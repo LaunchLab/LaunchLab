@@ -2,6 +2,8 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+
+    -moz-outline-style: none;
 }
 
 .mainlogo {
@@ -34,7 +36,9 @@ h4,
 h5,
 h6,
 label {
-    color: #333;
+    color: #fff;
+
+    font-weight: 400;
 }
 
 .projectlink {
@@ -122,7 +126,7 @@ a.pure-button-primary {
 .home-menu {
     padding: 0.5em;
     text-align: center;
-    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+    box-shadow: 0 5px 5px rgba(0,0,0, 0.10);
 }
 .home-menu.pure-menu-open {
     background: #fff;
@@ -203,6 +207,55 @@ a.pure-button-primary {
     opacity: 0.8;
 }
 
+
+.firsttagline { 
+color: white;
+text-transform: uppercase;
+text-align:center;
+}
+
+.secondtagline {
+ text-align:center;   
+ color: rgba(255,255,255,0.8);
+}
+
+.taglinebutton {
+color: rgb(245, 175, 45); 
+text-align:center; 
+
+width: 250px; 
+font-size: 22px; 
+background: rgb(255, 255, 255); 
+padding: 10px; 
+margin: 0 auto;
+
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+
+
+.iconboxes {
+    text-align: center;
+}
+.largeicon { 
+    font-size: 100px;
+
+    color: #F38A00;
+}
+
+.portfolio img {
+    width: 100%;    
+}
+
+.portfoliobox {
+    padding: 0 5px 2px 5px;
+}
+
+.clients img {
+    max-width: 75%;    
+}
+
 /*
  * -- CONTENT STYLES --
  * This represents the content area (everything below the blue section)
@@ -246,6 +299,7 @@ a.pure-button-primary {
 /* This is the class used for the content sub-headers (<h3>) */
 .content-subhead {
     color: #F38A00;
+    text-transform: uppercase;
 }
     .content-subhead i {
         margin-right: 7px;
