@@ -127,28 +127,29 @@ app.post('/', function(req, res){
 
 		  				var email = {}
 						email.from = "noreply@launchlabapp.com";
-						email.fromname = "LaunchLab";
+						email.fromname = "Launch Lab Signups";
 						email.rcpt = "rouan@8bo.org";
 						email.rcptname = "Rouan van der Ende";
-						email.subject = "LaunchLab Admin - new user registered";
-						email.body = "Someone new signed up! Username:"+req.body.username+" Email:"+req.body.email;
+						email.subject = "Launch Lab Admin notice new user "+req.body.username+" registered";
+						email.body = "This is a notice to let you known a new user signed up. Username:"+req.body.username+" Email:"+req.body.email;
 
 						mailbot.sendemail(email, function (data) {
 							console.log("EMAIL SENT")
+							
+							var emailK = {}
+							emailK.from = "noreply@launchlabapp.com";
+							emailK.fromname = "Launch Lab Signups";
+							emailK.rcpt = "kevin@openwindow.co.za";
+							emailK.rcptname = "Kevin Lawrie";
+							emailK.subject = "Launch Lab Admin notice new user "+req.body.username+" registered";
+							emailK.body = "This is a notice to let you known a new user signed up. Username:"+req.body.username+" Email:"+req.body.email;
+
+							mailbot.sendemail(emailK, function (data) {
+								console.log("EMAIL SENT")
+							})
 						})
 
-						var emailK = {}
-						emailK.from = "noreply@launchlabapp.com";
-						emailK.fromname = "LaunchLab";
-						emailK.rcpt = "kevin@openwindow.co.za";
-						emailK.rcptname = "Kevin Lawrie";
-						emailK.subject = "LaunchLab Admin - new user registered";
-						emailK.body = "Someone new signed up! Username:"+req.body.username+" Email:"+req.body.email;
-
-						mailbot.sendemail(emailK, function (data) {
-							console.log("EMAIL SENT")
-						})
-
+		
 
 
 
@@ -410,6 +411,7 @@ app.post('/projects/new', function (req, res) {
 				console.log("EMAIL SENT")
 			})
 
+			/*
 			var emailK = {}
 			emailK.from = "noreply@launchlabapp.com";
 			emailK.fromname = "LaunchLab";
@@ -421,6 +423,7 @@ app.post('/projects/new', function (req, res) {
 			mailbot.sendemail(emailK, function (data) {
 				console.log("EMAIL SENT")
 			})
+			*/
 		//res.redirect('/project/'+projectid);
 	});
 });
@@ -452,8 +455,8 @@ app.get('/admin', function (req, res) {
 	email.fromname = "LaunchLab";
 	email.rcpt = "rouan@8bo.org";
 	email.rcptname = "Rouan van der Ende";
-	email.subject = "Welcome to LaunchLab";
-	email.body = "Hi "+req.session.username+" we welcome you to http://launchlabapp.com";
+	email.subject = "Welcome 123 to LaunchLab test";
+	email.body = "Hi  5466 this is a test email "+req.session.username+" we welcome you to http://launchlabapp.com";
 
 	mailbot.sendemail(email, function (data) {
 		console.log("EMAIL SENT")
