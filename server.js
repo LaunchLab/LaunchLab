@@ -404,7 +404,7 @@ app.post('/projects/new', function (req, res) {
 			email.fromname = "Launch Lab Projects";
 			email.rcpt = "rouan@8bo.org";
 			email.rcptname = "Rouan van der Ende";
-			email.subject = "Launch Lab Projects - New project created";
+			email.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
 			email.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
 
 			mailbot.sendemail(email, function (data) {
@@ -415,7 +415,7 @@ app.post('/projects/new', function (req, res) {
 					email.fromname = "Launch Lab Projects";
 					emailK.rcpt = "kevin@openwindow.co.za";
 					emailK.rcptname = "Kevin Lawrie";
-					email.subject = "Launch Lab Projects - New project created";
+					email.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
 					email.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
 
 					mailbot.sendemail(email, function (data) {
