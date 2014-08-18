@@ -413,8 +413,8 @@ app.post('/projects/new', function (req, res) {
 					var email = {}
 					email.from = "noreply@launchlabapp.com";
 					email.fromname = "Launch Lab Projects";
-					email.rcpt = "rouan@8bo.org";
-					email.rcptname = "Rouan van der Ende";
+					emailK.rcpt = "kevin@openwindow.co.za";
+					emailK.rcptname = "Kevin Lawrie";
 					email.subject = "Launch Lab Projects - New project created";
 					email.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
 
