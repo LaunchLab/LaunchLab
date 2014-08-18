@@ -100,7 +100,7 @@ cursor: pointer;
 }
 
 /*
- * -- PURE BUTTON STYLES --
+ * -- taglineON STYLES --
  * I want my pure-button elements to look a little different
  */
 .pure-button {
@@ -220,7 +220,7 @@ text-align:center;
 }
 
 .taglinebutton {
-color: rgb(245, 175, 45); 
+color: rgb(#F38A00); 
 text-align:center; 
 
 width: 250px; 
