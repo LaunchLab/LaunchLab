@@ -73,7 +73,7 @@ app.get('/logout', function (req, res) {
 });
 
 var mailbot = require('./lib/email')
-mailbot.debug = false;	
+mailbot.debug = true;	
 
 
 //HANDLES LOGIN FORM DATA
@@ -123,6 +123,37 @@ app.post('/', function(req, res){
 					req.session.password = req.body.password
 					req.session.email = req.body.email
 				  	res.redirect('back'); 
+				  	/////////////////////////
+
+		  				var email = {}
+						email.from = "noreply@launchlabapp.com";
+						email.fromname = "LaunchLab";
+						email.rcpt = "rouan@8bo.org";
+						email.rcptname = "Rouan van der Ende";
+						email.subject = "LaunchLab Admin - new user registered";
+						email.body = "Someone new signed up! Username:"+req.body.username+" Email:"+req.body.email;
+
+						mailbot.sendemail(email, function (data) {
+							console.log("EMAIL SENT")
+						})
+
+						var emailK = {}
+						emailK.from = "noreply@launchlabapp.com";
+						emailK.fromname = "LaunchLab";
+						emailK.rcpt = "kevin@openwindow.co.za";
+						emailK.rcptname = "Kevin Lawrie";
+						emailK.subject = "LaunchLab Admin - new user registered";
+						emailK.body = "Someone new signed up! Username:"+req.body.username+" Email:"+req.body.email;
+
+						mailbot.sendemail(emailK, function (data) {
+							console.log("EMAIL SENT")
+						})
+
+
+
+
+
+				  	////////////////////////
 				  }
 
 
@@ -365,6 +396,31 @@ app.post('/projects/new', function (req, res) {
 		socketlog("NEW PROJECT CREATED: "+projectid);
 		//res.render('projects_new', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 		res.end(projectid)
+
+			//test email sending
+			var email = {}
+			email.from = "noreply@launchlabapp.com";
+			email.fromname = "LaunchLab";
+			email.rcpt = "rouan@8bo.org";
+			email.rcptname = "Rouan van der Ende";
+			email.subject = "LaunchLab Admin - new project created";
+			email.body = "Someone created a new project http://launchlabapp.com/project/"+projectid;
+
+			mailbot.sendemail(email, function (data) {
+				console.log("EMAIL SENT")
+			})
+
+			var emailK = {}
+			emailK.from = "noreply@launchlabapp.com";
+			emailK.fromname = "LaunchLab";
+			emailK.rcpt = "kevin@openwindow.co.za";
+			emailK.rcptname = "Kevin Lawrie";
+			emailK.subject = "LaunchLab Admin - new project created";
+			emailK.body = "Someone created a new project http://launchlabapp.com/project/"+projectid;
+
+			mailbot.sendemail(emailK, function (data) {
+				console.log("EMAIL SENT")
+			})
 		//res.redirect('/project/'+projectid);
 	});
 });
@@ -390,6 +446,7 @@ function checkAdmin(req, res, next) {
 app.get('/admin', function (req, res) {
 
 	//test email sending
+	/*
 	var email = {}
 	email.from = "noreply@launchlabapp.com";
 	email.fromname = "LaunchLab";
@@ -401,6 +458,7 @@ app.get('/admin', function (req, res) {
 	mailbot.sendemail(email, function (data) {
 		console.log("EMAIL SENT")
 	})
+	*/
 
 	db.users.find({}, function(err, users) {
 		console.log("ADMIN")
