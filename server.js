@@ -410,15 +410,15 @@ app.post('/projects/new', function (req, res) {
 			mailbot.sendemail(email, function (data) {
 				console.log("EMAIL SENT")
 							//test email sending
-					var email = {}
-					email.from = "noreply@launchlabapp.com";
-					email.fromname = "Launch Lab Projects";
+					var emailK = {}
+					emailK.from = "noreply@launchlabapp.com";
+					emailK.fromname = "Launch Lab Projects";
 					emailK.rcpt = "kevin@openwindow.co.za";
 					emailK.rcptname = "Kevin Lawrie";
-					email.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
-					email.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
+					emailK.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
+					emailK.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
 
-					mailbot.sendemail(email, function (data) {
+					mailbot.sendemail(emailK, function (data) {
 						console.log("EMAIL SENT")
 					})
 			})
