@@ -166,7 +166,7 @@ a.pure-button-primary {
  */
 .splash-overlay {
     background-image: url("/images/pattern.png");
-    opacity: 50%;
+    z-index: 0;
     background-repeat: repeat-x repeat-y;
 }
 .splash-container {
@@ -190,6 +190,10 @@ a.pure-button-primary {
     top: 100px; left: 0; bottom: 0; right: 0;
     text-align: center;
     text-transform: uppercase;
+}
+
+.launchlabsplash h1 {
+    z-index: 1;
 }
 
 /* This is the main heading that appears on the blue section */
