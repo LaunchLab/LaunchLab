@@ -164,7 +164,11 @@ a.pure-button-primary {
  * -- SPLASH STYLES --
  * This is the blue top section that appears on the page.
  */
-
+.splash-overlay {
+    background-image: url("/images/pattern.png");
+    opacity: 50%;
+    background-repeat: repeat-x repeat-y;
+}
 .splash-container {
     background: #F38A00 url("/images/big.jpg");
     z-index: -1;
@@ -220,12 +224,12 @@ text-align:center;
 }
 
 .taglinebutton {
-color: #F38A00; 
+color: white; 
 text-align:center; 
-
 width: 250px; 
-font-size: 22px; 
-background: rgb(255, 255, 255); 
+font-size: 22px;
+
+background: #F38A00; 
 padding: 10px; 
 margin: 0 auto;
 
@@ -233,8 +237,10 @@ margin: 0 auto;
 -moz-border-radius: 5px;
 border-radius: 5px;
 }
-
-
+.taglinebutton a {color: white;
+}
+.taglinebutton:hover {background: grey;
+}
 .iconboxes {
     text-align: center;
 }

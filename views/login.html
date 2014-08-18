@@ -29,6 +29,7 @@
 <a name="top" id="top"></a>
 
 <div class="splash-container">
+ <div class="splash-overlay">
 
     
     <div class="pure-g launchlabsplash" >
@@ -53,7 +54,7 @@
         
 
     </div>
-    
+  </div>
 </div>
 
 <div class="content-wrapper">
@@ -271,6 +272,7 @@ $('a').click(function(){
 var windowheight = $(window).height()
 $(".launchlabsplash").css("padding-top", (windowheight/3));
 $(".splash-container").css("height", windowheight)
+$(".splash-overlay").css("height", windowheight)
 $(".content-wrapper").css("top", windowheight)
 
 </script>
