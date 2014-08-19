@@ -47,8 +47,19 @@ label {
  LAUNCHLAB NEW PROJECT BRIEFING
 */
 
-.backgroundtextareas { width: 100%; height: 150px; resize:vertical ; }
+.briefbutton {
+    float:right;
+}
 
+.brief {
+    background-color: #eee;
+}
+
+.brief h2 { color: #555;}
+.brief label { color: #999;}
+.backgroundtextareas { width: 100%; resize:vertical ; }
+
+.check_boxes { width: 14px; display: inline-block;}
 
 /*
  LAUNCHLAB DASHBOARD
@@ -83,8 +94,6 @@ label {
     text-align: center;
 }
 
-
-
 /*
  * -- PURE FORM STYLES --
  * Style the form inputs and labels
@@ -95,7 +104,7 @@ label {
     font-size: 100%;
 }
 
-.pure-form input[type] {
+.pure-form input[type="text"] {
     border: 2px solid #ddd;
     box-shadow: none;
     font-size: 100%;
@@ -103,7 +112,20 @@ label {
     margin-bottom: 1em;
 }
 
-.pure-form input[type]:focus {
+.pure-form input[type="text"]:focus {
+    border: 2px solid #F38A00;
+    
+}
+
+.pure-form textarea {
+    border: 2px solid #ddd;
+    box-shadow: none;
+    font-size: 100%;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.pure-form textarea:focus {
     border: 2px solid #F38A00;
     
 }
@@ -328,7 +350,7 @@ border-radius: 5px;
 
 /* This is the class used for the content sub-headers (<h3>) */
 .content-subhead {
-    color: #F38A00;
+    color: #000;
     text-transform: uppercase;
 }
     .content-subhead i {

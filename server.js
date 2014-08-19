@@ -1,6 +1,6 @@
 var enableEmail = false;
+var enableArduino = false;		//set this to true if you want arduino sensor access on server side
 
-var enableArduino = true;		//set this to true if you want arduino sensor access on server side
 //var socketconnect = 'http://fluentart.com/';
 var socketconnect = '/';
 
@@ -398,6 +398,7 @@ app.post('/projects/new', function (req, res) {
 	project.created = Date.now();
 	project.status = "new"
 	project.costtodate = 0;
+	console.log(project)
 	db.projects.save( project, function(err, saved) {
 		
 		console.log("NEW PROJECT CREATED");		

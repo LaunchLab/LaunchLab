@@ -13,12 +13,142 @@
 
 
 
-<div class="content-wrapper-top">
-    <div class="content">
-    	<div class="pure-g" id="brief">
+<div class="content-wrapper-top ">
+    <div class="content brief">
+    	<div class="pure-g" >
 
-    	</div>
+		<div class="l-box pure-u-1 pure-u-md-1-1 pure-u-lg-1-1">
+			<br><br><h1 class="content-subhead">create new order form</h1>
+		</div>
+
+
+	<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+
+	
+    
+	<h2>Your Company</h2>
+	<form class="pure-form pure-form-stacked">
+	<label>Company name</label>
+	<input id="companyname" class="backgroundinputs" data-backgroundinfo="companyname" type="text" name="companyname" placeholder="Enter your company name here...">
+
+	<label>Company website url</label>
+	<input id="companyurl" class="backgroundinputs" data-backgroundinfo="companyurl" type="text" name="companyurl" placeholder="Explain the project! ex. Design a new UI for a movie review site">
+	    	
+	<label>Company description</label>    	
+	<textarea id="companydescription" class="backgroundtextareas" rows="8" placeholder="The main brief to the designers and developers that will be working on your project. This should be as detailed as possible."></textarea>
+
+	<label>Location</label>
+	<input id="companylocation" class="backgroundinputs" data-backgroundinfo="companyurl" type="text" name="companyurl" placeholder="ex. Centurion, South Africa">
+	 
+	<h2>Project Info</h2>
+	<form class="pure-form pure-form-stacked">
+	
+	<label>Title</label>
+	<input id="projecttitle" class="backgroundinputs" data-backgroundinfo="projecttitle" type="text" name="projecttitle" placeholder="Explain the project. ex. 'Design a new logo for a bakery'">
+
+	<label>Project summary</label>    	
+	<textarea id="projectsummary" class="backgroundtextareas" rows="3" placeholder="A two-sentence description of what you're trying to accomplish. This is what designers will receive in their inbox."></textarea>
+
+	<h2>Budget</h2>
+	<label>Designer Type</label>  
+	<div class="pure-g" >
+		<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">
+			<input type="radio" name="designertype" value="junior"> Junior</br>
+		</div>
+		<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">
+			<input type="radio" name="designertype" value="senior"> Senior</br>
+		</div>
+		<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">
+			<input type="radio" name="designertype" value="superstar"> Superstar</br>
+		</div>
+	</div>
+
+	<label>Budget Range</label>  
+	<select id="budgetrange" class="select required" id="job_offer_budget_range" name="job_offer[budget_range]"><option value=""></option>
+		<option value="Not sure yet">Not sure yet</option>
+		<option value="Under R1000">Under R1000</option>
+		<option value="R1000-R1500">R1000-R1500</option>
+		<option value="R1500-R2000">R1500-R2000</option>
+		<option value="R2000-R3000">R2000-R3000</option>
+		<option value="R3000-R4000">R3000-R4000</option>
+		<option value="R4000-R5000">R4000-R5000</option>
+		<option value="R5000-R6000">R5000-R6000</option>
+		<option value="R6000-R7500">R6000-R7500</option>
+		<option value="R7500-R10000">R7500-R10000</option>
+		<option value="R10000-R15000">R10000-R15000</option>
+		<option value="R15000-R20000">R15000-R20000</option>
+		<option value="R20000+">R20000+</option>
+	</select>
+
+	 </form>
+</div>
+<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+
+
+
+	<h2>Project Brief</h2>
+
+	<form class="pure-form pure-form-stacked">
+	<label>Project details</label>    	
+	<textarea id="projectdetails" class="backgroundtextareas" rows="16" placeholder="More details about your project. Explain what you need, and what kind of deliverables you expect."></textarea>
+
+	<label>Inspiration</label>    	
+	<textarea id="projectinspiration" class="backgroundtextareas" rows="5" placeholder="Other sites, logos, etc. that you like, or services similar to yours."></textarea>
+
+	<label>Timeframe</label>    	
+	<textarea id="projecttimeframe" class="backgroundtextareas" rows="5" placeholder="Starting date, deadline, etc."></textarea>
+
+	<label>Desired skills</label>    	
+
+	<div class="pure-g" >
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="Icon design"> Icon design
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="Illustration"> Illustration
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="Logo design"> Logo design
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="Mobile design"> Mobile design
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="Print design"> Print design
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="UI design"> UI design
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="UX design"> UX design
+		</div>
+		<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-2">
+			<input class="skillschecklist" type="checkbox" name="skills" value="Web design"> Web design
+		</div>
+	</div>
+
+	<label>Coding</label>   
+	<div class="pure-g" >
+		<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">
+			<input type="radio" name="coding" value="Not needed"> Not needed
+		</div>
+		<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">
+			<input type="radio" name="coding" value="Optional"> Optional
+		</div>
+		<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">
+			<input type="radio" name="coding" value="Mandatory"> Mandatory
+		</div>
+	</div>
+	
+	<br>
+    	<a href="#2" class="pure-button pure-button-primary briefbutton">Done</a>
+
+    </form>			
     </div>
+
+
+ </div>
+</div>
 
     
 
@@ -35,228 +165,53 @@
 
 <script>
 
-	var briefdata = {}
-
-	briefdata.step = 1;	
-
-	console.log(location.hash) 
-	parseInt(location.hash.replace('#',''),10); 
 	
-	if (briefdata.brieftype) {} else {
-		briefdata.brieftype = "";	
-	}
-
-	if (briefdata.backgroundinfo) {} else {
-		briefdata.backgroundinfo = {};
-	}
-
-	var renderbrief = function () {
-		console.log(briefdata)
-		location.hash = briefdata.step
-		// STEP 0 - SELECT TYPE
-		if (briefdata.step == 0) {		
-			$('#brief').html("")
-			var brdata = []
-			brdata.push({ head: 1, name:"Corporate Identity design"})
-			brdata.push({ head: 0, name:"Logo"})
-			brdata.push({ head: 0, name:"Business Card"})
-			brdata.push({ head: 0, name:"Letterhead"})
-			brdata.push({ head: 0, name:"Folder"})
-			brdata.push({ head: 0, name:"Envelopes"})
-			brdata.push({ head: 0, name:"Email Signature"})
-			brdata.push({ head: 0, name:"Presentation"})
-			brdata.push({ head: 0, name:"Other"});
-			brdata.push({ head: 1, name:"Business &amp; Advertising"});
-			brdata.push({ head: 0, name:"Print Advertisement"});
-			brdata.push({ head: 0, name:"Infographic"});
-			brdata.push({ head: 0, name:"Brochure"});
-			brdata.push({ head: 0, name:"Signage"});
-			brdata.push({ head: 0, name:"Packaging"});
-			brdata.push({ head: 0, name:"Other"});
-
-			brdata.push({ head: 2, name:"next table"});
-
-			brdata.push({ head: 1, name:"Website &amp; mobile applications"});
-			brdata.push({ head: 0, name:"Website"});
-			brdata.push({ head: 0, name:"Mobile Applications"});
-			brdata.push({ head: 0, name:"Social Media Page"});
-			brdata.push({ head: 0, name:"Web Banner Ad"});
-			brdata.push({ head: 0, name:"Emailer"});
-			brdata.push({ head: 0, name:"Other"});
-			brdata.push({ head: 1, name:"Drawing &amp; Illustration"});
-			brdata.push({ head: 0, name:"Illustration &amp; Graphics"});
-			brdata.push({ head: 0, name:"Card or invitation"});
-			brdata.push({ head: 0, name:"storybook illustration"});
-			brdata.push({ head: 0, name:"book or magazine cover"});
-			brdata.push({ head: 1, name:"Animation"});
-			brdata.push({ head: 1, name:"Film"});
-			brdata.push({ head: 1, name:"Motion Graphics"});
-			brdata.push({ head: 1, name:"Photography"});
-
-			//section
-			var section = "STEP 1: What kind of project";
-
-			var briefhtml = "";
-
-			briefhtml += '<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3"><h3 class="content-subhead">'+section+'</h3></div>';
-
-			//options
-			briefhtml += '<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">'
-			briefhtml += '<p>';
-				
-			for (var num in brdata) {
-				if (brdata[num].head == 0) {
-					briefhtml += '<span class="briefoptions" data-type="'+brdata[num].name+'" data-head="'+brdata[num].head+'" >'+brdata[num].name+'</span><br>';
-				} 
-				if (brdata[num].head == 1) {
-					briefhtml += '<h4><span class="briefoptions" data-type="'+brdata[num].name+'" data-head="'+brdata[num].head+'">'+brdata[num].name+'</span></h4>'
-				} 
-
-				if (brdata[num].head == 2) {
-					briefhtml += '</p></div><div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3"><p>';
-				}
-			}
-				
-			briefhtml += '</p>'
-			briefhtml += '</div>'
-
-			$('#brief').html(briefhtml);
-
-			var hoveron = function () {
-				$(this).css("color", "rgb(243, 138, 0)")
-				$(this).css("cursor", "pointer")
-			}
-
-			var hoveroff = function () {
-				if ($(this).data("head") == 0) {
-					
-					$(this).css("color", "rgb(127, 140, 141)")		
-				}
-
-				if ($(this).data("head") == 1) {
-					$(this).css("color", "rgb(52, 73, 94)")		
-				}
-
-				
-			}
-
-			$('.briefoptions').hover(hoveron, hoveroff);
-
-			$('.briefoptions').click( function() {
-				briefdata.brieftype = $(this).data("type");
-				briefdata.step += 1;
-				console.log("click");
-				console.log(briefdata)
-				renderbrief();
-				
-			})
-		}
-                
-		//STEP 1
-
-		if (briefdata.step == 1) {	
-			var brdata = []
-			brdata.push({ name:"Title", dataname: "projecttitle", example: "Explain the project! ex. Design a new UI for a movie review site"})
-			brdata.push({ name:"Overview (brief description of project and expected)", dataname: "overview", example:"The main brief to the designers and developers that will be working on your project. This should be as detailed as possible.", inputtype : "textarea"})
-			brdata.push({ name:"Objectives", dataname: "objectives"})
-			brdata.push({ name:"Expected delivery date", dataname: "timeframe"})
-			//brdata.push({ name:"Budget", dataname: "budget"})
-			brdata.push({ name:"Target Audiences", dataname: "audience"})
-			//brdata.push({ name:"Your industry / Main competitors", dataname: "competitors"})
-			//brdata.push({ name:"Describe what your organization or product does", dataname: "purpose"})
-			brdata.push({ name:"Tone", dataname: "tone", example: "Feelings you are trying to provoke"});
-
-			$('#brief').html("")			
-			//section
-			var section = "Step 1: Your company";
-			
-			var briefhtml = "";
-			briefhtml += '<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">';
-			//SECTION
-			briefhtml += '<h3 class="content-subhead">'+section+'</h3><p><b>Project Type: </b>'+briefdata.brieftype+'</p></div>';
-
-
-			//BACKGROUND INFORMATION
-			briefhtml += '<div class="l-box pure-u-1 pure-u-md-2-3 pure-u-lg-2-3">'
-			
-			briefhtml += '<form class="pure-form pure-form-stacked" >';
-				
-
-			//FORM 	
-			for (var num in brdata) {
-				briefhtml += '<h4><span class="briefoptions" data-type="'+brdata[num].name+'" data-head="'+brdata[num].head+'" >'+brdata[num].name+'</span></h4>';
-
-				if (brdata[num].inputtype == "textarea") {
-					briefhtml += '<textarea class="backgroundtextareas" placeholder="'+brdata[num].example+'"></textarea>';
-				} else {
-					briefhtml += '<input class="backgroundinputs" data-backgroundinfo="'+brdata[num].dataname+'" type="text" name="'+brdata[num].dataname+'" placeholder="'+brdata[num].example+'">'
-				}
-				
-			
-
-
-			}
-				
-			briefhtml += '</form>'
-
-			briefhtml += '<a href="#2" class="pure-button pure-button-primary backgroundbtn">Done</a>'
-
-			briefhtml += '</div>'
-
-			$('#brief').html(briefhtml);
-
+			var briefdata = {}
 			var entry = {}
-			
-			$('.backgroundbtn').click( function() {
 
-				$('.backgroundinputs').each( function(a){
-					entry[$(this).data("backgroundinfo")] = $(this).val();
-				})
-				briefdata.backgroundinfo = entry
+			$('.briefbutton').click( function() {
+
+				
+				entry["companyname"] = $("#companyname").val();
+				entry["companyurl"] = $("#companyurl").val();
+				entry["companydescription"] = $("#companydescription").val();
+				entry["companylocation"] = $("#companylocation").val();
+				entry["projecttitle"] = $("#projecttitle").val();
+				entry["projectsummary"] = $("#projectsummary").val();
+				entry["designertype"] = $("input:radio[name ='designertype']:checked").val();
+				entry["budgetrange"] =$( "#budgetrange option:selected" ).text();
+				entry["projectdetails"] = $("#projectdetails").val(); 
+				entry["projectinspiration"] = $("#projectinspiration").val(); 
+				entry["projecttimeframe"] = $("#projecttimeframe").val(); 
+				
+				entry["skills"] = [] //$("input:checkbox[name ='skills']:checked").val();
+				
+				$('.skillschecklist').each(function(){ 
+					if (this.checked == true) {
+						console.log( $(this).prop('value') );
+						console.log( $(this).prop('checked') );
+						entry["skills"].push( $(this).prop('value') )
+					}
+						
+				});
+
+				entry["coding"] = $("input:radio[name ='coding']:checked").val();
+
+				briefdata.brief = entry
+
 				console.log(entry)
 				$.post( "/projects/new", briefdata, function( projectid ) {
 				  console.log("success! created.. project id is:")
 				  console.log(projectid)
 
 
-				  var briefhtml = "";
-					briefhtml += '<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">';
-
-					briefhtml += '<h3 class="content-subhead">Created!</h3><p><b>Project Type: </b>'+briefdata.brieftype+'</p></div>';
-					
-					briefhtml += '<div class="l-box pure-u-1 pure-u-md-2-3 pure-u-lg-2-3">'					
-					briefhtml += '<h4>project has been created</h4>';				
-					briefhtml += '<p>Your project can be found at <a href="/project/'+projectid+'">/project/'+projectid+'</a></p>';				
-					briefhtml += '</div>'
-
-				  $('#brief').html(briefhtml)
-				  //window.location.href = "http://stackoverflow.com"; //similar to click
-				  window.location.replace("/project/"+projectid); //similar to redirect
+				  
+				  //window.location.replace("/project/"+projectid); //similar to redirect
 
 				});
-				//briefdata.step += 1;
-				//renderbrief();
+				 
 			});
 
-
-		} // end step 1
-
-		//STEP 2 VISUAL STYLE
-		if (briefdata.step == 2) {	
-			$('#brief').html("")
-			
-		} // end step 2
-
-		//STEP 3 CONTENT DETAILS
-		if (briefdata.step == 3) {	
-			$('#brief').html("")
-		} // end step 3
-
-	
-	}
-	//END BRIEF
-
-	renderbrief();
 	
 </script>
 {% endblock %}
