@@ -1,4 +1,4 @@
-var enableEmail = false;
+var enableEmail = true;
 var enableArduino = false;		//set this to true if you want arduino sensor access on server side
 
 //var socketconnect = 'http://fluentart.com/';
@@ -315,6 +315,12 @@ app.get('/', function (req, res) {
 
 		for (var project in projects) {
 			projects[project]._id = JSON.stringify( projects[project]._id ).replace("\"", "").replace("\"", "");
+			var nowdate = new Date(projects[project].created);
+			projects[project].createdformatted = nowdate.toISOString();
+
+			var updateddate = new Date(projects[project].created);
+			projects[project].updatedformatted = updateddate.toISOString();
+			//
 		}
 
 		res.render('home_loggedin', data);
@@ -396,7 +402,7 @@ app.post('/projects/new', function (req, res) {
 	var project = req.body;
 	project.creator = req.session.username;
 	project.created = Date.now();
-	project.status = "new"
+	project.status = "pending"
 	project.costtodate = 0;
 	console.log(project)
 	db.projects.save( project, function(err, saved) {
@@ -418,6 +424,9 @@ app.post('/projects/new', function (req, res) {
 			email.rcptname = "Rouan van der Ende";
 			email.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
 			email.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
+			email.body += "\n\r"
+			email.body += JSON.stringify(project)
+			email.body += "\n\r"
 
 			mailbot.sendemail(email, function (data) {
 				console.log("EMAIL SENT")
@@ -429,7 +438,10 @@ app.post('/projects/new', function (req, res) {
 					emailK.rcptname = "Kevin Lawrie";
 					emailK.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
 					emailK.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
-
+					email.body += "\n\r"
+					email.body += JSON.stringify(project)
+					email.body += "\n\r"
+					
 					mailbot.sendemail(emailK, function (data) {
 						console.log("EMAIL SENT")
 					})

@@ -42,8 +42,13 @@ label {
     font-weight: 400;
 }
 
+.signupform label {
+    color: #ccc;
+}
 
-
+.signupform h4 {
+    color: #ccc;
+}
 /*
  LAUNCHLAB NEW PROJECT BRIEFING
 */
@@ -57,11 +62,10 @@ label {
 }
 
 
-
-.projectlink {
-    background: rgb(225,225,225);
-    padding: 10px;
+.projectlinkrow {
+    text-align: left;
 }
+
 
 .brief {
     background-color: #eee;
@@ -76,9 +80,9 @@ label {
 /*
  LAUNCHLAB DASHBOARD
 */
-.launchlabdarkbg a { color: #F38A00;}
+.launchlabdarkbg a { color: #fff;}
 .launchlabdarkbg a:hover { color: #FFF;}
-.launchlabdarkbg h3 { color: #ccc;}
+.launchlabdarkbg h3 { color: #666;}
 
 .projectlink:hover .projectlinkrow { background: #333; cursor: pointer; }
 
