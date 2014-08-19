@@ -7,7 +7,7 @@
 }
 
 .mainlogo {
-	height: 28px;
+	height: 50px;
 }
 
 a {
@@ -41,6 +41,9 @@ label {
     font-weight: 400;
 }
 
+.servicelist{
+    color: #fff;
+}
 .projectlink {
     background: rgb(225,225,225);
     padding: 10px;
