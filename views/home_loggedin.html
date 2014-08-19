@@ -1,0 +1,189 @@
+{% extends 'layout.html' %}
+
+{% block title %}LaunchLab{% endblock %}
+
+{% block head %}
+  {% parent %}
+  <script src="/lib/scrypt.js"></script>
+{% endblock %}
+
+{% block content %}
+{{ foo }}
+
+
+
+<a name="top" id="top"></a>
+
+
+<div class="content-wrapper-top">
+<a name="tour" id="tour"></a>       
+    <div class="content"  style="background: rgb(255, 255, 255);">
+	   
+        <h2 class="content-head is-center" style="color: rgb(45, 45, 45); margin-top:60px; margin-bottom: 0;" >Welcome {{ username }} - Launch Lab Dashboard</h2>
+        <p style="text-align: center; margin-top:0px;">This is your launchlab main control panel.</p>
+
+        <div class="pure-g">
+
+            <div class="l-box pure-u-1 pure-u-md-1-4 pure-u-lg-1-4">
+                <div class="iconboxes">
+
+                    <a class="dashboardicons" href="/projects/new" >
+                        <i class="fa fa-rocket mediumicon"></i>
+                        <h4 class="content-subhead">
+                        Place a new order
+                        </h4>
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="l-box pure-u-1 pure-u-md-1-4 pure-u-lg-1-4">
+                <div class="iconboxes">
+
+                    <a class="dashboardicons" href="/account/details" >
+                        <i class="fa fa-pencil mediumicon"></i>
+                        <h4 class="content-subhead">
+                        Edit your details
+                        </h4>
+                         <p >
+                     </a>
+
+                </div>
+            </div>
+
+
+            <div class="l-box pure-u-1 pure-u-md-1-4 pure-u-lg-1-4">
+                <div class="iconboxes">
+                    <a class="dashboardicons" href="/account/payments" >
+                        <i class="fa fa-bank mediumicon"></i>
+                        <h4 class="content-subhead">
+                        Setup payment methods
+                        </h4>
+                    </a>
+                </div>
+            </div>
+
+            <div class="l-box pure-u-1 pure-u-md-1-4 pure-u-lg-1-4">
+                <div class="iconboxes">
+                    <a class="dashboardicons" href="/account/payments" >
+                        <i class="fa fa-support mediumicon"></i>
+                        <h4 class="content-subhead">
+                        Support
+                        </h4>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    
+
+
+    <div class="ribbon l-box-lrg launchlabdarkbg" style="background: rgb(45, 45, 45); min-height:750px;">
+	<h2 class="content-head is-center" style="color: rgb(225, 225, 225);margin-bottom: 0;" >Your Orders</h2>
+    <p style="text-align: center; margin-top:0px; color: #7F8C8D;">Have a quick look to see progress on all your orders. Or <a href="/projects/new" >create a new one.</a></p>
+
+        
+        <div class="pure-g clients">
+
+            <div class="pure-u-1 pure-u-md-1-1 pure-u-lg-1-1">
+                <div class="clientbox" style="text-align:center;" >
+                    
+                        <div class="pure-g">
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                <h3>name </h3>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                <h3>type </h3>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                <h3>status </h3>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                <h3>overview </h3>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                               <h3>cost</h3>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                <h3>time </h3>
+                            </div>
+                            
+                        </div> 
+                    
+                     {% for project in projects %}
+                     <a class="projectlink" href="/project/{{ project._id }}" >
+                        <div class="pure-g projectlinkrow">
+                             <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                {{ project.name }}
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                {{ project.brieftype }}
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                {{ project.status }}
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                {{ project.overview }}
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                               {{ project.backgroundinfo.budget }}
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6 pure-u-lg-1-6">
+                                {{ project.backgroundinfo.timeframe }}
+                            </div>
+                            
+                        </div>                     
+                     </a>
+
+                     <br>
+                    {% endfor %}
+                </div>                
+            </div>
+
+            
+        </div>
+        
+        
+    </div>
+
+
+    {% include "./footer.html" %}
+
+</div>
+
+
+
+
+<script>
+	var scrypt = scrypt_module_factory();
+
+$('a').click(function(){
+    $('html, body').animate({
+        scrollTop: $( $(this).attr('href') ).offset().top
+    }, 500);
+    return false;
+});
+
+	$('#login').submit(function() {
+    // get all the inputs into an array.
+    	// not sure if you wanted this, but I thought I'd add it.
+    	// get an associative array of just the values.
+
+	    //console.log($('#username').val());
+	    //console.log($('#password').val());
+	   	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8($('#username').val()), scrypt.encode_utf8($('#password').val()), 16384, 8, 1, 32);
+		console.log(scrypt.to_hex(encrypted))
+		$('#password').val(scrypt.to_hex(encrypted));
+		return 1;
+	});
+
+var windowheight = $(window).height()
+$(".launchlabsplash").css("padding-top", (windowheight/3));
+$(".splash-container").css("height", windowheight)
+$(".splash-overlay").css("height", windowheight)
+$(".content-wrapper").css("top", windowheight)
+
+</script>
+{% endblock %}

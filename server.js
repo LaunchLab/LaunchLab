@@ -1,3 +1,5 @@
+var enableEmail = false;
+
 var enableArduino = true;		//set this to true if you want arduino sensor access on server side
 //var socketconnect = 'http://fluentart.com/';
 var socketconnect = '/';
@@ -76,6 +78,29 @@ var mailbot = require('./lib/email')
 mailbot.debug = true;	
 
 
+app.get('/tow/attendance', function (req, res) {
+	var data = {}
+	data.socketserver = socketconnect;
+	data.students = []
+
+	data.studentcounttotal = 15;
+	data.studentcountpresent = 0;
+	data.studentcountabsent = 0;
+	data.studentcountexempt = 0;
+	data.studentcountwork = 0;
+
+	for (var a = 0; a < data.studentcounttotal; a++) {
+		var student = {}
+		student.name = "Name"
+		student.surname = "Surname"
+		student.count = a+1;
+		student.number = 46400 + Math.round(Math.random()*500)
+		data.students.push(student)
+	}
+
+	res.render('tow_attendance', data)
+});
+
 //HANDLES LOGIN FORM DATA
 app.post('/', function(req, res){
 	  var minute = 60 * 1000;
@@ -92,7 +117,7 @@ app.post('/', function(req, res){
 	{
 		if ( err || !users) { 
 			console.log("DB error"); 
-			res.render('login', { foo: "Database error. Database offline?" });
+			res.render('home_loggedout', { foo: "Database error. Database offline?" });
 		} else {
 			console.log(users)
 
@@ -110,6 +135,8 @@ app.post('/', function(req, res){
 				newuser.mobile = ""
 				newuser.website = ""
 
+
+
 				db.users.save( newuser, function(err, saved) 
 				{
 
@@ -125,6 +152,9 @@ app.post('/', function(req, res){
 				  	res.redirect('back'); 
 				  	/////////////////////////
 
+				  	//SEND EMAIL WHEN THERES A NEW USER
+				  	if (enableEmail) 
+				  	{
 		  				var email = {}
 						email.from = "noreply@launchlabapp.com";
 						email.fromname = "Launch Lab Signups";
@@ -133,7 +163,8 @@ app.post('/', function(req, res){
 						email.subject = "Launch Lab Admin notice new user "+req.body.username+" registered";
 						email.body = "This is a notice to let you known a new user signed up. Username:"+req.body.username+" Email: "+req.body.email;
 
-						mailbot.sendemail(email, function (data) {
+						mailbot.sendemail(email, function (data) 
+						{
 							console.log("EMAIL SENT")
 							
 							var emailK = {}
@@ -144,11 +175,12 @@ app.post('/', function(req, res){
 							emailK.subject = "Launch Lab Admin notice new user "+req.body.username+" registered";
 							emailK.body = "This is a notice to let you known a new user signed up. Username:"+req.body.username+" Email: "+req.body.email;
 
-							mailbot.sendemail(emailK, function (data) {
+							mailbot.sendemail(emailK, function (data) 
+							{
 								console.log("EMAIL SENT")
 							})
 						})
-
+					}
 		
 
 
@@ -177,7 +209,7 @@ app.post('/', function(req, res){
 				} else {
 					//username exists
 					//password wrong
-					res.render('login', { foo: "Password wrong. This has been logged." });
+					res.render('home_loggedout', { foo: "Password wrong. This has been logged." });
 				}
 			}
 
@@ -203,7 +235,7 @@ function checkAuth(req, res, next) {
   if ((!req.session.username)||(!req.session.password)) 
   	{	
   		socketlog("anonymous visitor active on page "+ req.url )
-  		res.render('login', { foo: "please login with a new user, or existing username and password." }); 
+  		res.render('home_loggedout', { loggedout: true, foo: "please login with a new user, or existing username and password." }); 
   	} 
   else {
   
@@ -220,7 +252,7 @@ function checkAuth(req, res, next) {
 	{
 		if ( err || !users) { 
 			console.log("DB error. Is mongod running?");
-			res.render('login', { foo: "Error. Database offline." });
+			res.render('home_loggedout', { foo: "Error. Database offline." });
 		} else 
 		{
 
@@ -236,7 +268,7 @@ function checkAuth(req, res, next) {
 				req.session.avatar = avatar;
 				next(); 
 			}
-			if (users.length == 0) { res.render('login', { foo: "wrong username and password. check your CAPSLOCK" }); }
+			if (users.length == 0) { res.render('home_loggedout', { foo: "wrong username and password. check your CAPSLOCK" }); }
 		}
 	});
 
@@ -250,31 +282,7 @@ function checkAuth(req, res, next) {
 
 //OPENWINDOW TEST
 
-app.get('/tow/attendance', function (req, res) {
-	var data = {}
-	data.username = req.session.username;
-	data.password = req.session.password; 
-	data.email = req.session.email;
-	data.socketserver = socketconnect;
-	data.students = []
 
-	data.studentcounttotal = 15;
-	data.studentcountpresent = 0;
-	data.studentcountabsent = 0;
-	data.studentcountexempt = 0;
-	data.studentcountwork = 0;
-
-	for (var a = 0; a < data.studentcounttotal; a++) {
-		var student = {}
-		student.name = "Name"
-		student.surname = "Surname"
-		student.count = a+1;
-		student.number = 46400 + Math.round(Math.random()*500)
-		data.students.push(student)
-	}
-
-	res.render('tow_attendance', data)
-});
 
 
 
@@ -293,6 +301,7 @@ app.post('/account', function(req, res){
 });
 
 
+//DASHBOARD FOR USERS
 app.get('/', function (req, res) {
 	var data = { username: req.session.username, email: req.session.email, password: req.session.password, socketserver: socketconnect, userdb: req.session.db };
 
@@ -308,7 +317,7 @@ app.get('/', function (req, res) {
 			projects[project]._id = JSON.stringify( projects[project]._id ).replace("\"", "").replace("\"", "");
 		}
 
-		res.render('account', data);
+		res.render('home_loggedin', data);
 	})
 
   	
@@ -387,7 +396,8 @@ app.post('/projects/new', function (req, res) {
 	var project = req.body;
 	project.creator = req.session.username;
 	project.created = Date.now();
-
+	project.status = "new"
+	project.costtodate = 0;
 	db.projects.save( project, function(err, saved) {
 		
 		console.log("NEW PROJECT CREATED");		
@@ -398,6 +408,7 @@ app.post('/projects/new', function (req, res) {
 		//res.render('projects_new', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 		res.end(projectid)
 
+		if (enableEmail) {
 			//test email sending
 			var email = {}
 			email.from = "noreply@launchlabapp.com";
@@ -422,21 +433,8 @@ app.post('/projects/new', function (req, res) {
 						console.log("EMAIL SENT")
 					})
 			})
-
-			/*
-			var emailK = {}
-			emailK.from = "noreply@launchlabapp.com";
-			emailK.fromname = "LaunchLab";
-			emailK.rcpt = "kevin@openwindow.co.za";
-			emailK.rcptname = "Kevin Lawrie";
-			emailK.subject = "LaunchLab Admin - new project created";
-			emailK.body = "Someone created a new project http://launchlabapp.com/project/"+projectid;
-
-			mailbot.sendemail(emailK, function (data) {
-				console.log("EMAIL SENT")
-			})
-			*/
-		//res.redirect('/project/'+projectid);
+		}
+			
 	});
 });
 

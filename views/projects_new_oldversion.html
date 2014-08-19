@@ -37,7 +37,7 @@
 
 	var briefdata = {}
 
-	briefdata.step = 1;	
+	briefdata.step = 0;	
 
 	console.log(location.hash) 
 	parseInt(location.hash.replace('#',''),10); 
@@ -49,6 +49,19 @@
 	if (briefdata.backgroundinfo) {} else {
 		briefdata.backgroundinfo = {};
 	}
+	
+
+	/*
+	window.onhashchange = function() {       
+	    if (location.hash.length > 0) {        
+	        briefdata.step = parseInt(location.hash.replace('#',''),10);     
+	    } else {
+	        briefdata.step = 0;
+	    }
+	    renderbrief();
+	}*/
+
+
 
 	var renderbrief = function () {
 		console.log(briefdata)
@@ -168,7 +181,7 @@
 
 			$('#brief').html("")			
 			//section
-			var section = "Step 1: Your company";
+			var section = "Step 2: Project Details";
 			
 			var briefhtml = "";
 			briefhtml += '<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">';
