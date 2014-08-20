@@ -218,7 +218,12 @@ a.pure-button-primary {
 }
 .splash-container {
     background: #F38A00 url("/images/big.jpg");
-    z-index: -1;
+    background-repeat:no-repeat;
+    -webkit-background-size:cover;
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    background-size:cover;
+    background-position:center;z-index: -1;
     overflow: hidden;
     /* The following styles are required for the "scroll-over" effect */
     width: 100%;
