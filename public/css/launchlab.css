@@ -180,7 +180,7 @@ a.pure-button-primary {
 }
 .pure-menu.pure-menu-open.pure-menu-fixed {
     /* Fixed menus normally have a border at the bottom. */
-    border-bottom: none;
+    border-bottom: 0.5;
     /* I need a higher z-index here because of the scroll-over effect. */
     z-index: 4;
 }
