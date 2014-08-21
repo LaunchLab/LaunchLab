@@ -7,7 +7,7 @@
 }
 
 .mainlogo {
-	height: 38px;
+	height: 1em;
 }
 
 a {
@@ -40,6 +40,12 @@ label {
     color: #000;
 
     font-weight: 400;
+}
+
+h1 { line-height:  1.1em;}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset;
 }
 
 .signupform label {
@@ -129,6 +135,32 @@ label {
 }
 
 .pure-form input[type="text"]:focus {
+    border: 2px solid #F38A00;
+    
+}
+
+.pure-form input[type="password"] {
+    border: 2px solid #ddd;
+    box-shadow: none;
+    font-size: 100%;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.pure-form input[type="password"]:focus {
+    border: 2px solid #F38A00;
+    
+}
+
+.pure-form input[type="email"] {
+    border: 2px solid #ddd;
+    box-shadow: none;
+    font-size: 100%;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.pure-form input[type="email"]:focus {
     border: 2px solid #F38A00;
     
 }

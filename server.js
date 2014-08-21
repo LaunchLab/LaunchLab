@@ -102,6 +102,54 @@ app.get('/tow/attendance', function (req, res) {
 });
 
 //HANDLES LOGIN FORM DATA
+var loginhandler = function (req, res) {
+	  var minute = 60 * 1000;
+	  console.log("new login/register:")
+	  console.log(req.body)
+	  console.log("-----")
+	  //do login
+	  // app.js
+	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(req.body.username), scrypt.encode_utf8(req.body.password), 128, 8, 1, 32);
+	var encryptedhex = scrypt.to_hex(encrypted)		
+
+	//finds users in the database that have the same username already
+	db.users.find({username: req.body.username}, function(err, users) 
+	{
+		if ( err || !users) { 
+			console.log("DB error"); 
+			res.render('home_loggedout', { foo: "Database error. Database offline?" });
+		} else {
+			console.log(users)
+
+			if (users.length == 1) {
+				console.log("DB User Found.")
+				
+				if (users[0].password == encryptedhex) {
+					//match!
+					console.log("User logged in")
+					socketlog("user login: "+req.body.username )
+				  	req.session.username = req.body.username
+					req.session.password = req.body.password
+					req.session.email = users[0].email
+					res.redirect('back'); 
+				} else {
+					//username exists
+					//password wrong
+					res.render('login', { loggedout: true, message: "Invalid username and/or password. This has been logged." });
+				}
+
+
+			} else {
+			//ERROR NOT FOUND
+			res.render('login', { loggedout: true, message: "Invalid login. This has been logged." });
+			}
+		}
+	});
+}
+
+//OPENWINDOW TEST
+app.post('/login', loginhandler)
+
 app.post('/', function(req, res){
 	  var minute = 60 * 1000;
 	  console.log("new login/register:")
@@ -198,19 +246,7 @@ app.post('/', function(req, res){
 			if (users.length == 1) {
 				console.log("DB User Found.")
 				
-				if (users[0].password == encryptedhex) {
-					//match!
-					console.log("User logged in")
-					socketlog("user login: "+req.body.username )
-				  	req.session.username = req.body.username
-					req.session.password = req.body.password
-					req.session.email = req.body.email
-					res.redirect('back'); 
-				} else {
-					//username exists
-					//password wrong
-					res.render('home_loggedout', { foo: "Password wrong. This has been logged." });
-				}
+				res.redirect("/login")
 			}
 
 
@@ -234,8 +270,13 @@ app.use(checkAuth);
 function checkAuth(req, res, next) {
   if ((!req.session.username)||(!req.session.password)) 
   	{	
-  		socketlog("anonymous visitor active on page "+ req.url )
-  		res.render('home_loggedout', { loggedout: true, foo: "please login with a new user, or existing username and password." }); 
+  		if (req.url == "/login") {
+  			res.render('login', { loggedout: true } ); 
+  		} else {
+  			socketlog("anonymous visitor active on page "+ req.url )
+  			res.render('home_loggedout', { loggedout: true } ); 
+  		}
+  		
   	} 
   else {
   
@@ -280,12 +321,31 @@ function checkAuth(req, res, next) {
 /////////////////////////////////////////////////////////////////////
 //EVERYTHING BELOW IS FOR LOGGED IN USERS ONLY
 
-//OPENWINDOW TEST
+
+
+app.get('/login', function (req, res) { res.redirect('/'); })
 
 
 
+//CREATIVES
+app.get('/creatives/apply', function (req, res) {
+	//Apply as creative form
+  	res.render('creatives_apply', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+});
 
+//CREATIVES
+app.post('/creatives/applyform', function (req, res) {
+	console.log("applyform")
+	console.log(req.body)
+	//Apply as creative form
+  	res.render('creatives_applyformdone', { username: req.session.username, email: req.session.email, password: req.session.password, socketserver: socketconnect });
+});
 
+//CREATIVES
+app.get('/creatives/applyform', function (req, res) {
+	//Apply as creative form
+  	res.render('creatives_applyform', { username: req.session.username, email: req.session.email, password: req.session.password, socketserver: socketconnect });
+});
 
 //LAUNCHLAB MAIN
 //handles account updates
