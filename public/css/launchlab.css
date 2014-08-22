@@ -357,6 +357,8 @@ border-radius: 5px;
     padding: 0 5px 2px 5px;
 }
 
+.portfoliobox img {-webkit-border-radius: 20px 0px 20px 0px;-moz-border-radius: 20px 0px 20px 0px;border-radius: 20px 0px 20px 0px;background-color:#E3E3E3;}
+
 .clients img {
     max-width: 75%;    
 }
