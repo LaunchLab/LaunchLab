@@ -28,6 +28,9 @@
 
 	<label>Full name</label>
 	<input id="fullname" class="backgroundinputs" data-backgroundinfo="fullname" type="text" name="fullname" placeholder="Enter your full name here...">
+	
+	<label>Phone number</label>
+	<input id="phonenumber" class="backgroundinputs" data-backgroundinfo="phonenumber" type="text" name="phonenumber" placeholder="We will not sell or spam your number">
 
 	<label>Username: {{ username }} </label>
 	<label>Email: {{ email }} </label>
@@ -80,76 +83,8 @@
 </div>
 </div>
 
-
-    
-	
-
-	
-
-	
-
-    
-
-
-  
-
     {% include "./footer.html" %}
 
 </div>
 
-
-
-
-
-<script>
-
-	
-			var briefdata = {}
-			var entry = {}
-
-			$('.briefbutton').click( function() {
-
-				
-				entry["companyname"] = $("#companyname").val();
-				entry["companyurl"] = $("#companyurl").val();
-				entry["companydescription"] = $("#companydescription").val();
-				entry["companylocation"] = $("#companylocation").val();
-				entry["projecttitle"] = $("#projecttitle").val();
-				entry["projectsummary"] = $("#projectsummary").val();
-				entry["designertype"] = $("input:radio[name ='designertype']:checked").val();
-				entry["budgetrange"] =$( "#budgetrange option:selected" ).text();
-				entry["projectdetails"] = $("#projectdetails").val(); 
-				entry["projectinspiration"] = $("#projectinspiration").val(); 
-				entry["projecttimeframe"] = $("#projecttimeframe").val(); 
-				
-				entry["skills"] = [] //$("input:checkbox[name ='skills']:checked").val();
-				
-				$('.skillschecklist').each(function(){ 
-					if (this.checked == true) {
-						console.log( $(this).prop('value') );
-						console.log( $(this).prop('checked') );
-						entry["skills"].push( $(this).prop('value') )
-					}
-						
-				});
-
-				entry["coding"] = $("input:radio[name ='coding']:checked").val();
-
-				briefdata.brief = entry
-
-				console.log(entry)
-				$.post( "/projects/new", briefdata, function( projectid ) {
-				  console.log("success! created.. project id is:")
-				  console.log(projectid)
-
-
-				  
-				  window.location.replace("/project/"+projectid); //similar to redirect
-
-				});
-				 
-			});
-
-	
-</script>
 {% endblock %}

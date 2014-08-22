@@ -31,7 +31,11 @@
 	<label>Company name</label>
 	<input id="companyname" class="backgroundinputs" data-backgroundinfo="companyname" type="text" name="companyname" placeholder="Enter your company name here...">
 
-	<label>Company website url</label>
+	<label>Phone number</label>
+	<input id="companyphone" class="backgroundinputs" data-backgroundinfo="companyphone" type="text" name="companyphone" placeholder="We will not sell or spam your number">
+	 
+
+	<label>Website url</label>
 	<input id="companyurl" class="backgroundinputs" data-backgroundinfo="companyurl" type="text" name="companyurl" placeholder="Your company website if applicable.">
 	    	
 	<label>Company description</label>    	
@@ -173,6 +177,7 @@
 
 				
 				entry["companyname"] = $("#companyname").val();
+				entry["companyphone"] = $("#companyphone").val();
 				entry["companyurl"] = $("#companyurl").val();
 				entry["companydescription"] = $("#companydescription").val();
 				entry["companylocation"] = $("#companylocation").val();
