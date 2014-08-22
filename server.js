@@ -15,7 +15,7 @@ var cookieParser = require('cookie-parser')
 var session = require('cookie-session')
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "projects", "messages","external", "talk", "reports"]
+var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications"]
 var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
@@ -245,7 +245,6 @@ app.post('/', function(req, res){
 
 			if (users.length == 1) {
 				console.log("DB User Found.")
-				
 				res.redirect("/login")
 			}
 
@@ -335,9 +334,49 @@ app.get('/creatives/apply', function (req, res) {
 
 //CREATIVES
 app.post('/creatives/applyform', function (req, res) {
+	//Apply as creative form
 	console.log("applyform")
 	console.log(req.body)
-	//Apply as creative form
+	//save application to database
+	var creativeApplication = req.body;
+	creativeApplication.username = req.session.username;
+	creativeApplication.email = req.session.email;
+	db.creativeapplications.save(creativeApplication)
+	//send emails
+	if (enableEmail) 
+  	{
+		var email = {}
+		email.from = "noreply@launchlabapp.com";
+		email.fromname = "Launch Lab Applications";
+		email.rcpt = "rouan@8bo.org";
+		email.rcptname = "Rouan van der Ende";
+		email.subject = "New creative application from "+req.body.username+" needs moderation.";
+		email.body = "A user applied to become a LaunchLab creative.\n\r";
+		email.body += "\n\r"
+		email.body += JSON.stringify(creativeApplication)
+		email.body += "\n\r"
+
+		mailbot.sendemail(email, function (data) 
+		{
+			console.log("EMAIL SENT")
+			
+			var emailK = {}
+			emailK.from = "noreply@launchlabapp.com";
+			emailK.fromname = "Launch Lab Applications";
+			emailK.rcpt = "kevin@openwindow.co.za";
+			emailK.rcptname = "Kevin Lawrie";
+			emailK.subject = "New creative application from "+req.body.username+" needs moderation.";
+			emailK.body = "A user applied to become a LaunchLab creative.\n\r";
+			emailK.body += "\n\r"
+			emailK.body += JSON.stringify(creativeApplication)
+			emailK.body += "\n\r"
+			mailbot.sendemail(emailK, function (data) 
+			{
+				console.log("EMAIL SENT")
+			})
+		})
+	}
+	//thank the user
   	res.render('creatives_applyformdone', { username: req.session.username, email: req.session.email, password: req.session.password, socketserver: socketconnect });
 });
 
@@ -490,7 +529,7 @@ app.post('/projects/new', function (req, res) {
 
 			mailbot.sendemail(email, function (data) {
 				console.log("EMAIL SENT")
-							//test email sending
+					//test email sending
 					var emailK = {}
 					emailK.from = "noreply@launchlabapp.com";
 					emailK.fromname = "Launch Lab Projects";
