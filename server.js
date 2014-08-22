@@ -13,6 +13,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('cookie-session')
+var compress = require('compression');
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
 var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications"]
@@ -20,6 +21,8 @@ var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
+
+app.use(compress());
 
 app.use(function(req, res, next) {
   console.log('================================================================');
