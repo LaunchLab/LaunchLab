@@ -212,7 +212,7 @@ app.post('/', function(req, res){
 						email.rcpt = "rouan@8bo.org";
 						email.rcptname = "Rouan van der Ende";
 						email.subject = "Launch Lab Admin notice new user "+req.body.username+" registered";
-						email.body = "This is a notice to let you known a new user signed up. Username:"+req.body.username+" Email: "+req.body.email;
+						email.body = "This is a notice to let you know a new user signed up. Username:"+req.body.username+" Email: "+req.body.email;
 
 						mailbot.sendemail(email, function (data) 
 						{
@@ -224,7 +224,7 @@ app.post('/', function(req, res){
 							emailK.rcpt = "kevin@openwindow.co.za";
 							emailK.rcptname = "Kevin Lawrie";
 							emailK.subject = "Launch Lab Admin notice new user "+req.body.username+" registered";
-							emailK.body = "This is a notice to let you known a new user signed up. Username:"+req.body.username+" Email: "+req.body.email;
+							emailK.body = "This is a notice to let you know a new user signed up. Username:"+req.body.username+" Email: "+req.body.email;
 
 							mailbot.sendemail(emailK, function (data) 
 							{
