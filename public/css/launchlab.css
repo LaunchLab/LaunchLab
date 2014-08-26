@@ -495,7 +495,7 @@ border-radius: 5px;
 .content-subhead {
     color: #f38a00;
     text-transform: uppercase;
-    text-align: center;
+    text-align: left;
 }
     .content-subhead i {
         margin-right: 7px;
