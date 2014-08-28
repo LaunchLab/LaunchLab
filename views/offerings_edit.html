@@ -37,7 +37,7 @@
 			
 				<h2>Offering writeup</h2>
 
-				<form class="pure-form pure-form-stacked" method="post" action="/offerings/edit/{{ offering.offering_id }}">
+				<form class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post" action="/offerings/edit/{{ offering.offering_id }}">
 
 
 				<fieldset>
@@ -49,6 +49,11 @@
 			        <div class="pure-control-group">
 			            <label for="description">Description</label>
 			            <textarea id="description" name="description" class="backgroundtextareas" rows="8" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
+			        </div>
+
+			        <div class="pure-control-group">
+			            <label for="upload">Upload</label>
+			             <input type="file" name="upload" multiple="multiple">
 			        </div>
 
 			        <div class="pure-control-group">

@@ -175,8 +175,14 @@
                      
                         <div class="pure-g">
                             <div class="pure-u-1">
-                                <a class="offeringlink" href="/offerings/edit/{{ offering._id }}" > edit </a> <abbr class="timeago" title="{{ offering.updatedformatted }}">{{ offering.updatedformatted }}</abbr>  {{ offering.status }}  {{ offering.title }}
-                                <a class="offeringlink" href="/offering/{{ offering._id }}" > go to page </a>
+                                <a href="/offerings/view/{{ offering._id }}" > view </a>
+
+                                <a href="/offerings/edit/{{ offering._id }}" > edit </a> 
+
+                                <a href="/offerings/delete/{{ offering._id }}" > delete </a>
+
+                                <abbr class="timeago" title="{{ offering.updatedformatted }}">{{ offering.updatedformatted }}</abbr>  {{ offering.status }}  {{ offering.title }}
+                                
                                 
                             </div>
                             

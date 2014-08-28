@@ -14,6 +14,11 @@ var enableArduino = false;		//set this to true if you want arduino sensor access
 var socketconnect = '/';
 
 var express = require('express');
+
+var multiparty = require('multiparty')
+  , http = require('http')
+  , util = require('util')
+
 var app = express();
 var swig = require('swig');
 
@@ -24,6 +29,11 @@ var cookieParser = require('cookie-parser')
 var session = require('cookie-session')
 var compress = require('compression');
 
+
+
+
+
+
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
 var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings"]
 var mongojs = require("mongojs");
@@ -31,18 +41,110 @@ var db = mongojs.connect(databaseUrl, collections);
 
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
 
-app.use(compress());
+app.use(function(req, res, next) {
+	//HANDLE FILE UPLOADS
+	var expectmulti = false;
+
+	if (req.method === 'POST') {
+		
+		if (req.url.slice(0,'/upload'.length) === '/upload') {
+			console.log("!!! in")
+			expectmulti = true;
+		}
+
+		if (req.url.slice(0,'/offerings/edit/'.length) === '/offerings/edit/') {
+			console.log("!!! in")
+			expectmulti = true;
+		}
+	}
+
+	if (expectmulti) {
+	    var form = new multiparty.Form();
+
+	    form.parse(req, function(err, fields, files) {
+	      res.writeHead(200, {'content-type': 'text/plain'});
+	      res.write('received upload:\n\n');
+	      console.log(files)
+	      console.log(fields)
+	      res.end(util.inspect({fields: fields, files: files}));
+	    });
+
+	} else {
+		console.log('%s %s', req.method, req.url);
+		next();
+	}
+});
+
+app.get('/test', function(req,res) {
+	res.writeHead(200, {'content-type': 'text/html'});
+  	res.end(
+    '<form action="/upload" enctype="multipart/form-data" method="post">'+
+    '<input type="text" name="title"><br>'+
+    '<input type="file" name="upload" multiple="multiple"><br>'+
+    '<input type="submit" value="Upload">'+
+    '</form>'
+  );
+})
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
+app.use(bodyParser.json({ type: 'application/vnd.api+json' }))
+
+app.post('/offerings/edit/*', function (req, res) {
+
+
+    console.log(req.body)
+	console.log(req.files)
+
+
+
+	res.render('thankyou');
+    /*
+	var incomingForm = req.body;
+
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/edit/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		var oldOffering = result;
+
+		var newOffering = oldOffering
+		newOffering.modified = Date.now();
+		newOffering.title = req.body.title
+		newOffering.description = req.body.description
+		newOffering.price = req.body.price
+
+		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
+			console.log(result)
+			if (result) {
+				res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+		});
+
+	});
+	*/
+});
+
+
+//app.use(bodyParser.urlencoded({ extended: false }))
+
+/*app.use(compress());
+
+
 
 app.use(function(req, res, next) {
   console.log('================================================================');
   console.log('%s %s', req.method, req.url);
   next();
 });
+*/
+
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
-app.use(bodyParser.json({ type: 'application/vnd.api+json' }))
+
+
 
 app.use(session({
   keys: ['key1', 'key2'],
@@ -591,8 +693,16 @@ app.post('/projects/new', function (req, res) {
 	=========================================================
 */
 
+//uploads
+
+
+
+
+
+
+
 app.get('/offerings/new', function (req, res) {
-	//NEW OFFERING
+
 	var blankOffering = {}
 	blankOffering.creator = req.session.username;
 	blankOffering.created = Date.now();
@@ -608,10 +718,35 @@ app.get('/offerings/new', function (req, res) {
 		var offeringid = result._id.toHexString();
 		res.redirect("/offerings/edit/"+offeringid); //this should redirect to the new blank offering once we have a database entry
 	})
-  	 
 });
 
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+app.get('/offerings/view/*', function (req, res) {
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/view/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		result.offering_id = result._id.toHexString();
+		if (result) {
+			res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+  	
+});
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+
+
+
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 app.get('/offerings/edit/*', function (req, res) {
 
@@ -622,7 +757,7 @@ app.get('/offerings/edit/*', function (req, res) {
 
 	var ObjectId = mongojs.ObjectId;
 
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+	db.offerings.findOne({"_id": ObjectId(mongoid), "creator": req.session.username}, function(err, result) {
 		console.log("finding offering")
 		console.log(result)
 		result.offering_id = result._id.toHexString();
@@ -631,36 +766,29 @@ app.get('/offerings/edit/*', function (req, res) {
 		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
 
-
-	//EDIT OFFERING
   	
 });
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-app.post('/offerings/edit/*', function (req, res) {
-	console.log("updating offering")
-	var incomingForm = req.body;
+
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+app.get('/offerings/delete/*', function (req, res) {
+	console.log("deleting offering")
+	
 
 	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/edit/'.length );
+	var mongoid = req.url.slice( '/offerings/delete/'.length );
 	mongoid = mongoid.slice(0,24); //the length of a mongo id
 	var ObjectId = mongojs.ObjectId;
 
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		var oldOffering = result;
 
-		var newOffering = oldOffering
-		newOffering.modified = Date.now();
-		newOffering.title = req.body.title
-		newOffering.description = req.body.description
-		newOffering.price = req.body.price
 
-		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
-			console.log(result)
-			if (result) {
-				res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-		});
-
+	db.offerings.remove({"_id": ObjectId(mongoid), "creator": req.session.username}, function(err, result) {
+		if (result) {
+				res.redirect('/');
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	});
 
 });
