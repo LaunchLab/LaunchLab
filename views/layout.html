@@ -42,7 +42,7 @@ var socket = io.connect('{{ socketserver }}');
 </script>
 
 
-{% if loggedout %}
+{% if not username %}
 <div class="header">
     <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
         

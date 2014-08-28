@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+
+{% block title %}LaunchLab New Project{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+
+<a name="top" id="top"></a>
+<div class="splash-container-order">
+ <div class="splash-overlay" style="height:100%;">
+
+            <div class="pure-u-1 pure-u-md-1-1" >
+                <div>
+
+                    <h1 class="firsttagline" style="font-size: 45px; margin-top: 2.5em;">Setup an Offering</h1>
+                    <p class="secondtagline">
+                        Setup your offering. This could be a product or service you are offering to the market.
+                    </p> 
+
+                </div>
+            </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="content-wrapper-order">
+    <div class="content brief">
+    	<div class="pure-g" >
+
+         	<div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
+
+            <div class="l-box pure-u-1 pure-u-md-3-5 pure-u-lg-1-2">
+			
+				<h2>Offering writeup</h2>
+
+				<form class="pure-form pure-form-stacked" method="post" action="/offerings/edit/{{ offering.offering_id }}">
+
+
+				<fieldset>
+			        <div class="pure-control-group">
+			            <label for="title">Title</label>
+			            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title}}" placeholder="Short description of offering ">
+			        </div>
+
+			        <div class="pure-control-group">
+			            <label for="description">Description</label>
+			            <textarea id="description" name="description" class="backgroundtextareas" rows="8" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
+			        </div>
+
+			        <div class="pure-control-group">
+			            <label for="price">Price</label>
+			            <input id="price" class="backgroundinputs" type="text" name="price" value="{{ offering.price}}" placeholder="Set your price. For example: R 1000.00">
+			        </div>
+
+			        <div class="pure-controls">
+			            <button type="submit" class="pure-button pure-button-primary">Update</button>
+			        </div>
+			    </fieldset>
+
+
+			    </form>			
+		    </div>
+
+		    <div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
+
+		</div>
+    </div>
+
+    
+
+
+  
+
+    {% include "./footer.html" %}
+
+</div>
+
+
+
+
+
+
+{% endblock %}

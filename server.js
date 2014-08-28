@@ -1,5 +1,14 @@
-var enableEmail = true;
+var production = false;			//make sure this is true when in production
+// enables cacheing and emails to be sent
+
+var enableEmail = production;		
 var enableArduino = false;		//set this to true if you want arduino sensor access on server side
+
+
+
+/*
+	==================================================
+*/
 
 //var socketconnect = 'http://fluentart.com/';
 var socketconnect = '/';
@@ -16,7 +25,7 @@ var session = require('cookie-session')
 var compress = require('compression');
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications"]
+var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings"]
 var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
@@ -64,7 +73,7 @@ app.set('views', __dirname + '/views');
 
 // Swig will cache templates for you, but you can disable
 // that and use Express's caching instead, if you like:
-app.set('view cache', false);
+app.set('view cache', production);
 // To disable Swig's cache, do the following:
 swig.setDefaults({ cache: false });
 // NOTE: You should always cache templates in a production environment.
@@ -411,9 +420,10 @@ app.get('/', function (req, res) {
 		data.admin = true
 	}
 
+	//PROJECTS DASHBOARD
 	db.projects.find({"creator": req.session.username}, function(err, projects) {
 		console.log(projects);
-		data.projects = projects;
+		
 
 		for (var project in projects) {
 			projects[project]._id = JSON.stringify( projects[project]._id ).replace("\"", "").replace("\"", "");
@@ -424,9 +434,32 @@ app.get('/', function (req, res) {
 			projects[project].updatedformatted = updateddate.toISOString();
 			//
 		}
+		data.projects = projects;
+		////// OFFERINGS DASHBOARD
+		db.offerings.find({"creator": req.session.username}, function(err, offerings) {
+			console.log(offerings);
+			
 
-		res.render('home_loggedin', data);
-	})
+			for (var project in offerings) {
+				offerings[project]._id = JSON.stringify( offerings[project]._id ).replace("\"", "").replace("\"", "");
+				var nowdate = new Date(offerings[project].created);
+				offerings[project].createdformatted = nowdate.toISOString();
+
+				if (offerings[project].modified) {
+					var updateddate = new Date(offerings[project].modified);
+					offerings[project].updatedformatted = updateddate.toISOString();
+				} else {
+					offerings[project].updatedformatted = offerings[project].createdformatted
+				}
+				
+				//
+			}
+			data.offerings = offerings;
+			res.render('home_loggedin', data);
+		})//end find
+
+		
+	})//end find
 
   	
 });
@@ -552,6 +585,89 @@ app.post('/projects/new', function (req, res) {
 			
 	});
 });
+
+
+/*
+	=========================================================
+*/
+
+app.get('/offerings/new', function (req, res) {
+	//NEW OFFERING
+	var blankOffering = {}
+	blankOffering.creator = req.session.username;
+	blankOffering.created = Date.now();
+	blankOffering.status = "pending";
+	blankOffering.title = "";
+	blankOffering.description = "";
+	blankOffering.price = "";
+	blankOffering.samplefiles = [];
+
+	db.offerings.save(blankOffering, function (err, result) {
+		console.log("new offering made")
+		console.log(result)
+		var offeringid = result._id.toHexString();
+		res.redirect("/offerings/edit/"+offeringid); //this should redirect to the new blank offering once we have a database entry
+	})
+  	 
+});
+
+
+
+app.get('/offerings/edit/*', function (req, res) {
+
+
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/edit/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		result.offering_id = result._id.toHexString();
+		if (result) {
+			res.render('offerings_edit', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+
+
+	//EDIT OFFERING
+  	
+});
+
+app.post('/offerings/edit/*', function (req, res) {
+	console.log("updating offering")
+	var incomingForm = req.body;
+
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/edit/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		var oldOffering = result;
+
+		var newOffering = oldOffering
+		newOffering.modified = Date.now();
+		newOffering.title = req.body.title
+		newOffering.description = req.body.description
+		newOffering.price = req.body.price
+
+		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
+			console.log(result)
+			if (result) {
+				res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+		});
+
+	});
+
+});
+
+/*
+	=========================================================
+*/
 
 app.get('/talk', function (req, res) {
   res.render('talk', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
