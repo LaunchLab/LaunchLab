@@ -18,7 +18,7 @@ var express = require('express');
 var multiparty = require('multiparty')
   , http = require('http')
   , util = require('util')
-
+var fs = require('fs');
 var app = express();
 var swig = require('swig');
 
@@ -28,11 +28,6 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('cookie-session')
 var compress = require('compression');
-
-
-
-
-
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
 var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings"]
@@ -62,11 +57,10 @@ app.use(function(req, res, next) {
 	    var form = new multiparty.Form();
 
 	    form.parse(req, function(err, fields, files) {
-	      res.writeHead(200, {'content-type': 'text/plain'});
-	      res.write('received upload:\n\n');
-	      console.log(files)
-	      console.log(fields)
-	      res.end(util.inspect({fields: fields, files: files}));
+	      //res.end(util.inspect({fields: fields, files: files}));
+	      req.multipartparse = {fields: fields, files: files}
+	      req.files = files;
+	      next();
 	    });
 
 	} else {
@@ -90,42 +84,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }))
 
-app.post('/offerings/edit/*', function (req, res) {
 
-
-    console.log(req.body)
-	console.log(req.files)
-
-
-
-	res.render('thankyou');
-    /*
-	var incomingForm = req.body;
-
-	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/edit/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
-	var ObjectId = mongojs.ObjectId;
-
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		var oldOffering = result;
-
-		var newOffering = oldOffering
-		newOffering.modified = Date.now();
-		newOffering.title = req.body.title
-		newOffering.description = req.body.description
-		newOffering.price = req.body.price
-
-		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
-			console.log(result)
-			if (result) {
-				res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-		});
-
-	});
-	*/
-});
 
 
 //app.use(bodyParser.urlencoded({ extended: false }))
@@ -743,7 +702,57 @@ app.get('/offerings/view/*', function (req, res) {
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
+app.post('/offerings/edit/*', function (req, res) {
 
+
+    //console.log(req.body) // with multipart there is no body.
+	console.log(req.multipartparse)
+
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/edit/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var ObjectId = mongojs.ObjectId;
+
+	console.log("multipartfiles:")
+	console.log(req.multipartparse.files)
+
+	for (var f in req.multipartparse.files.upload) {
+
+		var source = fs.createReadStream(req.multipartparse.files.upload[f].path);
+		var dest = fs.createWriteStream(__dirname+'/uploads'+req.multipartparse.files.upload[f].path);
+		
+		console.log("COPY FILE!!!")
+		console.log(req.multipartparse.files.upload[f].path)
+		//originalFilename
+		console.log(__dirname+'/uploads'+req.multipartparse.files.upload[f].path)
+
+		source.pipe(dest);
+
+		source.on('end', function() { /* copied */ });
+		source.on('error', function(err) { /* error */ });
+
+	}
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		var oldOffering = result;
+
+		var newOffering = oldOffering
+		newOffering.modified = Date.now();
+		newOffering.title = req.multipartparse.fields.title[0]
+		newOffering.description = req.multipartparse.fields.description[0]
+		newOffering.price = req.multipartparse.fields.price[0]
+
+		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
+			console.log(result)
+			if (result) {
+				//res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+				res.redirect('/offerings/edit/'+mongoid)
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+		});
+
+	});
+	
+});
 
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
