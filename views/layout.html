@@ -44,18 +44,12 @@ var socket = io.connect('{{ socketserver }}');
 
 {% if not username %}
 <div class="header">
-    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
-        
+    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed" style="background: none; border-bottom: none; -webkit-box-shadow: none;">
      <a class="pure-menu-heading" href="/"><img class="mainlogo" src="/images/logo.png"></a>
        <span style="font-size: 10px; margin-left: -16px; ">beta</span>
        <span style="margin-left: 20px;  color: rgb(75, 75, 75); ">+27 (12) 648 9241</span>
-        
-        <ul>
-            <li class="pure-menu-selected"><a href="#top">Home</a></li>
-            <li><a href="#tour">Tour</a></li>
-            <li><a href="#start">Signup</a></li>
-            <li><a href="/login">Login</a></li>
-        </ul>
+       <a href="/login" style="color: black;" class="signinbutton">Sign in </a>
+      
     </div>
 </div>
 {% endif %}

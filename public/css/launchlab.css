@@ -2,7 +2,6 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-
     -moz-outline-style: none;
 }
 
@@ -47,6 +46,34 @@ h1 { line-height:  1.1em;}
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px white inset;
 }
+
+
+.frontsignup input {
+    border: 2px solid #F38A00;
+    box-shadow: none;
+    font-size: 100%;
+    margin-bottom: 1em;
+
+    padding: 5px;
+}
+
+.signinbutton {
+    color: white; 
+    text-align:center; 
+    width: 6em;
+    background: #fff; 
+    padding: 5px; 
+    float: right;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signinbutton:hover {
+    background: #eee;
+}
+
 
 .signupform label {
     color: #ccc;

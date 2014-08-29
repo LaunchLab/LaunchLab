@@ -17,10 +17,26 @@
 				<h1>Title: {{ offering.title}}</h1>
 				<p>Description: {{ offering.description }}</p>
 				<h2>Price: {{ offering.price }}</h2>
+
+				{% if offering.creator == username %} 
+				 <p><a href="/offerings/edit/{{ offering.offering_id }}">edit</a></p>
+				{% endif %}
 				
+
+
 				<a class="pure-button pure-button-primary "><i class="fa fa-shopping-cart"></i> BUY THIS</a>
-				  		
+				
+
 		    </div>
+
+				{% for image in offering.samplefiles %}
+					<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
+						<a href="/offerings/{{ image }}">
+							<img src="/offerings/{{ image }}" style="width:100%;">
+						</a>
+					</div>
+					
+				{% endfor %}		    
 
 		</div>
     </div>

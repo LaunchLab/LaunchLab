@@ -123,7 +123,11 @@ app.use(function (req, res, next) {
 })
 */
 
+//APP and theme
 app.use(serveStatic(__dirname + '/public', {'index': ['default.html', 'default.htm']}))
+//USER CONTENT
+app.use(serveStatic(__dirname + '/content', {'index': ['default.html', 'default.htm']}))
+
 //app.use(express.static(__dirname + '/public'));
 
 // This is where all the magic happens!
@@ -332,7 +336,23 @@ app.post('/', function(req, res){
     
 });
 
+/* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
 
+
+app.get('/market', function (req, res) {
+	db.offerings.find({}, function(err, results) {
+		for (var x in results) {
+			results[x].offering_id = results[x]._id.toHexString();
+		}
+		res.render('market', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offerings: results });
+	})//end find
+	
+})
+
+
+
+
+/* #######################################################################  MUST BE LOGGED IN BELOW ######### */
 
 var gravatar = require('gravatar');
 
@@ -688,13 +708,12 @@ app.get('/offerings/view/*', function (req, res) {
 
 	var ObjectId = mongojs.ObjectId;
 
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		console.log("finding offering")
-		console.log(result)
-		result.offering_id = result._id.toHexString();
-		if (result) {
-			res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
-		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
+			if (result) {
+				result.offering_id = result._id.toHexString();
+
+				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
   	
 });
@@ -716,19 +735,25 @@ app.post('/offerings/edit/*', function (req, res) {
 	console.log("multipartfiles:")
 	console.log(req.multipartparse.files)
 
+	var uploadedFilenames = []
 	for (var f in req.multipartparse.files.upload) {
 
 		var source = fs.createReadStream(req.multipartparse.files.upload[f].path);
-		var dest = fs.createWriteStream(__dirname+'/uploads'+req.multipartparse.files.upload[f].path);
+
+		//var dest = fs.createWriteStream(__dirname+'/uploads'+req.multipartparse.files.upload[f].path);
 		
+		var newfilename = Date.now()+req.multipartparse.files.upload[f].originalFilename
+		var dest = fs.createWriteStream(__dirname+'/content/offerings/'+newfilename);
+
 		console.log("COPY FILE!!!")
-		console.log(req.multipartparse.files.upload[f].path)
-		//originalFilename
-		console.log(__dirname+'/uploads'+req.multipartparse.files.upload[f].path)
+		uploadedFilenames.push(newfilename) 
 
 		source.pipe(dest);
 
-		source.on('end', function() { /* copied */ });
+		source.on('end', function() { 
+		/* copied */
+			
+		});
 		source.on('error', function(err) { /* error */ });
 
 	}
@@ -741,6 +766,15 @@ app.post('/offerings/edit/*', function (req, res) {
 		newOffering.title = req.multipartparse.fields.title[0]
 		newOffering.description = req.multipartparse.fields.description[0]
 		newOffering.price = req.multipartparse.fields.price[0]
+
+		for (var file in uploadedFilenames) {
+			if (newOffering.samplefiles) { 
+				newOffering.samplefiles.push(uploadedFilenames[file]) 
+			} else {
+				newOffering.samplefiles = []
+				newOffering.samplefiles.push(uploadedFilenames[file]) 
+			}
+		}
 
 		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
 			console.log(result)
