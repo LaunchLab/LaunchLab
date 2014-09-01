@@ -44,10 +44,10 @@ var socket = io.connect('{{ socketserver }}');
 
 {% if not username %}
 <div class="header">
-    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed" style="background: none; border-bottom: none; -webkit-box-shadow: none;">
+    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed splashtopmenu" style="background: #111; border-bottom: none; -webkit-box-shadow: none;">
      <a class="pure-menu-heading" href="/"><img class="mainlogo" src="/images/logo.png"></a>
        <span style="font-size: 10px; margin-left: -16px; ">beta</span>
-       <span style="margin-left: 20px;  color: rgb(75, 75, 75); ">+27 (12) 648 9241</span>
+       <span style="margin-left: 20px;  color: rgb(115, 115, 115); ">+27 (12) 648 9241</span>
        <a href="/login" style="color: black;" class="signinbutton">Sign in </a>
       
     </div>
@@ -56,24 +56,26 @@ var socket = io.connect('{{ socketserver }}');
 
 {% if username %}
 <div class="header">
-    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
-        
+    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed splashtopmenu" style="background: #111; border-bottom: none; -webkit-box-shadow: none;">
      <a class="pure-menu-heading" href="/"><img class="mainlogo" src="/images/logo.png"></a>
        <span style="font-size: 10px; margin-left: -16px; ">beta</span>
-       <span style="margin-left: 20px;  color: rgb(75, 75, 75); ">+27 (12) 648 9241</span>
-        
-        <ul>
+       <span style="margin-left: 20px;  color: rgb(115, 115, 115); ">+27 (12) 648 9241</span>
+ <ul>
            
-
-        {% if admin %}
-            <li><a href="/admin">Admin</a></li>
-        {% endif %}
             <li class="pure-menu-selected"><a href="/">Dashboard</a></li>
+            <li><a href="/credits">Your balance: <strong style="color: #fff;">R 0.00</strong> </a></li>
+            <li><a href="/market">Market</a></li>
+            {% if admin %}
+              <li><a href="/admin" >Admin</a></li>
+            {% endif %}
             <li><a href="/logout">logout</a></li>
         </ul>
     </div>
 </div>
 {% endif %}
+
+
+
 
 {% block content %}{% endblock %}
 
