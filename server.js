@@ -1,4 +1,4 @@
-var production = false;			//make sure this is true when in production
+var production = true;			//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		
@@ -35,6 +35,8 @@ var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
+
+app.use(compress());
 
 app.use(function(req, res, next) {
 	//HANDLE FILE UPLOADS
@@ -89,7 +91,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }))
 
 //app.use(bodyParser.urlencoded({ extended: false }))
 
-/*app.use(compress());
+/*
 
 
 
