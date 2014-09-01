@@ -76,12 +76,10 @@ input:-webkit-autofill {
 
 .downarrowtour {
     color: #e94123;
-    font-size: 5em;
 }
 
 .downarrowtour:hover {
     color: #fff;
-    font-size: 5em;
 }
 
 .signinbutton {
@@ -786,3 +784,15 @@ border-radius: 5px;
 
 .inputbox { padding-top: 10px;}
 .inputmessage { width: 100%;}
+
+@media (max-width: 600px) {
+  .facet_sidebar {
+    display: none;
+  }
+  .topnum {
+    display: none;
+  }
+  .frontsignup input {
+    width: 90%;
+  }
+}

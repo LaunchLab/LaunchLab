@@ -20,7 +20,7 @@
             
             <div class="pure-u-1" >
                 <div>
-                    <h1 class="firsttagline" style="font-size: 5em;">Find a Creative</h1>
+                    <h1 class="firsttagline" >Find a Creative</h1>
 
 
                     <p class="secondtagline">
@@ -283,12 +283,23 @@ $('a').click(function(){
 
 var reposition = function () {
     var windowheight = $(window).height()
-    $(".launchlabsplash").css("padding-top", (windowheight/3));
+    var windowwidth = $(window).width()
+    $(".launchlabsplash").css("padding-top", (windowheight/4));
     $(".splash-container").css("height", windowheight)
     $(".splash-overlay").css("height", windowheight)
     $(".content-wrapper").css("top", windowheight)
 
     $(".downarrowfront").css("top", windowheight - 100)
+    if (windowwidth < 600) {
+      $(".downarrowfront").hide();
+      $(".secondtagline").hide();
+    }
+     if (windowwidth > 600) {
+        $(".downarrowfront").show();
+        $(".secondtagline").show();
+      $(".downarrowfront").css("font-size", 60)    
+    }
+
 }
 
 
