@@ -48,7 +48,8 @@ var socket = io.connect('{{ socketserver }}');
      <a class="pure-menu-heading" href="/"><img class="mainlogo" src="/images/logo.png"></a>
        <span style="font-size: 10px; margin-left: -16px; ">beta</span>
        <span style="margin-left: 20px;  color: rgb(115, 115, 115); ">+27 (12) 648 9241</span>
-       <a href="/login" style="color: black;" class="signinbutton">Sign in </a>
+       
+       <a href="/login" class="signinbutton"><span class="signInButtonText">Sign in</span> </a>
       
     </div>
 </div>
@@ -74,7 +75,13 @@ var socket = io.connect('{{ socketserver }}');
 </div>
 {% endif %}
 
-
+<script>
+$(".signinbutton").hover( function() {
+  $(".signInButtonText").css("color", "#e94123")
+}, function() {
+  $(".signInButtonText").css("color", "#fff")
+})
+</script>
 
 
 {% block content %}{% endblock %}
