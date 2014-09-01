@@ -69,6 +69,11 @@ input:-webkit-autofill {
     border-radius: 0.5em;
 }
 
+.downarrowfront {
+    position: absolute;
+    width: 100%;
+}
+
 .downarrowtour {
     color: #e94123;
     font-size: 5em;

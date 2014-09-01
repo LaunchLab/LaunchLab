@@ -43,17 +43,19 @@
                 </div>
             </div>
 
-            <div class="pure-u-1" style="margin-top: 25em;">
-                <center ><a href="#tour" >
-                    <i class="fa fa-arrow-circle-down downarrowtour" style=""></i>
-                </a></center>
-            </div>
+
             
             
 
     </div>
   </div>
 </div>
+
+            <div class="downarrowfront">
+                <center><a href="#tour" >
+                    <i class="fa fa-arrow-circle-down downarrowtour" style=""></i>
+                </a></center>
+            </div>
 
 <div class="content-wrapper">
 <a name="tour" id="tour"></a>       
@@ -277,13 +279,22 @@ $('a').click(function(){
 		return 1;
 	});
 
-var windowheight = $(window).height()
-$(".launchlabsplash").css("padding-top", (windowheight/3));
-$(".splash-container").css("height", windowheight)
-$(".splash-overlay").css("height", windowheight)
-$(".content-wrapper").css("top", windowheight)
 
 
+var reposition = function () {
+    var windowheight = $(window).height()
+    $(".launchlabsplash").css("padding-top", (windowheight/3));
+    $(".splash-container").css("height", windowheight)
+    $(".splash-overlay").css("height", windowheight)
+    $(".content-wrapper").css("top", windowheight)
+
+    $(".downarrowfront").css("top", windowheight - 100)
+}
+
+
+window.addEventListener('resize', reposition);
+
+reposition();
 
 </script>
 {% endblock %}
