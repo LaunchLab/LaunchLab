@@ -338,18 +338,7 @@ app.post('/', function(req, res){
     
 });
 
-/* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
 
-
-app.get('/market', function (req, res) {
-	db.offerings.find({}, function(err, results) {
-		for (var x in results) {
-			results[x].offering_id = results[x]._id.toHexString();
-		}
-		res.render('market', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offerings: results });
-	})//end find
-	
-})
 
 
 
@@ -367,8 +356,24 @@ function checkAuth(req, res, next) {
   		if (req.url == "/login") {
   			res.render('login', { loggedout: true } ); 
   		} else {
+
+  			//MAIN ENTRY FOR VISITORS
   			socketlog("anonymous visitor active on page "+ req.url )
-  			res.render('home_loggedout', { loggedout: true } ); 
+
+  			if (req.url == '/') {
+				db.offerings.find({}, function(err, results) {
+					for (var x in results) {
+						results[x].offering_id = results[x]._id.toHexString();
+					}
+					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: results });
+				})//end find
+  			} else {
+  				res.redirect('/login');
+  			}
+
+
+
+  			
   		}
   		
   	} 
@@ -410,6 +415,56 @@ function checkAuth(req, res, next) {
 
   }
 
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//LOGGED IN OPTIONAL
+
+/* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
+
+
+app.get('/market', function (req, res) {
+	db.offerings.find({}, function(err, results) {
+		for (var x in results) {
+			results[x].offering_id = results[x]._id.toHexString();
+		}
+		res.render('market', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offerings: results });
+	})//end find
+	
+})
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+app.get('/offerings/view/*', function (req, res) {
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/view/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
+			if (result) {
+				result.offering_id = result._id.toHexString();
+
+				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+  	
+});
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+
+
+app.use(enforceLogin);
+function enforceLogin(req, res, next) {
+  if ((!req.session.username)||(!req.session.password)) 
+  	{	
+  		res.render('login', { loggedout: true } ); 
+  	}
+  	else {
+  		next();
+  	}
+  	
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -703,24 +758,7 @@ app.get('/offerings/new', function (req, res) {
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-app.get('/offerings/view/*', function (req, res) {
-	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/view/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
 
-	var ObjectId = mongojs.ObjectId;
-
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
-			if (result) {
-				result.offering_id = result._id.toHexString();
-
-				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
-			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-	})
-  	
-});
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
 app.post('/offerings/edit/*', function (req, res) {

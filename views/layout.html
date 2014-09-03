@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no; user-scalable=0;">
   <title>{% block title %}LaunchLab{% endblock %}</title>
 
 	<link rel="icon" sizes="196x196" href="/iconbig.png">
@@ -64,12 +64,13 @@ var socket = io.connect('{{ socketserver }}');
  <ul>
            
             <li class="pure-menu-selected"><a href="/">Dashboard</a></li>
-            <li><a href="/credits">Your balance: <strong style="color: #fff;">R 0.00</strong> </a></li>
-            <li><a href="/market">Market</a></li>
+            <li><a href="/credits">Your balance: <strong style="color: #fff;">0.00</strong> </a></li>
+            <li><a href="/market"><i class="fa fa-globe"></i> market</a></li>
+            <li><a href="/market"><i class="fa fa-child"></i> {{ username }}</a></li>
             {% if admin %}
-              <li><a href="/admin" >Admin</a></li>
+              <li><a href="/admin" ><i class="fa fa-shield"></i> admin</a></li>
             {% endif %}
-            <li><a href="/logout">logout</a></li>
+            <li><a href="/logout"><i class="fa fa-times"></i></a></li>
         </ul>
     </div>
 </div>

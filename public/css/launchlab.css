@@ -2,7 +2,7 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    -moz-outline-style: none;
+    outline-style: none;
 }
 
 .mainlogo {
@@ -48,6 +48,48 @@ input:-webkit-autofill {
 }
 
 
+
+/*
+
+MARKET
+
+*/
+
+.market-container-wrap {
+    margin: 0.1em;
+}
+
+.market-container {
+    border: 2px solid rgb(50,50,50);
+    width: 100%;
+    height: 300px;
+    background-color: rgb(25,25,25);
+    float: left;
+    overflow: hidden;
+    margin: 0px;
+}
+
+.market-container-imagewrap {
+    height:200px;
+    overflow: hidden;
+}
+
+.market-container img {
+    display: block;
+}
+
+.portrait img {
+    width: 100%;
+}
+
+.landscape img {
+    height: 100%;
+}
+
+/*
+FRONT SIGNUP SPLASH
+*/
+
 .frontsignup input {
     border: none;
     box-shadow: none;
@@ -59,6 +101,12 @@ input:-webkit-autofill {
     -webkit-border-radius: 0.5em;
     -moz-border-radius: 0.5em;
     border-radius: 0.5em;
+    border: 4px solid #eee;
+}
+
+.frontsignup input:focus {
+    border: 4px solid #e94123;
+    
 }
 
 .frontsignup button {
@@ -325,7 +373,7 @@ a.pure-button-primary {
     height: 88%;
     top: 0;
     left: 0;
-    position: fixed !important;
+    
 }
 
 .splash-container-order {
@@ -397,7 +445,6 @@ a.pure-button-primary {
     min-height: 18em;
     top: 0;
     left: 0;
-    position: fixed !important;
 }
 
 .splash {
