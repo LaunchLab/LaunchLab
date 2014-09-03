@@ -48,6 +48,24 @@ input:-webkit-autofill {
 }
 
 
+/*
+PROFILE
+*/
+
+.labell {
+    text-align: right;
+    padding: 0.5em;
+    color: #222;
+    font-weight: 700;
+}
+
+.profiledata {
+    padding: 0.5em;
+}
+
+.inputlabel {
+    padding-top: 1.1em;
+}
 
 /*
 
@@ -832,7 +850,7 @@ border-radius: 5px;
 .inputbox { padding-top: 10px;}
 .inputmessage { width: 100%;}
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .facet_sidebar {
     display: none;
   }
@@ -842,4 +860,15 @@ border-radius: 5px;
   .frontsignup input {
     width: 90%;
   }
+
+  .labell {
+    text-align: left;
+    padding: 0.5em;
+    color: #222;
+    font-weight: 700;
+}
+
+    .profiledata {
+        padding: 0.5em;
+    }
 }

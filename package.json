@@ -24,6 +24,7 @@
     "express": "4.x",
     "gravatar": "^1.0.6",
     "json-scrape": "0.0.2",
+    "marked": "^0.3.2",
     "mongojs": "~0.13.0",
     "multer": "^0.1.4",
     "multiparty": "^3.3.2",

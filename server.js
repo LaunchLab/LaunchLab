@@ -21,6 +21,7 @@ var multiparty = require('multiparty')
 var fs = require('fs');
 var app = express();
 var swig = require('swig');
+var marked = require('marked'); // https://github.com/chjj/marked
 
 var serveStatic = require('serve-static')
 var favicon = require('serve-favicon');
@@ -444,7 +445,8 @@ app.get('/offerings/view/*', function (req, res) {
 	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
 			if (result) {
 				result.offering_id = result._id.toHexString();
-
+				result.descriptionmarked = marked(result.description);
+				console.log(result);
 				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
 			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
@@ -474,6 +476,17 @@ function enforceLogin(req, res, next) {
 
 app.get('/login', function (req, res) { res.redirect('/'); })
 
+
+app.post('/profile', function (req,res) {
+	db.users.update({username: req.session.username}, {'$set' : req.body }, function (err, user) {
+		console.log(user)
+		res.redirect('/')
+	});  
+})
+
+app.get('/profile', function (req,res) {
+	res.render('profile', { username: req.session.username, password: req.session.password, email: req.session.email, socketserver: socketconnect, userdb: req.session.db  });
+})
 
 
 //CREATIVES
@@ -778,24 +791,26 @@ app.post('/offerings/edit/*', function (req, res) {
 	var uploadedFilenames = []
 	for (var f in req.multipartparse.files.upload) {
 
-		var source = fs.createReadStream(req.multipartparse.files.upload[f].path);
+		if (req.multipartparse.files.upload[f].size > 0) {
 
-		//var dest = fs.createWriteStream(__dirname+'/uploads'+req.multipartparse.files.upload[f].path);
-		
-		var newfilename = Date.now()+req.multipartparse.files.upload[f].originalFilename
-		var dest = fs.createWriteStream(__dirname+'/content/offerings/'+newfilename);
+			var source = fs.createReadStream(req.multipartparse.files.upload[f].path);
 
-		console.log("COPY FILE!!!")
-		uploadedFilenames.push(newfilename) 
-
-		source.pipe(dest);
-
-		source.on('end', function() { 
-		/* copied */
+			//var dest = fs.createWriteStream(__dirname+'/uploads'+req.multipartparse.files.upload[f].path);
 			
-		});
-		source.on('error', function(err) { /* error */ });
+			var newfilename = Date.now()+req.multipartparse.files.upload[f].originalFilename
+			var dest = fs.createWriteStream(__dirname+'/content/offerings/'+newfilename);
 
+			console.log("COPY FILE!!!")
+			uploadedFilenames.push(newfilename) 
+
+			source.pipe(dest);
+
+			source.on('end', function() { 
+			/* copied */
+				
+			});
+			source.on('error', function(err) { /* error */ });
+		}
 	}
 
 	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
@@ -820,7 +835,7 @@ app.post('/offerings/edit/*', function (req, res) {
 			console.log(result)
 			if (result) {
 				//res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-				res.redirect('/offerings/edit/'+mongoid)
+				res.redirect('/offerings/view/'+mongoid)
 			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 		});
 

@@ -47,8 +47,8 @@
 			        </div>
 
 			        <div class="pure-control-group">
-			            <label for="description">Description</label>
-			            <textarea id="description" name="description" class="backgroundtextareas" rows="8" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
+			            <label for="description">Description ( <a href="http://daringfireball.net/projects/markdown/basics">markdown</a> allowed )</label>
+			            <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
 			        </div>
 
 			        <div class="pure-control-group">
@@ -71,10 +71,10 @@
 			        </div>
 
 			        <div class="pure-controls">
-			            <button type="submit" class="pure-button pure-button-primary">Save</button>
+			            <button type="submit" class="pure-button pure-button-primary">Done</button> 
 
 			        </div>
-			        <a href="/offerings/view/{{ offering.offering_id }}"> view this offering </a>
+			        
 			    </fieldset>
 
 

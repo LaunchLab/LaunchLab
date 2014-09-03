@@ -66,7 +66,7 @@ var socket = io.connect('{{ socketserver }}');
             <li class="pure-menu-selected"><a href="/">Dashboard</a></li>
             <li><a href="/credits">Your balance: <strong style="color: #fff;">0.00</strong> </a></li>
             <li><a href="/market"><i class="fa fa-globe"></i> market</a></li>
-            <li><a href="/market"><i class="fa fa-child"></i> {{ username }}</a></li>
+            <li><a href="/profile"><i class="fa fa-child"></i> {{ username }}</a></li>
             {% if admin %}
               <li><a href="/admin" ><i class="fa fa-shield"></i> admin</a></li>
             {% endif %}
