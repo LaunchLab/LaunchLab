@@ -40,6 +40,12 @@ var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scr
 app.use(compress());
 
 app.use(function(req, res, next) {
+
+	if (req.url == "/") {
+		console.log("ACTIVITY!!!!")
+		io.sockets.emit("activity", {led: "1.0"})	
+	}
+
 	//HANDLE FILE UPLOADS
 	var expectmulti = false;
 
@@ -565,6 +571,9 @@ app.post('/account', function(req, res){
 
 //DASHBOARD FOR USERS
 app.get('/', function (req, res) {
+
+
+
 	var data = { username: req.session.username, email: req.session.email, password: req.session.password, socketserver: socketconnect, userdb: req.session.db };
 
 	if (req.session.username == "rouan") {

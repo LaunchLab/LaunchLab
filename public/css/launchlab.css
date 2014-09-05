@@ -15,7 +15,7 @@ a {
 }
 
 a:hover {
-    color: #e94123;
+    color: #e14c07;
 }
 
 /*
@@ -123,12 +123,12 @@ FRONT SIGNUP SPLASH
 }
 
 .frontsignup input:focus {
-    border: 4px solid #e94123;
+    border: 4px solid #e14c07;
     
 }
 
 .frontsignup button {
-    background: #e94123;
+    background: #e14c07; /* #e14c07; */
     height: 3em;
     -webkit-border-radius: 0.5em;
     -moz-border-radius: 0.5em;
@@ -141,7 +141,7 @@ FRONT SIGNUP SPLASH
 }
 
 .downarrowtour {
-    color: #e94123;
+    color: #e14c07;
 }
 
 .downarrowtour:hover {
@@ -152,7 +152,7 @@ FRONT SIGNUP SPLASH
     
     text-align:center; 
     width: 6em;
-    background: #e94123;
+    background: #e14c07;
     padding: 5px; 
     float: right;
     -webkit-border-radius: 0.5em;
@@ -164,7 +164,7 @@ FRONT SIGNUP SPLASH
 
 .signinbutton:hover {
     background: #fff;
-    color: #e94123;
+    color: #e14c07;
 }
 
 .signInButtonText {
@@ -258,7 +258,7 @@ FRONT SIGNUP SPLASH
 }
 
 .pure-form input[type="text"]:focus {
-    border: 2px solid #e94123;
+    border: 2px solid #e14c07;
     
 }
 
@@ -271,7 +271,7 @@ FRONT SIGNUP SPLASH
 }
 
 .pure-form input[type="password"]:focus {
-    border: 2px solid #e94123;
+    border: 2px solid #e14c07;
     
 }
 
@@ -284,7 +284,7 @@ FRONT SIGNUP SPLASH
 }
 
 .pure-form input[type="email"]:focus {
-    border: 2px solid #e94123;
+    border: 2px solid #e14c07;
     
 }
 
@@ -297,7 +297,7 @@ FRONT SIGNUP SPLASH
 }
 
 .pure-form textarea:focus {
-    border: 2px solid #e94123;
+    border: 2px solid #e14c07;
     
 }
 
@@ -306,14 +306,14 @@ FRONT SIGNUP SPLASH
  * I want my pure-button elements to look a little different
  */
 .pure-button {
-    background-color: #e94123;
+    background-color: #e14c07;
     color: white;
     padding: 0.5em 2em;
     border-radius: 5px;
 }
 
 a.pure-button-primary {
-    background: #e94123;
+    background: #e14c07;
     color: #fff;
     border-radius: 5px;
     font-size: 120%;
@@ -348,7 +348,7 @@ a.pure-button-primary {
 
 .home-menu .pure-menu-selected a {
     color: #fff;
-    background: #e94123;    
+    background: #e14c07;    
 }
 
 .home-menu a {
@@ -358,7 +358,7 @@ a.pure-button-primary {
 .home-menu li a:focus {
     background: none;
     border: none;
-    color: #e94123;
+    color: #e14c07;
 }
 
 
@@ -378,7 +378,7 @@ a.pure-button-primary {
     background-repeat: repeat-x repeat-y;
 }
 .splash-container {
-    background: #e94123 url("/images/big.jpg");
+    background: #e14c07 url("/images/big.jpg");
     background-repeat:no-repeat;
     -webkit-background-size:cover;
     -moz-background-size:cover;
@@ -395,7 +395,7 @@ a.pure-button-primary {
 }
 
 .splash-container-order {
-    background: #e94123 url("/images/big_2.jpg");
+    background: #e14c07 url("/images/big_2.jpg");
     background-repeat:no-repeat;
     -webkit-background-size:cover;
     -moz-background-size:cover;
@@ -413,7 +413,7 @@ a.pure-button-primary {
 }
 
 .splash-container-login {
-    background: #e94123 url("/images/big_3.jpg");
+    background: #e14c07 url("/images/big_3.jpg");
     background-repeat:no-repeat;
     -webkit-background-size:cover;
     -moz-background-size:cover;
@@ -431,7 +431,7 @@ a.pure-button-primary {
 }
 
 .splash-container-creativeapply{
-    background: #e94123 url("/images/big_4.jpg");
+    background: #e14c07 url("/images/big_4.jpg");
     background-repeat:no-repeat;
     -webkit-background-size:cover;
     -moz-background-size:cover;
@@ -449,7 +449,7 @@ a.pure-button-primary {
 }
 
 .splash-container-dashboard{
-    background: #e94123 url("/images/big_5.jpg");
+    background: #e14c07 url("/images/big_5.jpg");
     background-repeat:no-repeat;
     -webkit-background-size:cover;
     -moz-background-size:cover;
@@ -518,7 +518,7 @@ text-align:center;
 width: 250px; 
 font-size: 22px;
 
-background: #e94123; 
+background: #e14c07; 
 padding: 10px; 
 margin: 0 auto;
 
@@ -642,7 +642,7 @@ border-radius: 5px;
 
 /* This is the class used for the content sub-headers (<h3>) */
 .content-subhead {
-    color: #e94123;
+    color: #e14c07;
     text-transform: uppercase;
     text-align: left;
 }
@@ -652,7 +652,7 @@ border-radius: 5px;
 
 /* This is the class used for the dark-background areas. */
 .ribbon {
-    background: #e94123;
+    background: #e14c07;
     color: #fff;
 }
 
@@ -670,7 +670,7 @@ border-radius: 5px;
 }
 
 .footer a:hover {
-	color: #e94123;    
+	color: #e14c07;    
 }
 
 
