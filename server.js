@@ -38,6 +38,7 @@ var db = mongojs.connect(databaseUrl, collections);
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
 
 app.use(compress());
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.use(function(req, res, next) {
 
@@ -78,16 +79,6 @@ app.use(function(req, res, next) {
 	}
 });
 
-app.get('/test', function(req,res) {
-	res.writeHead(200, {'content-type': 'text/html'});
-  	res.end(
-    '<form action="/upload" enctype="multipart/form-data" method="post">'+
-    '<input type="text" name="title"><br>'+
-    '<input type="file" name="upload" multiple="multiple"><br>'+
-    '<input type="submit" value="Upload">'+
-    '</form>'
-  );
-})
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
@@ -110,7 +101,7 @@ app.use(function(req, res, next) {
 */
 
 
-app.use(favicon(__dirname + '/public/favicon.ico'));
+
 
 
 
@@ -164,6 +155,57 @@ var mailbot = require('./lib/email')
 mailbot.debug = true;	
 
 
+
+
+
+
+
+
+
+
+
+app.get('/market', function (req, res) {
+	db.offerings.find({}, function(err, results) {
+		for (var x in results) {
+			results[x].offering_id = results[x]._id.toHexString();
+		}
+		res.render('market', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offerings: results });
+	})//end find
+	
+})
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+app.get('/offerings/view/*', function (req, res) {
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/view/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
+			if (result) {
+				result.offering_id = result._id.toHexString();
+				result.descriptionmarked = marked(result.description);
+				console.log(result);
+				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+  	
+});
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.get('/tow/attendance', function (req, res) {
 	var data = {}
 	data.socketserver = socketconnect;
@@ -187,8 +229,10 @@ app.get('/tow/attendance', function (req, res) {
 	res.render('tow_attendance', data)
 });
 
-//HANDLES LOGIN FORM DATA
-var loginhandler = function (req, res) {
+
+
+//OPENWINDOW TEST
+app.post('/login', function (req, res) {
 	  var minute = 60 * 1000;
 	  console.log("new login/register:")
 	  console.log(req.body)
@@ -231,10 +275,7 @@ var loginhandler = function (req, res) {
 			}
 		}
 	});
-}
-
-//OPENWINDOW TEST
-app.post('/login', loginhandler)
+})
 
 app.post('/', function(req, res){
 	  var minute = 60 * 1000;
@@ -431,35 +472,6 @@ function checkAuth(req, res, next) {
 /* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
 
 
-app.get('/market', function (req, res) {
-	db.offerings.find({}, function(err, results) {
-		for (var x in results) {
-			results[x].offering_id = results[x]._id.toHexString();
-		}
-		res.render('market', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offerings: results });
-	})//end find
-	
-})
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-app.get('/offerings/view/*', function (req, res) {
-	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/view/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
-
-	var ObjectId = mongojs.ObjectId;
-
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
-			if (result) {
-				result.offering_id = result._id.toHexString();
-				result.descriptionmarked = marked(result.description);
-				console.log(result);
-				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
-			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-	})
-  	
-});
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
 
@@ -480,7 +492,13 @@ function enforceLogin(req, res, next) {
 
 
 
-app.get('/login', function (req, res) { res.redirect('/'); })
+app.get('/login', function (req, res) { 
+	if (req.session.username) {
+		res.redirect('/');
+	} else {
+		res.render('login', { });
+	}
+})
 
 
 app.post('/profile', function (req,res) {
