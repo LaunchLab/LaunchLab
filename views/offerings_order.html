@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block title %}LaunchLab New Project{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+
+<div class="content-wrapper-top">
+    <div class="content">
+        <div class="pure-g" >
+            <div class="l-box pure-u-1">
+
+                <h1 style="font-weight: 700; font-size: 3em;">Order Form</h1>
+                
+            </div>
+
+
+            <div class="l-box pure-u-1">
+
+
+                <div class="pure-g">
+                    <div class="pure-u-1-2">
+                        <div style="margin: 1em;">
+                            <p style="color: #999;">Item Name</p>
+                        </div>
+                    </div>
+
+                    <div class="pure-u-1-2" style="text-align: right;">
+                        <div style="margin: 1em;">
+                            <p style="color: #999;">Price</p>
+                        </div>
+                    </div>
+
+                                         
+                </div>
+
+
+                <div class="pure-g" style="background: #eee;"> 
+                    <div class="pure-u-1-2" >
+                        <div style="margin: 1em;">
+                            <p style="color: #000;">{{ offering.title}}</p>
+                        </div>
+                    </div>
+
+                    <div class="pure-u-1-2" style="text-align: right;">
+                        <div style="margin: 1em;">
+                            <p style="color: #000;font-weight: 700;">R {{ offering.price}}</p>
+                        </div>
+                    </div>
+                                      
+                </div>
+                
+            </div>
+
+
+
+            <div class="l-box pure-u-1" style="text-align: right;">
+                <div style="margin: 1em;">
+                    <!--
+                    <p style="color: rgba(0,0,0,1); ">
+                        <span style="font-weight: 500; font-size: 0.75em;"><span style="color: rgba(0,0,0,0.3);">SUB-TOTAL</span> <span style="font-weight: 700; font-size: 2em;">R {{ offering.price }}</span> </span> 
+                    </p>
+
+                    <p style="color: rgba(0,0,0,1); ">
+                        <span style="font-weight: 500; font-size: 0.75em;"><span style="color: rgba(0,0,0,0.3);">14% TAX</span> <span style="font-weight: 700; font-size: 2em;">R {{ offering.price*0.14 }}</span> </span> 
+                    </p>
+                    -->
+                    <p style="color: rgba(0,0,0,1); ">
+                        <span style="font-weight: 500; font-size: 1.25em;"><span style="color: rgba(0,0,0,1);">TOTAL</span> <span style="font-weight: 700; font-size: 2em;">R {{ offering.price*1.14 }}</span> </span> 
+                    </p>
+                    
+                    <p>
+                        <a class="pure-button pure-button-primary" href="/offerings/confirm/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-check"></i> Confirm</a>
+                    </p>
+
+                </div>
+            </div>
+
+
+            
+  
+
+                
+
+
+
+        </div>
+    </div>
+
+    {% include "./footer.html" %}
+</div>
+
+
+
+
+
+
+{% endblock %}

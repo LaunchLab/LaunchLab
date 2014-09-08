@@ -49,7 +49,14 @@ var socket = io.connect('{{ socketserver }}');
        <span style="font-size: 10px; margin-left: -16px; ">beta</span>
        <span class="topnum" style="margin-left: 20px;  color: rgb(115, 115, 115); ">+27 (12) 648 9241</span>
        
+       {% if loginpage %}
+       <a href="/" class="signinbutton"><span class="signInButtonText">Register</span> </a>
+       {% endif %}
+
+       {% if not loginpage %}
        <a href="/login" class="signinbutton"><span class="signInButtonText">Sign in</span> </a>
+       {% endif %}
+
       
     </div>
 </div>
@@ -62,14 +69,16 @@ var socket = io.connect('{{ socketserver }}');
        <span style="font-size: 10px; margin-left: -16px; ">beta</span>
        <span style="margin-left: 20px;  color: rgb(115, 115, 115); ">+27 (12) 648 9241</span>
  <ul>
-           
-            <li class="pure-menu-selected"><a href="/">Dashboard</a></li>
+
+           {% if admin %}
+              <li><a href="/admin" ><i class="fa fa-shield"></i></a></li>
+            {% endif %}           
+            
             <li><a href="/credits">Your balance: <strong style="color: #fff;">0.00</strong> </a></li>
+            <li><a href="/"><i class="fa fa-home"></i> home</a></li>
             <li><a href="/market"><i class="fa fa-globe"></i> market</a></li>
             <li><a href="/profile"><i class="fa fa-child"></i> {{ username }}</a></li>
-            {% if admin %}
-              <li><a href="/admin" ><i class="fa fa-shield"></i> admin</a></li>
-            {% endif %}
+ 
             <li><a href="/logout"><i class="fa fa-times"></i></a></li>
         </ul>
     </div>

@@ -21,10 +21,13 @@
     		</div>
 
     		<div class="l-box pure-u-1 pure-u-md-1-3">
-    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-arrow-right"></i> Buy this <br>
-    					<span style="font-size: 2em; font-weight: 800;">{{ offering.price }}</span>
-    				</a>
-    			<br>
+    			<p style="color: rgba(0,0,0,1); ">
+    				<span style="font-weight: 700;  font-size: 3em;">R {{ offering.price }}</span> <span style="font-weight: 700; font-size: 0.75em;">excl VAT</span>
+    			</p>
+
+    			<p>
+    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-shopping-cart"></i> Order Form</a>
+    			</p>
 
     			{% if offering.creator == username %} 
 	    			<div class="l-box">

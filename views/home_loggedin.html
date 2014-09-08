@@ -18,68 +18,83 @@
 
             <div class="pure-u-1 pure-u-md-1-1" >
                 <div>
-                    <h2 class="firsttagline" style="font-size: 45px; margin-top: 3em;">LaunchLab Dashboard</h2><h2 class="content-head is-center" style="color: rgb(255, 255, 255); margin-top:60px; margin-bottom: 0;" >
-                    <h3 class="content-head is-center" style="color: rgb(255, 255, 255); margin-top:20px; margin-bottom: 0;" >Welcome {{ username }}</h2>
-                    <p style="color: rgb(255, 255, 255); text-align: center; margin-top:0px">This is your main control panel.</p>
+      
+                    
                 </div>
             </div>
     </div>
   </div>
 </div>
 
-<div class="content-wrapper-order">
-<a name="tour" id="tour"></a>       
-    <div class="content"  style="background: #1a031b;">
-        <div class="pure-g">
-
-          <div class="l-box pure-u-1 pure-u-md-1-4 pure-u-lg-1-4">
-                <div class="iconboxes">
-                    <a class="dashboardicons" href="/offerings/new" >
-                        <i class="fa fa-cube mediumicon"></i>
-                        <h3 class="content-subhead" style="text-align: center; ">Post to market</h3>
-                        <h5 class="content-head is-center" >
-                        Earn money by offering your service or product for a fee
-                        </h5>
-                    </a>
-                </div>
-            </div>
-
-
-              <div class="l-box pure-u-1 pure-u-md-1-4 pure-u-lg-1-4">
-                <div class="iconboxes">
-                    <a class="dashboardicons" href="/projects/new" >
-                        <i class="fa fa-cubes mediumicon"></i>
-                        <h3 class="content-subhead" style="text-align: center; ">Post a job opening</h3>
-                        <h5 class="content-head is-center" >
-                            Setup a brief so creative teams can pitch for the project.
-                        </h5>
-                    </a>
-                </div>
-            </div>
-
-
-
-
+<div class="content-wrapper-order" style="background: #111;">
    
 
-
-
-   
-
-
-          
-
-
-        </div>
-    </div>
 
     
+<div class="pure-g" style="background: #111; ">
+
+<div class="pure-u-1 pure-u-md-1-2">
+    <div class=" l-box-lrg " >
+    <h2 class="content-head is-center" style="color: rgb(225, 225, 225);margin-bottom: 1em;" >Market Offerings</h2>
+
+        <p style="text-align: center; margin-top:1em; color: #7F8C8D; font-size: 1.5em;">
+            <a class="dashboardicons" href="/offerings/new" ><i class="fa fa-plus-circle "></i> Create New</a>
+        </p>
+        
 
 
-    <div class="ribbon l-box-lrg launchlabdarkbg" style="background: #1a031b; border-top: 5px solid #222;">
-	<h2 class="content-head is-center" style="color: rgb(225, 225, 225);margin-bottom: 0;" >PROJECTS</h2>
-    <p style="text-align: center; margin-top:0px; color: #7F8C8D;">Have a quick look to see progress on all your orders.</p>
+        <div class="pure-g clients">
 
+            <div class="pure-u-1 pure-u-md-1-1 pure-u-lg-1-1">
+                <div class="clientbox"  >
+
+                     {% for offering in offerings %}
+                     
+                        <div class="pure-g">
+
+
+                          
+                            
+    
+
+                            <div class="pure-u-1-1"  style="border-bottom: 1px solid #300;">
+                        
+                        <a href="/offerings/view/{{ offering._id }}" style="margin-right: 3em;"><i class="fa fa-eye"></i> view </a> 
+                        <a href="/offerings/edit/{{ offering._id }}" style="margin-right: 3em;"><i class="fa fa-edit"></i> edit </a> 
+                        <a href="/offerings/delete/{{ offering._id }}" style="margin-right: 3em;"><i class="fa fa-times"></i> remove</a> 
+                        <a href="/offerings/view/{{ offering._id }}" style="margin-right: 6em;"> {{ offering.title }} </a>
+
+                            </div>
+
+                        </div>                     
+                    
+
+                     <br>
+                    {% endfor %}
+                </div>                
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="pure-u-1 pure-u-md-1-2">
+
+    <div class=" l-box-lrg " style=" border-left: 1px solid #222;">
+	<h2 class="content-head is-center" style="color: rgb(225, 225, 225);margin-bottom: 0;" >JOB LISTINGS</h2>
+    
+        <p style="text-align: center;color: #7F8C8D; font-size: 1.5em;">
+            <a class="dashboardicons" href="/projects/new" ><i class="fa fa-plus-circle "></i> Create New</a>
+        </p>
         
         <div class="pure-g clients">
 
@@ -150,54 +165,17 @@
 
             
         </div>
+
+
         
         
     </div>
 
+</div>
 
 
 
-
-
-<div class="ribbon l-box-lrg launchlabdarkbg" style="background: #1a031b; border-top: 5px solid #222; border-bottom: 5px solid #222; ">
-    <h2 class="content-head is-center" style="color: rgb(225, 225, 225);margin-bottom: 0;" >My Market Offerings</h2>
-    <p style="text-align: center; margin-top:0px; color: #7F8C8D;">This is what you are currently offering to the market.  <a href="/offerings/new" >create a new offering</a></p>
-
-        
-
-
-        <div class="pure-g clients">
-
-            <div class="pure-u-1 pure-u-md-1-1 pure-u-lg-1-1">
-                <div class="clientbox"  >
-
-                     {% for offering in offerings %}
-                     
-                        <div class="pure-g">
-
-
-                          
-                            
-    
-
-                            <div class="pure-u-1-1">
-
-                        <a href="/offerings/view/{{ offering._id }}" ><i class="fa fa-eye"></i> view </a> &nbsp;&nbsp;
-                        <a href="/offerings/edit/{{ offering._id }}" ><i class="fa fa-edit"></i> edit </a> &nbsp;&nbsp;
-                        <a href="/offerings/delete/{{ offering._id }}"><i class="fa fa-times"></i> remove</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="/offerings/view/{{ offering._id }}" > {{ offering.title }} </a>
-                            </div>
-
-                        </div>                     
-                    
-
-                     <br>
-                    {% endfor %}
-                </div>                
-            </div>
-        </div>
-    </div>
-
+</div>
 
 
 

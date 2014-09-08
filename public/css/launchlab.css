@@ -96,6 +96,10 @@ MARKET
     float: left;
     overflow: hidden;
     margin: 0px;
+
+        -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
 }
 
 .market-container-imagewrap {

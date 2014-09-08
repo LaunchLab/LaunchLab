@@ -31,7 +31,7 @@ var session = require('cookie-session')
 var compress = require('compression');
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings"]
+var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders"]
 var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
@@ -402,7 +402,7 @@ function checkAuth(req, res, next) {
   if ((!req.session.username)||(!req.session.password)) 
   	{	
   		if (req.url == "/login") {
-  			res.render('login', { loggedout: true } ); 
+  			res.render('login', { loggedout: true, loginpage: true } ); 
   		} else {
 
   			//MAIN ENTRY FOR VISITORS
@@ -479,7 +479,7 @@ app.use(enforceLogin);
 function enforceLogin(req, res, next) {
   if ((!req.session.username)||(!req.session.password)) 
   	{	
-  		res.render('login', { loggedout: true } ); 
+  		res.render('login', { loggedout: true, loginpage: true } ); 
   	}
   	else {
   		next();
@@ -496,7 +496,7 @@ app.get('/login', function (req, res) {
 	if (req.session.username) {
 		res.redirect('/');
 	} else {
-		res.render('login', { });
+		res.render('login', { loginpage: true });
 	}
 })
 
@@ -751,9 +751,9 @@ app.post('/projects/new', function (req, res) {
 					emailK.rcptname = "Kevin Lawrie";
 					emailK.subject = "Launch Lab Projects - "+req.session.username+" created new project.";
 					emailK.body = "User "+req.session.username+" created a new project http://launchlabapp.com/project/"+projectid;
-					email.body += "\n\r"
-					email.body += JSON.stringify(project)
-					email.body += "\n\r"
+					emailK.body += "\n\r"
+					emailK.body += JSON.stringify(project)
+					emailK.body += "\n\r"
 					
 					mailbot.sendemail(emailK, function (data) {
 						console.log("EMAIL SENT")
@@ -895,7 +895,87 @@ app.get('/offerings/edit/*', function (req, res) {
 });
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+app.get('/offerings/order/*', function (req, res) {
 
+
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/order/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		result.offering_id = result._id.toHexString();
+		if (result) {
+			res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+
+  	
+});
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+app.get('/offerings/confirm/*', function (req, res) {
+
+
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/confirm/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		result.offering_id = result._id.toHexString();
+		if (result) {
+			//SUCCESSFUL ORDER
+			res.render('offerings_confirm', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
+			
+			if (enableEmail) {
+				//test email sending
+				var email = {}
+				email.from = "noreply@launchlabapp.com";
+				email.fromname = "Launch Lab Orders";
+				email.rcpt = "rouan@8bo.org";
+				email.rcptname = "Rouan van der Ende";
+				email.subject = "Launch Lab Orders - "+req.session.username+" placed an order.";
+
+				email.body = "Order Details\n"
+				email.body += "================\n"	
+				email.body += "Title: "+result.title+"\n";
+				email.body += "Page: http://launchlabapp.com/offering/"+mongoid+"\n";	
+				email.body += "Price: "+result.price+"\n";	
+				
+				email.body += "\n"
+				email.body += "Customer Details\n"
+				email.body += "================\n"
+				email.body += "Username: "+req.session.db.username+"\n"
+				email.body += "Email: "+req.session.db.email+"\n"
+				email.body += "Phone: "+req.session.db.phonenumber+"\n"
+				email.body += "Fullname: "+req.session.db.phonenumber+"\n"
+				email.body += "Shortbio: "+req.session.db.shortbio+"\n"
+				email.body += "Location: "+req.session.db.location+"\n"
+				email.body += "\n"
+
+				mailbot.sendemail(email, function (data) {
+					console.log("EMAIL SENT")
+					email.rcpt = "kevin@openwindow.co.za";
+					email.rcptname = "Kevin Lawrie";
+					mailbot.sendemail(email, function (data) { console.log("EMAIL SENT"); })
+				});
+
+			}
+
+
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+
+  	
+});
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
