@@ -949,20 +949,18 @@ app.get('/offerings/confirm/*', function (req, res) {
 				email.body += "Title: "+result.title+"\n";
 				email.body += "Page: http://launchlabapp.com/offering/"+mongoid+"\n";	
 				email.body += "Price: "+result.price+"\n";	
-				
 				email.body += "\n"
 				email.body += "Customer Details\n"
 				email.body += "================\n"
+				email.body += "Fullname: "+req.session.db.fullname+"\n"
 				email.body += "Username: "+req.session.db.username+"\n"
 				email.body += "Email: "+req.session.db.email+"\n"
 				email.body += "Phone: "+req.session.db.phonenumber+"\n"
-				email.body += "Fullname: "+req.session.db.phonenumber+"\n"
 				email.body += "Shortbio: "+req.session.db.shortbio+"\n"
 				email.body += "Location: "+req.session.db.location+"\n"
 				email.body += "\n"
 
 				mailbot.sendemail(email, function (data) {
-					console.log("EMAIL SENT")
 					email.rcpt = "kevin@openwindow.co.za";
 					email.rcptname = "Kevin Lawrie";
 					mailbot.sendemail(email, function (data) { console.log("EMAIL SENT"); })

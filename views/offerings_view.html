@@ -12,7 +12,7 @@
     <div class="content">
     	<div class="pure-g" >
     		<div class="l-box pure-u-1">
-    			<h1>{{ offering.title}}</h1>
+    			<h1 style="font-weight: 700; font-size: 4em;">{{ offering.title}}</h1>
     		</div>
 
 
@@ -20,22 +20,23 @@
 				<p>{{ offering.descriptionmarked|raw }}</p>
     		</div>
 
-    		<div class="l-box pure-u-1 pure-u-md-1-3">
-    			<p style="color: rgba(0,0,0,1); ">
-    				<span style="font-weight: 700;  font-size: 3em;">R {{ offering.price }}</span> <span style="font-weight: 700; font-size: 0.75em;">excl VAT</span>
-    			</p>
+    		<div class="l-box pure-u-1 pure-u-md-1-3" >
+    			<div class="rounded" >
+	    			<p style="color: rgba(255,255,255,1); ">
+	    				<span style="font-weight: 700;  font-size: 3em;">R {{ offering.price }}</span> <span style="font-weight: 700; font-size: 0.75em; color: rgba(255,255,255,0.75);">excl VAT</span>
+	    			</p>
 
-    			<p>
-    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-shopping-cart"></i> Order Form</a>
-    			</p>
+	    			<p>
+	    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-shopping-cart"></i> Order Form</a>
+	    			</p>
 
-    			{% if offering.creator == username %} 
-	    			<div class="l-box">
-	    				This is your offering. <a href="/offerings/edit/{{ offering.offering_id }}">Edit this.</a>
+	    			{% if offering.creator == username %} 
+		    			<div  style="color: rgba(255,255,255,0.75); ">This is your own offering. <a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(255,255,255,1); ">Edit this</a>
 
-	    			</div>
-				 
-				{% endif %}
+		    			</div>
+					 
+					{% endif %}
+				</div>
     		</div>
 
 

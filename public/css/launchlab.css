@@ -78,6 +78,14 @@ OFFERING VIEW
     width:100%;
 }
 
+.rounded {
+    background-color: rgb(35,35,35);
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    padding: 1em;
+}
+
 /*
 
 MARKET
@@ -89,7 +97,6 @@ MARKET
 }
 
 .market-container {
-    border: 2px solid rgb(50,50,50);
     width: 100%;
     height: 300px;
     background-color: rgb(25,25,25);
