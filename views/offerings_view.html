@@ -30,8 +30,10 @@
 	    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-shopping-cart"></i> Order Form</a>
 	    			</p>
 
-	    			{% if offering.creator == username %} 
-		    			<div  style="color: rgba(255,255,255,0.75); ">This is your own offering. <a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(255,255,255,1); ">Edit this</a>
+	    			{% if editable == 1 %} 
+		    			<div  style="color: rgba(255,255,255,0.75); ">
+		    				<a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(255,255,255,1); margin-right: 1em; "><i class="fa fa-edit"></i> edit </a>
+		    				<a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(255,255,255,1); margin-right: 1em;"><i class="fa fa-times"></i> delete</a>
 
 		    			</div>
 					 

@@ -154,15 +154,7 @@ app.get('/logout', function (req, res) {
 var mailbot = require('./lib/email')
 mailbot.debug = true;	
 
-
-
-
-
-
-
-
-
-
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 app.get('/market', function (req, res) {
 	db.offerings.find({}, function(err, results) {
@@ -173,7 +165,9 @@ app.get('/market', function (req, res) {
 	})//end find
 	
 })
+
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
 app.get('/offerings/view/*', function (req, res) {
 	//bugfix chop to correct length
 	var mongoid = req.url.slice( '/offerings/view/'.length );
@@ -186,25 +180,15 @@ app.get('/offerings/view/*', function (req, res) {
 				result.offering_id = result._id.toHexString();
 				result.descriptionmarked = marked(result.description);
 				console.log(result);
-				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+				var editbool = 0;
+				if (req.session.username == "rouan") { editbool = 1}
+				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, editable: editbool });
 			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
   	
 });
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-
-
-
-
-
-
-
-
-
-
-
 
 app.get('/tow/attendance', function (req, res) {
 	var data = {}
@@ -882,12 +866,15 @@ app.get('/offerings/edit/*', function (req, res) {
 
 	var ObjectId = mongojs.ObjectId;
 
-	db.offerings.findOne({"_id": ObjectId(mongoid), "creator": req.session.username}, function(err, result) {
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
 		console.log("finding offering")
 		console.log(result)
 		result.offering_id = result._id.toHexString();
 		if (result) {
-			res.render('offerings_edit', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result });
+			var editbool = 0;
+			if (result.creator == req.session.username) { editbool = 1}
+			if (req.session.username == "rouan") {editbool = 1}	
+			res.render('offerings_edit', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, editable: editbool });
 		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
 
