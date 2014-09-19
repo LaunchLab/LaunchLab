@@ -98,26 +98,28 @@ p img {
 
 .market-link:hover .market-container {
     border: 2px solid rgb(223,223,223);
-    background: rgba(25,25,25,1);
+    background: rgba(235,235,235,1);
 }
 
 .market-link:hover .market-title {
-    color: #fff;
+    color: rgb(80,80,80); 
 }
 
 .market-link:hover .market-creator {
-    color: rgba(255,255,255,0.5); 
+    
+    color: rgba(80,80,80,0.5); 
 }
 
 .market-title {
-    color: rgb(80,80,80); 
+    
+    color: #fff;
     font-weight: 300; 
     font-size: 1em;
 }
 
 .market-creator {
     font-size: 0.7em;
-    color: rgba(80,80,80,0.5); 
+    color: rgba(255,255,255,0.5); 
 }
 
 .market-container-wrap {
@@ -131,7 +133,8 @@ p img {
     float: left;
     overflow: hidden;
     margin: 0px;
-    background: rgba(235,235,235,1);
+
+    background: rgba(25,25,25,1);
 }
 
 .market-container-imagewrap {
