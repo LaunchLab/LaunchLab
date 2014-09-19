@@ -91,6 +91,10 @@ OFFERING VIEW
 MARKET
 
 */
+p img {
+    width: 100%;
+}
+
 
 .market-link:hover .market-container {
     border: 2px solid rgb(223,223,223);
