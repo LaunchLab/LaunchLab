@@ -8,83 +8,71 @@
 
 {% block content %}
 
-<a name="top" id="top"></a>
-<div class="splash-container-order">
- <div class="splash-overlay" style="height:100%;">
 
-            <div class="pure-u-1 pure-u-md-1-1" >
-                <div>
-
-                    <h1 class="firsttagline" style="font-size: 45px; margin-top: 2.5em;">Setup an Offering</h1>
-                    <p class="secondtagline">
-                        Setup your offering. This could be a product or service you are offering to the market.
-                    </p> 
-
-                </div>
-            </div>
-    </div>
-  </div>
-</div>
+div class="content-wrapper">
 
 
-<div class="content-wrapper-order">
-    <div class="content brief">
-    	<div class="pure-g" >
-
-         	<div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
-
-            <div class="l-box pure-u-1 pure-u-md-3-5 pure-u-lg-1-2">
-			
-				<h2>Offering writeup</h2>
-
-				<form class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post" action="/offerings/edit/{{ offering.offering_id }}">
+ 
 
 
-				<fieldset>
-			        <div class="pure-control-group">
-			            <label for="title">Title</label>
-			            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title}}" placeholder="Short description of offering ">
-			        </div>
+<!-- start market -->
+<div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #000;">
+<div class="pure-g" style="margin-top: 60px;">
 
-			        <div class="pure-control-group">
-			            <label for="description">Description ( <a href="http://daringfireball.net/projects/markdown/basics">markdown</a> allowed )</label>
-			            <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
-			        </div>
-
-			        <div class="pure-control-group">
-			            <label for="upload">Upload</label>
-			             <input type="file" name="upload" multiple="multiple">
-			        </div>
-
-			    {% for image in offering.samplefiles %}
-					<div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
-						<a href="/offerings/{{ image }}">
-							<img src="/offerings/{{ image }}" style="width:100%;">
-						</a>
+           
+                <div class="pure-u-1 pure-u-md-1-2 ">
+                	<div style="margin: 1em;">
+					{% for image in offering.samplefiles %}
+								<a href="/offerings/{{ image }}">
+									<img src="/offerings/{{ image }}" style="width:100%;">
+								</a>
+					{% endfor %}
 					</div>
+                </div>    
+                   
+                <div class="pure-u-1 pure-u-md-1-2 ">
+                	<!-- start FORM -->
+					<form class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post" action="/offerings/edit/{{ offering.offering_id }}">
+						<fieldset>
+					        <div class="pure-control-group">
+					            <label for="title">Title</label>
+					            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title}}" placeholder="Short description of offering ">
+					        </div>
+
+					        <div class="pure-control-group">
+					            <label for="description">Description ( <a href="http://daringfireball.net/projects/markdown/basics">markdown</a> allowed )</label>
+					            <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
+					        </div>
+
+					        <div class="pure-control-group">
+					            <label for="upload">Upload</label>
+					             <input type="file" name="upload" multiple="multiple">
+					        </div>
+
 					
-				{% endfor %}	
-				<p>For now you have to delete an offering and recreate if you want to get rid of images.</p>
-			        <div class="pure-control-group">
-			            <label for="price">Price</label>
-			            <input id="price" class="backgroundinputs" type="text" name="price" value="{{ offering.price}}" placeholder="Set your price. For example: R 1000.00">
-			        </div>
+						<br>
+					
 
-			        <div class="pure-controls">
-			            <button type="submit" class="pure-button pure-button-primary">Done</button> 
+					        <div class="pure-controls">
+					            <button type="submit" class="pure-button pure-button-primary">Done</button> 
 
-			        </div>
-			        
-			    </fieldset>
+					        </div>
+					        
+					    </fieldset>
 
 
-			    </form>			
-		    </div>
+					    </form>		
+					    <!-- end form -->
+                </div> 
+            
 
-		    <div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
+</div>
+</div> 
+<!-- end market -->
 
-		</div>
-    </div>
+
+
+
 
     
 

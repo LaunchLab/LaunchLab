@@ -312,6 +312,8 @@ app.post('/', function(req, res){
 				  	/////////////////////////
 
 				  	//SEND EMAIL WHEN THERES A NEW USER
+
+				  	//start email
 				  	if (enableEmail) 
 				  	{
 		  				var email = {}
@@ -339,7 +341,8 @@ app.post('/', function(req, res){
 								console.log("EMAIL SENT")
 							})
 						})
-					}
+					} 
+					// end email
 		
 
 
@@ -371,7 +374,75 @@ app.post('/', function(req, res){
 });
 
 
+/////////////////////////////////////////////////////////////////////
+//LOGGED IN OPTIONAL
 
+/* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
+
+app.post('/offerings/contact/*', function (req, res) {
+	console.log(req.body)
+	//CREATE AN ORDER 
+
+	//IF NEW USER, CREATE ACCOUNT AND EMAIL TO VERIFY
+
+	//SAVE TO DATABASE
+
+
+	//SEND EMAIL
+  	//start email
+  	if (enableEmail) 
+  	{
+		var email = {}
+		email.from = "noreply@launchlabapp.com";
+		email.fromname = "Launch Lab Contact";
+		email.subject = "Launch Lab Admin notice new message";
+		email.body = "This is a notice to let you know a new message has been recieved.\r\n"
+		email.body += JSON.stringify(req.body)+"\r\n"
+		email.body += JSON.stringify(req.session.username)+"\r\n";
+		
+		email.rcpt = "rouan@8bo.org";
+		email.rcptname = "Rouan van der Ende";
+		
+		mailbot.sendemail(email, function (data) 
+		{
+			email.rcpt = "kevin@openwindow.co.za";
+			email.rcptname = "Kevin Lawrie";
+			
+			mailbot.sendemail(email, function (data) { console.log("EMAIL SENT"); })
+		})
+	} 
+	// end email	
+
+
+	res.render('offerings_confirm', { username: req.session.username, password: req.session.password, socketserver: socketconnect, userdb: req.session.db });
+});
+
+app.get('/offerings/order/*', function (req, res) {
+	//bugfix chop to correct length
+	var mongoid = req.url.slice( '/offerings/order/'.length );
+	mongoid = mongoid.slice(0,24); //the length of a mongo id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		result.offering_id = result._id.toHexString();
+		if (result) {
+
+			if ((!req.session.username)||(!req.session.password)) 
+  			{	
+  				res.render('offerings_order', { loggedout: true, socketserver: socketconnect, offering: result });
+  			} else {
+  				res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
+  			}
+
+			
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+});
+
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
 
@@ -450,14 +521,11 @@ function checkAuth(req, res, next) {
 }
 
 
+
+
 /////////////////////////////////////////////////////////////////////
-//LOGGED IN OPTIONAL
-
-/* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
-
-
-
-
+/////////////////////////////////////////////////////////////////////
+//EVERYTHING BELOW IS FOR LOGGED IN USERS ONLY
 
 app.use(enforceLogin);
 function enforceLogin(req, res, next) {
@@ -471,8 +539,6 @@ function enforceLogin(req, res, next) {
   	
 }
 
-/////////////////////////////////////////////////////////////////////
-//EVERYTHING BELOW IS FOR LOGGED IN USERS ONLY
 
 
 
@@ -582,6 +648,17 @@ app.get('/', function (req, res) {
 		data.admin = true
 	}
 
+	///////
+
+	db.offerings.find({}, function(err, results) {
+					for (var x in results) {
+						results[x].offering_id = results[x]._id.toHexString();
+					}
+					data.offerings = results;
+					res.render('home_loggedin', data);
+				})
+
+	/*
 	//PROJECTS DASHBOARD
 	db.projects.find({"creator": req.session.username}, function(err, projects) {
 		console.log(projects);
@@ -622,7 +699,7 @@ app.get('/', function (req, res) {
 
 		
 	})//end find
-
+	*/
   	
 });
 
@@ -755,12 +832,6 @@ app.post('/projects/new', function (req, res) {
 
 //uploads
 
-
-
-
-
-
-
 app.get('/offerings/new', function (req, res) {
 
 	var blankOffering = {}
@@ -786,7 +857,7 @@ app.get('/offerings/new', function (req, res) {
 
 
 app.post('/offerings/edit/*', function (req, res) {
-
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
 
     //console.log(req.body) // with multipart there is no body.
 	console.log(req.multipartparse)
@@ -801,7 +872,9 @@ app.post('/offerings/edit/*', function (req, res) {
 
 	var uploadedFilenames = []
 	for (var f in req.multipartparse.files.upload) {
-
+		console.log("= = = = = = = = = = = = = = = = = =  ")
+		console.log(req.multipartparse.files.upload[f])
+		console.log("= = = = = = = = = = = = = = = = = = ")
 		if (req.multipartparse.files.upload[f].size > 0) {
 
 			var source = fs.createReadStream(req.multipartparse.files.upload[f].path);
@@ -831,7 +904,6 @@ app.post('/offerings/edit/*', function (req, res) {
 		newOffering.modified = Date.now();
 		newOffering.title = req.multipartparse.fields.title[0]
 		newOffering.description = req.multipartparse.fields.description[0]
-		newOffering.price = req.multipartparse.fields.price[0]
 
 		for (var file in uploadedFilenames) {
 			if (newOffering.samplefiles) { 
@@ -882,28 +954,7 @@ app.get('/offerings/edit/*', function (req, res) {
 });
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-app.get('/offerings/order/*', function (req, res) {
 
-
-	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/order/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
-
-	var ObjectId = mongojs.ObjectId;
-
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		console.log("finding offering")
-		console.log(result)
-		result.offering_id = result._id.toHexString();
-		if (result) {
-			res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
-		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-	})
-
-  	
-});
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 app.get('/offerings/confirm/*', function (req, res) {
 
@@ -973,13 +1024,26 @@ app.get('/offerings/delete/*', function (req, res) {
 	mongoid = mongoid.slice(0,24); //the length of a mongo id
 	var ObjectId = mongojs.ObjectId;
 
+	//////////
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+			console.log(result)
+			
+			if ((req.session.username == "rouan") || (result.creator == req.session.username)) {
+				//start del
+					
+					db.offerings.remove({"_id": ObjectId(mongoid)}, function(err, result) {
+							console.log("REMOVED");
+							res.redirect('/');
+					});
+					
+
+				//end del
+			}
+		
+	})
+	//////////
 
 
-	db.offerings.remove({"_id": ObjectId(mongoid), "creator": req.session.username}, function(err, result) {
-		if (result) {
-				res.redirect('/');
-		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-	});
 
 });
 

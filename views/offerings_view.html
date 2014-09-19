@@ -29,16 +29,16 @@
     			<p class="offering-view-markdown">{{ offering.descriptionmarked|raw }}</p>
 
 
-			<div class="rounded" >
-				
+			<div class="offerContact" style="text-align: right;" >
+
 	    			<p>
-	    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-shopping-cart"></i> Order Form</a>
+	    				<a class="pure-button pure-button-primary" href="/offerings/order/{{ offering.offering_id }}" style="text-align: left;"><i class="fa fa-envelope"></i> Contact </a>
 	    			</p>
 
 	    			{% if editable == 1 %} 
-		    			<div  style="color: rgba(255,255,255,0.75); ">
-		    				<a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(255,255,255,1); margin-right: 1em; "><i class="fa fa-edit"></i> edit </a>
-		    				<a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(255,255,255,1); margin-right: 1em;"><i class="fa fa-times"></i> delete</a>
+		    			<div  style="color: rgba(55,55,55,0.75); ">
+		    				<a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(55,55,55, 0.5); margin-right: 1em; "><i class="fa fa-edit"></i> edit </a>
+		    				<a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(55,55,55, 0.5); margin-right: 1em;"><i class="fa fa-times"></i> delete</a>
 
 		    			</div>
 					{% endif %}
