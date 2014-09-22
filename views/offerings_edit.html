@@ -21,7 +21,7 @@ div class="content-wrapper">
 
            
                 <div class="pure-u-1 pure-u-md-1-2 ">
-                	<div style="margin: 1em;">
+                	<div class="uploadimgblock" style="margin: 1em; ">
 					{% for image in offering.samplefiles %}
 								<a href="/offerings/{{ image }}">
 									<img src="/offerings/{{ image }}" style="width:100%;">
@@ -83,7 +83,21 @@ div class="content-wrapper">
 
 </div>
 
+<script>
+var sizeblock = function () {
+	console.log( )
+	var h = parseInt($(".uploadimgblock").css("height"))
+	if (h < 10) {
+		$(".uploadimgblock").css("height", $(".uploadimgblock").css("width"))
+		$(".uploadimgblock").css("background", "rgb(240,240,240)");
+		$(".uploadimgblock").css("border", "2px #ccc dashed");
+	}
+	
 
+}
+
+sizeblock();
+</script>
 
 
 
