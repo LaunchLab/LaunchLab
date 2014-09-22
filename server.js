@@ -182,6 +182,7 @@ app.get('/offerings/view/*', function (req, res) {
 				console.log(result);
 				var editbool = 0;
 				if (req.session.username == "rouan") { editbool = 1}
+				if (req.session.username == result.creator) { editbool = 1}
 				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, editable: editbool });
 			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
