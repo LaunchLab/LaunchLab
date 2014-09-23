@@ -428,7 +428,7 @@ app.get('/offerings/order/*', function (req, res) {
 	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
 		console.log("finding offering")
 		console.log(result)
-		result.offering_id = result._id.toHexString();
+		result.offering_id = mongoid;
 		if (result) {
 
 			if ((!req.session.username)||(!req.session.password)) 
