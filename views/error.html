@@ -8,49 +8,27 @@
 
 {% block content %}
 
+<div class="content-wrapper-top">
+    <div class="content">
+        <div class="pure-g" >
 
-
-
-<a name="top" id="top"></a>
-<div class="splash-container-creativeapply">
- <div class="splash-overlay" style="height:100%;">
-
-            <div class="pure-u-1 pure-u-md-1-1" >
-                <div>
-
-                    <h1 class="firsttagline" style="font-size: 45px; margin-top: 4em;">ERROR</h1>
-                    <p class="secondtagline">
-                        SOMETHING WENT WRONG
-                    </a> 
-                </div>
+            <div class="l-box pure-u-1">
+                <div style="margin-top: 6em; text-align: center;">
+                    <h1 style="color: rgba(155,45,45, 0.8); font-weight: 700; font-size: 4em;"><i class="fa fa-cross-circle "></i> ERROR 404</h1>
+                    <p style="color: #888; font-size: 2em; line-height: 1.5em;">Something went wrong! <br> {{message}} <br> Back to <a href="/">home</a> perhaps?
+                    </p>
+                </div>    
             </div>
+
+        </div>
     </div>
-  </div>
-</div>
-
-<div class="content-wrapper-order">
-<div class="content brief">
-    <div class="pure-g" >
-
-         <div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
-
-            <div class="l-box pure-u-1 pure-u-md-3-5 pure-u-lg-1-2">
-				
-
-<h2>back to <a href="/">homepage</a></h2>
-
-
-
-</div>
-
-<div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
-
-
-</div>
-</div>
 
     {% include "./footer.html" %}
-
 </div>
+
+
+
+
+
 
 {% endblock %}

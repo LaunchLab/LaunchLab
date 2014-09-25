@@ -1,4 +1,4 @@
-var production = true;			//make sure this is true when in production
+var production = false;			//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		
@@ -38,6 +38,7 @@ var db = mongojs.connect(databaseUrl, collections);
 var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scrypt
 
 app.use(compress());
+
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.use(function(req, res, next) {
@@ -136,14 +137,18 @@ app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-// Swig will cache templates for you, but you can disable
-// that and use Express's caching instead, if you like:
-app.set('view cache', production);
-// To disable Swig's cache, do the following:
-swig.setDefaults({ cache: false });
-// NOTE: You should always cache templates in a production environment.
-// Don't leave both of these to `false` in production!
+////////////////
+// CACHING 
 
+app.set('view cache', production);
+
+if (production == true) {
+	swig.setDefaults({ cache: 'memory' });
+} else {
+	swig.setDefaults({ cache: false });
+}
+
+///////////////
 //LOGOUT
 app.get('/logout', function (req, res) {
   delete req.session.username;
@@ -166,7 +171,23 @@ app.get('/market', function (req, res) {
 	
 })
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+
+
+##     ## #### ######## ##      ## 
+##     ##  ##  ##       ##  ##  ## 
+##     ##  ##  ##       ##  ##  ## 
+##     ##  ##  ######   ##  ##  ## 
+ ##   ##   ##  ##       ##  ##  ## 
+  ## ##    ##  ##       ##  ##  ## 
+   ###    #### ########  ###  ###  
+
+
+*/
+
+
+
 
 app.get('/offerings/view/*', function (req, res) {
 	//bugfix chop to correct length
@@ -174,8 +195,9 @@ app.get('/offerings/view/*', function (req, res) {
 	mongoid = mongoid.slice(0,24); //the length of a mongo id
 
 	var ObjectId = mongojs.ObjectId;
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect}
 
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {			
+	db.offerings.findOne({"_id": ObjectId(mongoid) }, function (err, result) {			
 			if (result) {
 				result.offering_id = result._id.toHexString();
 				result.descriptionmarked = marked(result.description);
@@ -183,8 +205,13 @@ app.get('/offerings/view/*', function (req, res) {
 				var editbool = 0;
 				if (req.session.username == "rouan") { editbool = 1}
 				if (req.session.username == result.creator) { editbool = 1}
-				res.render('offerings_view', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, editable: editbool });
-			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+				db.users.findOne({username:result.creator}, function (err, creatorresult) {
+					data.offering = result;
+					data.editable = editbool;
+					data.creator = creatorresult;
+					res.render('offerings_view', data);	
+				})
+			} else res.render('error', data);
 	})
   	
 });
@@ -214,6 +241,53 @@ app.get('/tow/attendance', function (req, res) {
 	res.render('tow_attendance', data)
 });
 
+/*
+
+
+##     ##  ######  ######## ########  
+##     ## ##    ## ##       ##     ## 
+##     ## ##       ##       ##     ## 
+##     ##  ######  ######   ########  
+##     ##       ## ##       ##   ##   
+##     ## ##    ## ##       ##    ##  
+ #######   ######  ######## ##     ## 
+
+
+*/
+
+app.get('/user/:id', function (req, res) {
+	console.log(req.params)
+	var ObjectId = mongojs.ObjectId;
+
+	var data = {username: req.session.username, password: req.session.password}
+	data.socketserver = socketconnect;
+
+	db.users.find({"_id": ObjectId(req.params.id)}, function(err, users) {
+		if (err) {
+			res.status(404);
+			res.render('error', data)
+		} else {
+			console.log(users)
+			if (users.length != 1) {
+				res.status(404);
+				res.render('error', data)
+			} else {
+				console.log("FOUND")
+				data.user = users[0];
+
+				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
+					data.offerings = offerings;
+					res.render('user', data)			
+				})
+
+				
+			}
+			
+		}
+		
+	})
+	
+});
 
 
 //OPENWINDOW TEST
@@ -294,6 +368,7 @@ app.post('/', function(req, res){
 				newuser.phonenumber = ""
 				newuser.mobile = ""
 				newuser.website = ""
+				//newuser.level = 0;
 
 
 
@@ -378,7 +453,17 @@ app.post('/', function(req, res){
 /////////////////////////////////////////////////////////////////////
 //LOGGED IN OPTIONAL
 
-/* - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
+/*
+ #######  ########  ########  ######## ########  
+##     ## ##     ## ##     ## ##       ##     ## 
+##     ## ##     ## ##     ## ##       ##     ## 
+##     ## ########  ##     ## ######   ########  
+##     ## ##   ##   ##     ## ##       ##   ##   
+##     ## ##    ##  ##     ## ##       ##    ##  
+ #######  ##     ## ########  ######## ##     ## 
+
+
+ - - - - - - - - - -   OPTIONAL LOGGED IN - - - - - - - - - - - - - -  */
 
 app.post('/offerings/contact/*', function (req, res) {
 	console.log(req.body)
@@ -418,19 +503,18 @@ app.post('/offerings/contact/*', function (req, res) {
 	res.render('offerings_confirm', { username: req.session.username, password: req.session.password, socketserver: socketconnect, userdb: req.session.db });
 });
 
-app.get('/offerings/order/*', function (req, res) {
+app.get('/offerings/order/:id', function (req, res) {
 	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/order/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var mongoid = req.params.id
 
 	var ObjectId = mongojs.ObjectId;
 
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+	db.offerings.findOne({"_id": ObjectId(req.params.id)}, function(err, result) {
 		console.log("finding offering")
 		console.log(result)
-		result.offering_id = mongoid;
+		
 		if (result) {
-
+			result.offering_id = req.params.id;
 			if ((!req.session.username)||(!req.session.password)) 
   			{	
   				res.render('offerings_order', { loggedout: true, socketserver: socketconnect, offering: result });
@@ -444,7 +528,17 @@ app.get('/offerings/order/*', function (req, res) {
 });
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/*
 
+ ######  ########  ######  ##     ## ########  #### ######## ##    ## 
+##    ## ##       ##    ## ##     ## ##     ##  ##     ##     ##  ##  
+##       ##       ##       ##     ## ##     ##  ##     ##      ####   
+ ######  ######   ##       ##     ## ########   ##     ##       ##    
+      ## ##       ##       ##     ## ##   ##    ##     ##       ##    
+##    ## ##       ##    ## ##     ## ##    ##   ##     ##       ##    
+ ######  ########  ######   #######  ##     ## ####    ##       ##    
+
+*/
 
 
 /* #######################################################################  MUST BE LOGGED IN BELOW ######### */
@@ -704,6 +798,20 @@ app.get('/', function (req, res) {
   	
 });
 
+/*
+
+
+########  ########   #######        ## ########  ######  ######## 
+##     ## ##     ## ##     ##       ## ##       ##    ##    ##    
+##     ## ##     ## ##     ##       ## ##       ##          ##    
+########  ########  ##     ##       ## ######   ##          ##    
+##        ##   ##   ##     ## ##    ## ##       ##          ##    
+##        ##    ##  ##     ## ##    ## ##       ##    ##    ##    
+##        ##     ##  #######   ######  ########  ######     ##    
+
+*/
+
+
 app.get('/project/*', function (req, res) {
 	console.log("!!")
 
@@ -828,7 +936,13 @@ app.post('/projects/new', function (req, res) {
 
 
 /*
-	=========================================================
+ #######  ######## ######## ######## ########   ######  
+##     ## ##       ##       ##       ##     ## ##    ## 
+##     ## ##       ##       ##       ##     ## ##       
+##     ## ######   ######   ######   ########   ######  
+##     ## ##       ##       ##       ##   ##         ## 
+##     ## ##       ##       ##       ##    ##  ##    ## 
+ #######  ##       ##       ######## ##     ##  ######  
 */
 
 //uploads
@@ -1060,7 +1174,19 @@ app.get('/external', function (req, res) {
   res.render('external', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 });
 
-//SUPER ADMIN
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+   ###    ########  ##     ## #### ##    ## 
+  ## ##   ##     ## ###   ###  ##  ###   ## 
+ ##   ##  ##     ## #### ####  ##  ####  ## 
+##     ## ##     ## ## ### ##  ##  ## ## ## 
+######### ##     ## ##     ##  ##  ##  #### 
+##     ## ##     ## ##     ##  ##  ##   ### 
+##     ## ########  ##     ## #### ##    ##     // http://www.network-science.de/ascii/
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+
 
 app.use(checkAdmin);
 function checkAdmin(req, res, next) {
@@ -1071,24 +1197,70 @@ function checkAdmin(req, res, next) {
 }
 
 app.get('/admin', function (req, res) {
-
 	db.users.find({}, function(err, users) {
-		console.log("ADMIN")
 		res.render('admin', { username: req.session.username, password: req.session.password, socketserver: socketconnect, users: users });
 	});
 });
 
+app.get('/admin/users', function (req, res) {
+	db.users.find({}, function(err, users) {
+
+		for (var num in users) {
+			if (users[num].level == undefined) { 
+				//if we have user accounts without a level tag, we create it and set it to 0.
+				users[num].level = 0;
+				db.users.update({username: users[num].username}, users[num]);
+			}	
+		}
+		
+		res.render('admin_users', { username: req.session.username, password: req.session.password, socketserver: socketconnect, users: users });
+	});
+});
+
+
+/*
+
+   ###    ########  #### 
+  ## ##   ##     ##  ##  
+ ##   ##  ##     ##  ##  
+##     ## ########   ##  
+######### ##         ##  
+##     ## ##         ##  
+##     ## ##        #### 
+
+*/
+
+app.get('/api/u/:id/:cmd/:subcmd', function (req, res) {
+	console.log(req.params)
+});
+
+
+app.get('/*', function (req, res) {
+	console.log("NOT FOUND!!!!!%#$$@#")
+	res.status(404);
+	res.render('error', {"message":"Could not find what you were looking for?! It might not exist, or your link is broken."})
+})
+
 app.use(errorHandler);
 
 function errorHandler(err, req, res, next) {
+	
   console.error(err.stack);
   res.status(500);
   res.send(500, 'Something broke! '+err);
 }
 
 /*
-	ARDUINO
+
+   ###    ########  ########  ##     ## #### ##    ##  #######  
+  ## ##   ##     ## ##     ## ##     ##  ##  ###   ## ##     ## 
+ ##   ##  ##     ## ##     ## ##     ##  ##  ####  ## ##     ## 
+##     ## ########  ##     ## ##     ##  ##  ## ## ## ##     ## 
+######### ##   ##   ##     ## ##     ##  ##  ##  #### ##     ## 
+##     ## ##    ##  ##     ## ##     ##  ##  ##   ### ##     ## 
+##     ## ##     ## ########   #######  #### ##    ##  #######  
 */
+
 var SerialPort = require("serialport"); //so we can access the serial port
 var scraper = require('json-scrape')();
 var arduino;
@@ -1239,6 +1411,19 @@ scraper.on('data', function (data) {
 	
 		
 });
+
+/*
+
+########  ########    ###    ##       ######## #### ##     ## ######## 
+##     ## ##         ## ##   ##          ##     ##  ###   ### ##       
+##     ## ##        ##   ##  ##          ##     ##  #### #### ##       
+########  ######   ##     ## ##          ##     ##  ## ### ## ######   
+##   ##   ##       ######### ##          ##     ##  ##     ## ##       
+##    ##  ##       ##     ## ##          ##     ##  ##     ## ##       
+##     ## ######## ##     ## ########    ##    #### ##     ## ######## 
+
+*/
+
 
 var socketlog = function(message) {
 	io.sockets.emit("log", {message: message})	

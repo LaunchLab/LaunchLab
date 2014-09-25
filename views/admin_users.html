@@ -20,36 +20,44 @@
 
     <div class="content">
         <div class="pure-g">
-            <div class="l-box-lrg pure-u-1 pure-u-md-1-5">
-                
-				{% include "./admin_nav.html" %}
-
+            <div class="l-box-lrg pure-u-md-1-5">
+                {% include "./admin_nav.html" %}
             </div>
 
             <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
-            <h4>Realtime Status</h4>
-            <div id="realtimestatus">
+            
+
+                <h4>User list</h4>
+                <p>
+
+<table  style="width:100%">
+  <tr style="font-weight: 700; color: #000;">
+    <td>username</td>
+    <td>email</td> 
+    <td>level</td>
+  </tr>
+
+{% for user in users %}
+    <tr>
+        <td><a href="/user/{{ user._id.toHexString() }}">{{ user.username }}</a></td>
+        <td>{{ user.email }}</td>
+        <td>
+             {% if user.level > 0 %} <a href="/api/u/{{ user.id }}/level/down"><i class="fa fa-minus-circle"></i></a> {% endif %} 
+             {{ user.level }}
+             <i class="fa fa-plus-circle userLevelUp"></i>
+        </td>
+    </tr>
+{% endfor %}  
+</table>                    
+                <script>
+                    $('.userLevelUp').click(function(){ 
+                        //  /api/u/{{ user._id.toHexString() }}/level/up
+                        return false; 
+                    });
+                </script>
                 
-            </div>
 
-                <h4>Users</h4>
-                <p>
-                    {% for user in users %}
-                        username: {{ user.username }} <br>
-                        address: {{ user.address }} <br>
-                        companyname: {{ user.companyname }} <br>
-                        email: {{ user.email }} <br>
-                        mobile: {{ user.mobile }} <br>
-                        phonenumber: {{ user.phonenumber }} <br>                        
-                        website: {{ user.website }} <br>
-                        <hr>
-                    {% endfor %}
-                </p>
-
-                <h4>Problems?</h4>
-                <p>
-                    If for some reason you cannot access your account, please send us an email or call us.
-                </p>
+                
             </div>
         </div>
 

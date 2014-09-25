@@ -24,7 +24,7 @@
 
     		<div class="l-box pure-u-1 pure-u-md-1-2">
     			<h1 style="font-weight: 700; font-size: 2em; margin-top: 2em;">{{ offering.title}}</h1>
-    			<p>{{ offering.creator }}</p>
+    			<p><a href="/user/{{ creator._id.toHexString() }}">{{ offering.creator }}</a></p>
     			<br><br>
     			<p class="offering-view-markdown">{{ offering.descriptionmarked|raw }}</p>
 
