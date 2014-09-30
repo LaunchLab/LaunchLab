@@ -76,10 +76,10 @@ var socket = io.connect('{{ socketserver }}');
               <li><a href="/admin" ><i class="fa fa-shield"></i></a></li>
             {% endif %}           
             
-            <li><a href="/credits">Your balance: <strong style="color: #fff;">0.00</strong> </a></li>
             <li><a href="/"><i class="fa fa-home"></i> home</a></li>
-            <li><a href="/profile"><i class="fa fa-child"></i> {{ username }}</a></li>
- 
+            <li><a href="/offerings/new" ><i class="fa fa-upload "></i> upload</a></li>            
+            <li><a href="/profile"><i class="fa fa-child"></i> {{ username }}</a></li> 
+            <li><a href="/work" ><i class="fa fa-rocket "></i> work</a></li>  
             <li><a href="/logout"><i class="fa fa-times"></i> logout</a></li>
         </ul>
     </div>

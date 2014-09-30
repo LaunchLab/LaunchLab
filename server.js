@@ -1,4 +1,4 @@
-var production = true;			//make sure this is true when in production
+var production = false;			//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		
@@ -31,7 +31,7 @@ var session = require('cookie-session')
 var compress = require('compression');
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders"]
+var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders", "invoices"]
 var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
@@ -971,15 +971,14 @@ app.get('/offerings/new', function (req, res) {
 
 
 
-app.post('/offerings/edit/*', function (req, res) {
+app.post('/offerings/edit/:id', function (req, res) {
 	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
 
     //console.log(req.body) // with multipart there is no body.
 	console.log(req.multipartparse)
 
 	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/edit/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var mongoid = req.params.id; // req.url.slice( '/offerings/edit/'.length );
 	var ObjectId = mongojs.ObjectId;
 
 	console.log("multipartfiles:")
@@ -1029,13 +1028,19 @@ app.post('/offerings/edit/*', function (req, res) {
 			}
 		}
 
-		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
-			console.log(result)
-			if (result) {
-				//res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-				res.redirect('/offerings/view/'+mongoid)
-			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
-		});
+		if ((newOffering.title == '')||(newOffering.description == '')) {
+			res.redirect('/offerings/edit/'+mongoid+'?err=1')
+		} else {
+			//start update
+			db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
+				console.log(result)
+				if (result) {
+					//res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+					res.redirect('/offerings/view/'+mongoid)
+				} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+			});
+			//end update
+		}
 
 	});
 	
@@ -1044,24 +1049,27 @@ app.post('/offerings/edit/*', function (req, res) {
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-app.get('/offerings/edit/*', function (req, res) {
+app.get('/offerings/edit/:id', function (req, res) {
 
 
 	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/edit/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var mongoid = req.params.id;
 
 	var ObjectId = mongojs.ObjectId;
 
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect}
+
 	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		console.log("finding offering")
-		console.log(result)
+
 		result.offering_id = result._id.toHexString();
+		
 		if (result) {
 			var editbool = 0;
 			if (result.creator == req.session.username) { editbool = 1}
 			if (req.session.username == "rouan") {editbool = 1}	
-			res.render('offerings_edit', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, editable: editbool });
+			data.offering = result;
+			data.editable = editbool;
+			res.render('offerings_edit', data);
 		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 	})
 
@@ -1174,7 +1182,97 @@ app.get('/external', function (req, res) {
   res.render('external', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
 });
 
+/*
+##      ##  #######  ########  ##    ## 
+##  ##  ## ##     ## ##     ## ##   ##  
+##  ##  ## ##     ## ##     ## ##  ##   
+##  ##  ## ##     ## ########  #####    
+##  ##  ## ##     ## ##   ##   ##  ##   
+##  ##  ## ##     ## ##    ##  ##   ##  
+ ###  ###   #######  ##     ## ##    ## 
 
+all the functionality under /work.
+
+this will include:
+------------------
+dashboard 	/work
+invoices	/work/invoices
+clients		/work/clients
+projects 	/work/projects
+tasks 		/work/tasks
+
+*/
+
+app.get('/work', function (req, res) {
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect};
+	res.render('work', data);
+	//work dashboard
+	//shows summaries on invoices, projects
+});
+
+app.get('/work/invoices', function (req, res) {
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect};
+	
+	db.invoices.find({"creator": req.session.username}, function (err, result) {
+		data.invoices = result;
+		res.render('work_invoices', data);	
+	});
+});
+
+app.get('/work/invoices/new', function (req, res) {
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect, userdb: req.session.db};
+
+	db.invoices.find({"creator": req.session.username}, function (err, result) {
+		var invoice = {}
+
+		var lastid = 0;
+
+		//start lastid update (update lastid to new number automatically)
+		if (result.length > 0) {
+			// has invoiced before		
+			for (var num in result) {
+				if (result[num].id != undefined) { 
+					console.log("DEBUG"+result[num].id)
+					if (result[num].id >= lastid) { lastid = result[num].id + 1;}
+				}
+			}
+		} 
+		//end lastid update (update lastid to new number automatically)
+		invoice.id = lastid;
+		invoice.creator = req.session.username;
+		invoice.created = Date.now();
+		invoice.status = "draft";
+		invoice.issuedate = new Date(); // MM/DD/YYYY
+		invoice.duedate = new Date(invoice.issuedate);
+		invoice.duedate.setDate(invoice.duedate.getDate()+14)
+		invoice.subject = ""
+		invoice.payments = 0;
+		invoice.deposit = 100/100; // amount payable.. 
+		invoice.orderNumber = ""
+		invoice.from = req.session.db; //gets the user data
+		invoice.for; //who the invoice is for
+		invoice.items = [];
+		
+		db.invoices.save(invoice, function (err, result) {
+			var dbid = result._id.toHexString();
+			res.redirect("/work/invoices/edit/"+dbid); //takes us to the new blank invoice
+		})
+
+	});
+
+});
+
+app.get('/work/invoices/edit/:id', function (req, res) {
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect, userdb: req.session.db};
+	var dbid = req.params.id;
+	var ObjectId = mongojs.ObjectId;
+
+	db.invoices.findOne({"_id": ObjectId(dbid)}, function (err, result) {
+		data.invoice = result;
+		res.render('work_invoices_edit', data);	
+	});
+
+});
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
    ###    ########  ##     ## #### ##    ## 
@@ -1238,7 +1336,10 @@ app.get('/api/u/:id/:cmd/:subcmd', function (req, res) {
 app.get('/*', function (req, res) {
 	console.log("NOT FOUND!!!!!%#$$@#")
 	res.status(404);
-	res.render('error', {"message":"Could not find what you were looking for?! It might not exist, or your link is broken."})
+
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect}
+	data.message = "Could not find what you were looking for?! It might not exist, or your link is broken.";
+	res.render('error', data)
 })
 
 app.use(errorHandler);
