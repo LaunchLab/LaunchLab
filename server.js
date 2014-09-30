@@ -289,6 +289,39 @@ app.get('/user/:id', function (req, res) {
 	
 });
 
+app.get('/u/:username', function (req, res) {
+	console.log(req.params)
+
+	var data = {username: req.session.username, password: req.session.password}
+	data.socketserver = socketconnect;
+
+	db.users.find({"username": req.params.username}, function(err, users) {
+		if (err) {
+			res.status(404);
+			res.render('error', data)
+		} else {
+			console.log(users)
+			if (users.length != 1) {
+				res.status(404);
+				res.render('error', data)
+			} else {
+				console.log("FOUND")
+				data.user = users[0];
+
+				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
+					data.offerings = offerings;
+					res.render('user', data)			
+				})
+
+				
+			}
+			
+		}
+		
+	})
+	
+});
+
 
 //OPENWINDOW TEST
 app.post('/login', function (req, res) {
@@ -563,6 +596,7 @@ function checkAuth(req, res, next) {
 					for (var x in results) {
 						results[x].offering_id = results[x]._id.toHexString();
 					}
+					console.log(results)
 					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: results });
 				})//end find
   			} else {

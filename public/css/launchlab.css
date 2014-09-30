@@ -91,14 +91,27 @@ OFFERING VIEW
 MARKET
 
 */
+.galleryBy {
+    padding: 0.5em;
+    text-align: right;
+    position: absolute;
+    top: 285px;
+}
+
+
+
 p img {
     width: 100%;
 }
 
+.market-link:hover .market-container-imagewrap {
+    border-bottom: 1px solid rgb(225, 76, 7); 
+}
 
 .market-link:hover .market-container {
     border: 2px solid rgb(223,223,223);
     background: rgba(235,235,235,1);
+
 }
 
 .market-link:hover .market-title {
@@ -117,13 +130,36 @@ p img {
     font-size: 1em;
 }
 
+.market-title a{   
+    color: #aaa;
+    font-weight: 300; 
+    font-size: 1em;
+}
+
+.market-title a:hover {   
+    color: rgb(225, 76, 7); 
+    font-weight: 300; 
+    font-size: 1em;
+}
+
 .market-creator {
     font-size: 0.7em;
+    color: rgba(255,255,255,0.4); 
+}
+
+.market-creator a{
+    font-size: 1em;
     color: rgba(255,255,255,0.5); 
+}
+
+.market-creator a:hover{
+    font-size: 1em;
+    color: rgb(225, 76, 7); 
 }
 
 .market-container-wrap {
     margin: 0.5em;
+    position: relative;
 }
 
 .market-container {
@@ -140,7 +176,7 @@ p img {
 .market-container-imagewrap {
     height:225px;
     overflow: hidden;
-
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;

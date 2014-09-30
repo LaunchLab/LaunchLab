@@ -1,0 +1,38 @@
+{% for offering in offerings %}
+            
+                <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
+                    
+                    
+                    <div class="market-container-wrap">
+                        
+                        <div class="market-container portrait">
+                            <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link">
+                                <div class="market-container-imagewrap" style='background-image: url("/offerings/{{ offering.samplefiles[0] }}");'>
+                                    
+                                </div>
+                           </a>
+
+                            <div style="padding: 0.5em;">
+                                <span class="market-title" >
+                                    <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link">
+                                        {{ offering.title }}
+                                    </a>
+                                    </span><br>
+                            </div>
+
+                            <div class="galleryBy">
+                                <span class="market-creator" >by <a href="/u/{{ offering.creator }}">{{ offering.creator }}</a></span>
+                            </div>
+                            
+                        </div>
+                        
+
+
+
+
+                    </div>
+                     
+
+                </div>
+                
+            {% endfor %}
