@@ -275,7 +275,7 @@ app.get('/user/:id', function (req, res) {
 				console.log("FOUND")
 				data.user = users[0];
 
-				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
+				db.offerings.find({"creator":data.user.username, title: {"$ne": ""}}, function (err, offerings) {
 					data.offerings = offerings;
 					res.render('user', data)			
 				})
@@ -289,7 +289,7 @@ app.get('/user/:id', function (req, res) {
 	
 });
 
-app.get('/u/:username', function (req, res) {
+app.get('/:username', function (req, res,next) {
 	console.log(req.params)
 
 	var data = {username: req.session.username, password: req.session.password}
@@ -302,13 +302,12 @@ app.get('/u/:username', function (req, res) {
 		} else {
 			console.log(users)
 			if (users.length != 1) {
-				res.status(404);
-				res.render('error', data)
+				next();
 			} else {
 				console.log("FOUND")
 				data.user = users[0];
 
-				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
+				db.offerings.find({"creator":data.user.username, title: {"$ne": ""}}, function (err, offerings) {
 					data.offerings = offerings;
 					res.render('user', data)			
 				})
@@ -592,7 +591,7 @@ function checkAuth(req, res, next) {
   			socketlog("anonymous visitor active on page "+ req.url )
 
   			if (req.url == '/') {
-				db.offerings.find({}, function(err, results) {
+				db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
 					for (var x in results) {
 						results[x].offering_id = results[x]._id.toHexString();
 					}
@@ -779,10 +778,8 @@ app.get('/', function (req, res) {
 
 	///////
 
-	db.offerings.find({}, function(err, results) {
-					for (var x in results) {
-						results[x].offering_id = results[x]._id.toHexString();
-					}
+	db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
+
 					data.offerings = results;
 					res.render('home_loggedin', data);
 				})

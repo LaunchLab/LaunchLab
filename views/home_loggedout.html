@@ -20,23 +20,24 @@
             
             <div class="pure-u-1" >
                 <div>
-                    <h1 class="firsttagline" style="">REGISTER TO CREATE YOUR PROFILE</h1>
+                    <h1 class="firsttagline" style="">REGISTER TO SHOWCASE YOUR WORK</h1>
 
 
-                    <p class="secondtagline">
-                        Showcase your work. See what others are making. Connect to the openwindow community.
-                    </p>
+ 
                     
         <form action="/" class="frontsignup" method="post" style="text-align: center;" autocomplete="off">
                 
 
-                <input id="username" type="text" name="username" class="backgroundinputs"  placeholder="Your name" autocomplete="off">
-                <input id="email" type="email" name="email" placeholder="Your email address" autocomplete="0">
-                <input id="password" type="password" name="password" placeholder="Create a password" autocomplete="0">
+                <input id="username" type="text" name="username" class="backgroundinputs"  placeholder="username" autocomplete="off">
+                <input id="email" type="email" name="email" placeholder="you@domain.com" autocomplete="0">
+                <input id="password" type="password" name="password" placeholder="*********" autocomplete="0">
 
                 <button type="submit" class="pure-button" value="Submit">REGISTER <i class="fa fa-arrow-right"></i> </button>
          
         </form>
+                   <p class="secondtagline" id="registerhelper">
+                        Showcase your work. See what others are making. Connect to the openwindow community.
+                    </p>
 
                 </div>
             </div>
@@ -48,6 +49,29 @@
     </div>
   </div>
 </div>
+
+<script>
+    
+        $("#registerhelper").hide();
+
+    $("#username").focus( function () {
+        if ($("#username").val() == "") {
+            $("#registerhelper").fadeOut(500).html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>username").fadeIn(500);
+        } else {
+            $("#registerhelper").fadeOut(500).html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>").fadeIn(500);
+        }
+        
+    });
+
+    $("#username").on("input", function () {
+        $("#registerhelper").html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>")
+    });
+
+    $("#email").focus( function () {
+        $("#registerhelper").fadeIn(500).html("Your email address so we can send you notifications and you can recover your account. ")
+    })
+
+</script>
 
 
 
@@ -62,11 +86,7 @@
        
 
 <div class="pure-g">
-    {% include "./gallery.html" %}
-
-            
-            
-
+            {% include "./gallery.html" %}
         </div>
     </div> <!-- end market -->
 
@@ -184,6 +204,7 @@
 
 
     var reposition = function () {
+
         var windowheight = $(window).height()
         var windowwidth = $(window).width()
         $(".launchlabsplash").css("padding-top", 80);
@@ -198,7 +219,6 @@
         }
          if (windowwidth > 600) {
             $(".downarrowfront").show();
-            $(".secondtagline").show();
             $(".downarrowfront").css("font-size", 60)    
         }
     }
