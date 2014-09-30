@@ -56,9 +56,16 @@
 
     $("#username").focus( function () {
         if ($("#username").val() == "") {
-            $("#registerhelper").fadeOut(500).html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>username").fadeIn(500);
+            $("#registerhelper").fadeOut(100, function() {
+                $("#registerhelper").html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>username").fadeIn(100);
+            })
         } else {
-            $("#registerhelper").fadeOut(500).html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>").fadeIn(500);
+
+
+            $("#registerhelper").fadeOut(100, function() {
+                $("#registerhelper").html("Type in the username you want. This will form your profile url link <b style='color:#fff;'>launchlab.me/"+$("#username").val()+"</b>").fadeIn(100);
+            })
+
         }
         
     });
@@ -68,7 +75,15 @@
     });
 
     $("#email").focus( function () {
-        $("#registerhelper").fadeIn(500).html("Your email address so we can send you notifications and you can recover your account. ")
+        $("#registerhelper").fadeOut(100, function() {
+            $("#registerhelper").fadeIn(100).html("Your email address so we can send you notifications and you can recover your account. ")
+        });
+    })
+
+    $("#password").focus( function () {
+        $("#registerhelper").fadeOut(100, function() {
+            $("#registerhelper").fadeIn(100).html("Choose a secure password. Atleast 6 characters.")
+        });
     })
 
 </script>
