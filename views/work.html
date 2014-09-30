@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+
+{% block title %}LaunchLab New Project{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+
+<div class="content-wrapper-top">
+
+    <div class="content">
+    	<div class="pure-g" >
+    		<div class="l-box pure-u-1">
+    			<h1 style="font-weight: 700; font-size: 2em; line-height: 0em; margin-top: 2em;"><i class="fa fa-fw fa-rocket " ></i> work dashboard</h1>
+    			
+    			<p style="color: #888; margin-left: 1em;">
+                    
+                    {% include "./work_nav.html" %}
+                    
+                    
+    			</p>
+    		</div>
+		</div>
+    </div>
+
+<!-- start work dashboard -->
+    <div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #888;">
+       
+
+       <div class="pure-g">
+
+            <!-- start time summary -->
+            <div class="pure-u-1-2">
+                <h3>Time Summary</h3>                
+                <div class="pure-g">
+                    <div class="pure-u-1-2">
+                        <p>
+                            Hours Today: 0.5<br>
+                            Hours This woork: 2.2<br>
+                            Hours This Month: 6<br>
+                        </p>
+                    </div>
+                    <div class="pure-u-1-2">
+                     <p>
+                            Hours Yesterday: 0.5<br>
+                            Hours Last woork: 2.2<br>
+                            Hours Last Month: 6<br>
+                        </p>
+                    </div>            
+                </div>
+            </div>
+            <!-- end time summary -->
+            
+            <!-- start invoice summary -->
+            <div class="pure-u-1-2">
+                <h3>Invoice Summary</h3>
+                
+                    <p>
+                        Amount Outstanding: R0.00 (0 invoices)<br>
+                        Amount Invoiced This Month: R0.00 (0 invoices)<br>
+                        Payments Received Last Month: R0.00<br>
+                        Payments Received This Year: R0.00<br>
+                    </p>
+                
+            </div>    
+            <!-- end invoice summary-->
+
+
+            <!-- start project summary -->
+            <div class="pure-u-1-1">
+                <h3>Project Summary</h3>     
+
+
+                <p>
+                    client name - project name | total hours | total R0.00 | progress
+                </p>
+
+                <p>
+                    client name - project name | total hours | total R0.00 | progress
+                </p>
+            </div>
+            <!-- end project summary -->
+
+
+        </div>
+
+
+
+
+        
+    </div> <!-- end work dashboard -->
+
+
+
+    {% include "./footer.html" %}
+</div>
+
+
+
+
+
+
+{% endblock %}
