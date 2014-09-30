@@ -1,10 +1,8 @@
-var production = false;			//make sure this is true when in production
+var production = true;			//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		
 var enableArduino = false;		//set this to true if you want arduino sensor access on server side
-
-
 
 /*
 	==================================================
