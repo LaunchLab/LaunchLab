@@ -1,4 +1,4 @@
-var production = true;			//make sure this is true when in production
+var production = false;			//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		

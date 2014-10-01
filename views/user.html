@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}LaunchLab New Project{% endblock %}
+{% block title %}{{ user.username }}{% endblock %}
 
 {% block head %}
   {% parent %}
@@ -10,68 +10,35 @@
 
 <div class="content-wrapper-top">
 
-    <div class="content">
-    	<div class="pure-g" >
+   
+    	<div class="l-box pure-g" >
     		<div class="l-box pure-u-1">
     			<h1 style="font-weight: 700; font-size: 2em; line-height: 0em; margin-top: 2em;">{{ user.username }} ( {{ user.fullname }} )</h1>
     			
-    			<p style="color: #444; margin-left: 1em;">
-    				<i class="fa fa-fw fa-question-circle "></i> {{ user.shortbio }}<br>
-    				<i class="fa fa-fw fa-map-marker"></i> {{ user.location }}<br>
-    				<i class="fa fa-fw fa-envelope "></i> {{ user.email }}<br>
-	    			<i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}<br>
-    			</p>
+   
     		</div>
 
-
-
-    	
-
-
-            
-	
-
-			    
-
-
-
-		</div>
-    </div>
-
-<!-- start market -->
-    <div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255);">
-       
-       {% if username == user.username %}
-       <div class="pure-g">
-            <div class="pure-u-1">
-                <p style="text-align: left; margin-top:1em; color: #7F8C8D; font-size: 1em;">
-                    <a class="dashboardicons" href="/profile" ><i class="fa fa-edit "></i> Edit</a> | 
-                    <a class="dashboardicons" href="/offerings/new" ><i class="fa fa-upload "></i> Upload</a>
-                </p>
+            <div class="l-box pure-u-1 pure-u-md-1-2" style="color: #666;">
+                <i class="fa fa-fw fa-question-circle "></i> {{ user.shortbio }}<br>
+                <i class="fa fa-fw fa-map-marker"></i> {{ user.location }}<br>
+                <a href="mailto:{{ user.email }}"><i class="fa fa-fw fa-envelope "></i> {{ user.email }}</a><br>
+                <a href="tel:{{ user.phonenumber }}"><i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}</a><br>
             </div>
-        </div>
-        {% else %}
-		<div class="pure-g">
-            <div class="pure-u-1">
-                <p style="text-align: left; margin-top:1em; color: #7F8C8D; font-size: 1em;">
-                    <a class="dashboardicons" href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-envelope "></i> Send message</a>
-                </p>
-            </div>			
 
-        </div>	
-        {% endif %}
+            <div class="l-box pure-u-1 pure-u-md-1-2" >
+                   {% if username == user.username %}
+                                <a class="" href="/profile" ><i class="fa fa-fw fa-edit "></i> Edit your profile</a> <br>
+                                <a class="" href="/offerings/new" ><i class="fa fa-fw fa-upload "></i> Upload your work</a> <br>
+                    {% else %}
+                                <a class="" href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope-o "></i> Send a message</a><br>
+                    {% endif %}
+            </div>
 
-<div class="pure-g">
-
+            <!-- start gallery -->
             {% include "./gallery.html" %}
-            
-
-        </div>
-
-        
-    </div> <!-- end market -->
-
-
+            <!-- end gallery -->
+		</div>
+    
 
     {% include "./footer.html" %}
 </div>

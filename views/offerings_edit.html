@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}LaunchLab New Project{% endblock %}
+{% block title %}Edit {{ offering.title }}{% endblock %}
 
 {% block head %}
   {% parent %}
@@ -70,7 +70,7 @@ div class="content-wrapper">
 						<fieldset>
 					        <div class="pure-control-group">
 					            <label for="title">Title</label>
-					            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title}}" placeholder="Short description of offering ">
+					            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title }}" placeholder="Short description of offering ">
 					        </div>
 
 					        <div class="pure-control-group">
