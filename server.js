@@ -1,4 +1,4 @@
-var production = true;			//make sure this is true when in production
+var production = false;			//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		
@@ -42,7 +42,6 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(function(req, res, next) {
 
 	if (req.url == "/") {
-		console.log("ACTIVITY!!!!")
 		io.sockets.emit("activity", {led: "1.0"})	
 	}
 
@@ -52,12 +51,17 @@ app.use(function(req, res, next) {
 	if (req.method === 'POST') {
 		
 		if (req.url.slice(0,'/upload'.length) === '/upload') {
-			console.log("!!! in")
+			
 			expectmulti = true;
 		}
 
+		if (req.url.slice(0,'/offerings/imageupload/'.length) === '/offerings/imageupload/') {
+			
+			expectmulti = true;
+		}		
+
 		if (req.url.slice(0,'/offerings/edit/'.length) === '/offerings/edit/') {
-			console.log("!!! in")
+			
 			expectmulti = true;
 		}
 	}
@@ -83,44 +87,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }))
 
-
-
-
-//app.use(bodyParser.urlencoded({ extended: false }))
-
-/*
-
-
-
-app.use(function(req, res, next) {
-  console.log('================================================================');
-  console.log('%s %s', req.method, req.url);
-  next();
-});
-*/
-
-
-
-
-
-
 app.use(session({
   keys: ['key1', 'key2'],
   secureProxy: false // if you do SSL outside of node
 }))
-
-// DATA SCHEMA
-// http://spacetelescope.github.io/understanding-json-schema/structuring.html
-
-
-
-/*
-app.use(function (req, res, next) {
-  var n = req.session.views || 0
-  req.session.views = ++n
-  res.end(n + ' views')
-})
-*/
 
 //APP and theme
 app.use(serveStatic(__dirname + '/public', {'index': ['default.html', 'default.htm']}))
@@ -304,8 +274,8 @@ app.get('/:username', function (req, res,next) {
 			} else {
 				console.log("FOUND")
 				data.user = users[0];
-
-				db.offerings.find({"creator":data.user.username, title: {"$ne": ""}}, function (err, offerings) {
+				//, title: {"$ne": ""}
+				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
 					data.offerings = offerings;
 					res.render('user', data)			
 				})
@@ -599,9 +569,6 @@ function checkAuth(req, res, next) {
   			} else {
   				res.redirect('/login');
   			}
-
-
-
   			
   		}
   		
@@ -612,11 +579,7 @@ function checkAuth(req, res, next) {
   var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(req.session.username), scrypt.encode_utf8(req.session.password), 128, 8, 1, 32);
   var encryptedhex = scrypt.to_hex(encrypted)
 
-  console.log("AUTH " + req.url)
-  console.log(req.session.username);
-  console.log(req.session.password);
-  console.log(encryptedhex);
-  console.log("--------------")
+
   db.users.find({username: req.session.username, password: encryptedhex}, function(err, users) 
 	{
 		if ( err || !users) { 
@@ -626,8 +589,7 @@ function checkAuth(req, res, next) {
 		{
 
 			socketlog("user active: "+req.session.username+" on page "+ req.url )
-			console.log("DB " + req.url)
-			console.log(users)
+
 			console.log("--------------")
 			if (users.length == 1) { 
 				req.session.db = users[0];
@@ -998,7 +960,108 @@ app.get('/offerings/new', function (req, res) {
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
+app.post('/offerings/imagedelete/', function (req, res) {
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
 
+    console.log(req.body) // with multipart there is no body.
+	console.log("- - - - - - - - - - - -")
+
+
+	/////////
+	db.offerings.find({"creator": req.session.username }, function(err, results) {
+		for (var a in results) {
+			for (var b in results[a].samplefiles) {
+				if (results[a].samplefiles[b] == req.body.delimage) {
+
+					var ObjectId = mongojs.ObjectId;
+					var newcopy = results[a]
+					newcopy.samplefiles.splice(b,1);
+					db.offerings.update({"_id": ObjectId(results[a]._id)}, newcopy, function(err, results) {
+						console.log("BOOM FOUND AGAIN")
+					});
+					//- - - - -
+				}
+			}
+		}
+	});
+	/////////
+	
+	
+});
+
+
+
+
+
+app.post('/offerings/imageupload/:id', function (req, res) {
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
+
+    //console.log(req.body) // with multipart there is no body.
+	console.log(req.multipartparse)
+
+	//bugfix chop to correct length
+	var mongoid = req.params.id; // req.url.slice( '/offerings/edit/'.length );
+	var ObjectId = mongojs.ObjectId;
+
+	console.log("multipartfiles:")
+	console.log(req.multipartparse.files)
+
+	var uploadedFilenames = []
+	for (var f in req.multipartparse.files.file) {
+		console.log("= = = = = = = = = = = = = = = = = =  ")
+		console.log(req.multipartparse.files.file[f])
+		console.log("= = = = = = = = = = = = = = = = = = ")
+		if (req.multipartparse.files.file[f].size > 0) {
+
+			var source = fs.createReadStream(req.multipartparse.files.file[f].path);
+
+			//var dest = fs.createWriteStream(__dirname+'/files'+req.multipartparse.files.file[f].path);
+			
+			var newfilename = Date.now()+req.multipartparse.files.file[f].originalFilename
+			var dest = fs.createWriteStream(__dirname+'/content/offerings/'+newfilename);
+
+			console.log("COPY FILE!!!")
+			uploadedFilenames.push(newfilename) 
+
+			source.pipe(dest);
+
+			source.on('end', function() { 
+			/* copied */
+				
+			});
+			source.on('error', function(err) { /* error */ });
+		}
+	}
+
+	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		var oldOffering = result;
+
+		var newOffering = oldOffering
+		newOffering.modified = Date.now();
+
+		for (var file in uploadedFilenames) {
+			if (newOffering.samplefiles) { 
+				newOffering.samplefiles.push(uploadedFilenames[file]) 
+			} else {
+				newOffering.samplefiles = []
+				newOffering.samplefiles.push(uploadedFilenames[file]) 
+			}
+		}
+
+	
+		db.offerings.update({"_id": ObjectId(mongoid)}, newOffering, function(err, result) {
+			console.log(result)
+			if (result) {
+				//res.render('thankyou', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+				res.redirect('/offerings/view/'+mongoid)
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+		});
+		//end update
+		
+
+	});
+	
+});
 
 app.post('/offerings/edit/:id', function (req, res) {
 	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
@@ -1088,7 +1151,7 @@ app.get('/offerings/edit/:id', function (req, res) {
 
 	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect}
 
-	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+	db.offerings.findOne({"_id": ObjectId(req.params.id)}, function(err, result) {
 
 		result.offering_id = result._id.toHexString();
 		
@@ -1097,6 +1160,9 @@ app.get('/offerings/edit/:id', function (req, res) {
 			if (result.creator == req.session.username) { editbool = 1}
 			if (req.session.username == "rouan") {editbool = 1}	
 			data.offering = result;
+
+			console.log(result)
+
 			data.editable = editbool;
 			res.render('offerings_edit', data);
 		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });

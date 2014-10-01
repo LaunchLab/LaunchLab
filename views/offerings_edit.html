@@ -12,7 +12,7 @@
 div class="content-wrapper">
 
 
- 
+ <script src="/lib/dropzone.js"></script>
 
 
 <!-- start market -->
@@ -22,13 +22,47 @@ div class="content-wrapper">
            
                 <div class="pure-u-1 pure-u-md-1-2 ">
                 	<div class="uploadimgblock" style="margin: 1em; ">
+
+<form action="/offerings/imageupload/{{ offering.offering_id }}"
+      class="dropzone"
+      id="my-awesome-dropzone"></form>
+
+
 					{% for image in offering.samplefiles %}
-								<a href="/offerings/{{ image }}">
-									<img src="/offerings/{{ image }}" style="width:100%;">
-								</a>
+						
+						
+						<p data-imagename="{{ image }}" class="delimage" style="background:rgba(255,255,255,0.8);text-align:center; color: rgb(255,255,255); padding: 0.2em; border: 5px solid rgba(255,255,255,0.2);" > 
+							<img src="/offerings/{{ image }}" style="width:100%;">
+							<i class="fa fa-remove fa-3x"></i> 
+						</p>
 					{% endfor %}
+
+					<p class="result">
+					</p>
 					</div>
-                </div>    
+                </div> 
+                <script>
+
+                $(".delimage").hover( function () {
+                	$(this).css("background", "rgb(175,45,45)");
+                	$(this).css("cursor", "pointer")
+                },function () {
+                	$(this).css("color", "rgb(255,255,255)")
+                	$(this).css("background", "#fff")
+
+                });
+
+                $(".delimage").click( function () {
+                	console.log($(this).data('imagename'));
+                	$.post("/offerings/imagedelete/", {"delimage":$(this).data('imagename')});
+                	//href="/offerings/imagedelete/{{ image }}"
+                	//$(this).html(" removed ");
+                	$(this).fadeOut("slow");
+                })
+
+
+
+                </script>   
                    
                 <div class="pure-u-1 pure-u-md-1-2 ">
                 	<!-- start FORM -->
@@ -44,10 +78,7 @@ div class="content-wrapper">
 					            <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
 					        </div>
 
-					        <div class="pure-control-group">
-					            <label for="upload">Upload</label>
-					             <input type="file" name="upload" multiple="multiple">
-					        </div>
+
 
 					
 						<br>

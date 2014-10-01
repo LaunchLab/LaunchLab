@@ -47,6 +47,13 @@ input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px white inset;
 }
 
+/*
+UPLOAD
+*/
+
+.delimage:hover {
+    color: #f00;
+}
 
 /*
 PROFILE
@@ -104,9 +111,7 @@ p img {
     width: 100%;
 }
 
-.market-link:hover .market-container-imagewrap {
-    border-bottom: 1px solid rgb(225, 76, 7); 
-}
+
 
 .market-link:hover .market-container {
     border: 2px solid rgb(223,223,223);
@@ -173,10 +178,14 @@ p img {
     background: rgba(25,25,25,1);
 }
 
+.market-link:hover .market-container-imagewrap {
+    border-bottom: 5px solid rgb(225, 76, 7); 
+}
+
 .market-container-imagewrap {
     height:225px;
     overflow: hidden;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 5px solid rgba(255,255,255,0.1);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;
