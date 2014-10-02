@@ -1,4 +1,14 @@
-var production = false;			//make sure this is true when in production
+//sudo NODE_ENV=production nodemon server
+
+var production = false;	
+if (process.env.NODE_ENV == "production") {
+	production = true;
+	console.log("\nSTARTING LAUNCHLAB in PRODUCTION mode. Enabled caching and emails.\n\n")
+} else {
+	console.log("\nSTARTING LAUNCHLAB in DEVELOPMENT mode. Use for production:\n\tsudo NODE_ENV=production nodemon server\n\n")
+}
+
+		//make sure this is true when in production
 // enables cacheing and emails to be sent
 
 var enableEmail = production;		
@@ -560,7 +570,7 @@ function checkAuth(req, res, next) {
 
   			if (req.url == '/') {
 				db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-					var sorted = results.sort(function(a,b) { return a.modified - b.modified } );
+					var sorted = results.sort(function(a,b) { return b.created - a.created } );
 					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: sorted });
 				})//end find
   			} else {
@@ -721,6 +731,21 @@ app.post('/account', function(req, res){
 	});    
 });
 
+/*
+
+
+
+
+
+
+FRONT
+
+
+
+
+
+
+*/
 
 //DASHBOARD FOR USERS
 app.get('/', function (req, res) {
@@ -736,7 +761,7 @@ app.get('/', function (req, res) {
 	///////
 
 	db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-					var sorted = results.sort(function(a,b) { return a.modified - b.modified } );
+					var sorted = results.sort(function(a,b) { return b.created - a.created } );
 					data.offerings = sorted;
 					res.render('home_loggedin', data);
 				})
