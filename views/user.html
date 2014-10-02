@@ -30,6 +30,7 @@
                 <i class="fa fa-fw fa-map-marker"></i> {{ user.location }}<br>
                 <a href="mailto:{{ user.email }}"><i class="fa fa-fw fa-envelope "></i> {{ user.email }}</a><br>
                 <a href="tel:{{ user.phonenumber }}"><i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}</a><br>
+                <a href="http://{{ user.website }}"><i class="fa fa-fw fa-globe "></i> {{ user.website }}</a><br>
                 <br><br>
                    {% if username == user.username %}
                                 <a class="" href="/profile" ><i class="fa fa-fw fa-edit "></i> Edit your profile</a> <br>
