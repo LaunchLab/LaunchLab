@@ -687,7 +687,9 @@ border-radius: 5px;
 
 .clients img {
     max-width: 80%;
-    
+    {
+    color: #988b99;
+}    
 }
 
 /*
