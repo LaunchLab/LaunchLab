@@ -560,10 +560,7 @@ function checkAuth(req, res, next) {
 
   			if (req.url == '/') {
 				db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-					for (var x in results) {
-						results[x].offering_id = results[x]._id.toHexString();
-					}
-					console.log(results)
+					results.sort(function(a,b) { return b.modified - a.modified } );
 					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: results });
 				})//end find
   			} else {
