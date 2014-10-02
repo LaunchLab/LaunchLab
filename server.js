@@ -560,8 +560,8 @@ function checkAuth(req, res, next) {
 
   			if (req.url == '/') {
 				db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-					results.sort(function(a,b) { return b.modified - a.modified } );
-					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: results });
+					var sorted = results.sort(function(a,b) { return a.modified - b.modified } );
+					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: sorted });
 				})//end find
   			} else {
   				res.redirect('/login');
@@ -736,8 +736,8 @@ app.get('/', function (req, res) {
 	///////
 
 	db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-
-					data.offerings = results;
+					var sorted = results.sort(function(a,b) { return a.modified - b.modified } );
+					data.offerings = sorted;
 					res.render('home_loggedin', data);
 				})
 
