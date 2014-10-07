@@ -282,8 +282,11 @@ app.get('/:username', function (req, res,next) {
 			if (users.length != 1) {
 				next();
 			} else {
+
 				console.log("FOUND")
 				data.user = users[0];
+
+				data.avatar = gravatar.url(users[0].email, {s: '100', r: 'pg', d: '404'});
 				//, title: {"$ne": ""}
 				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
 					data.offerings = offerings;
@@ -614,6 +617,12 @@ function checkAuth(req, res, next) {
   }
 
 }
+/////////////////////////////////////////////////////////////////////
+//OPTIONAL LOGGED IN
+
+
+
+
 
 
 
@@ -827,7 +836,11 @@ app.get('/', function (req, res) {
 
 app.get('/project/*', function (req, res) {
 	console.log("!!")
-
+	var data = {}
+			data.username = req.session.username;
+			data.password = req.session.password; 
+			data.email = req.session.email;
+			data.socketserver = socketconnect;
 	//bugfix chop to correct length
 	var projectid = req.url.slice(9);
 	projectid = projectid.slice(0,"53e48f68832871c41306702d".length)
@@ -842,13 +855,6 @@ app.get('/project/*', function (req, res) {
 			console.log(project)
 			project.id = project._id.toHexString();
 			//project._id = JSON.stringify(project._id);
-
-			var data = {}
-
-			data.username = req.session.username;
-			data.password = req.session.password; 
-			data.email = req.session.email;
-			data.socketserver = socketconnect;
 
 			data.project = project;
 
@@ -872,7 +878,9 @@ app.get('/project/*', function (req, res) {
 				res.render('project', data);
 			} )
 		} else {
-			res.render('project');
+			res.status(404);
+			data.message = "The project was not found in the database. Was it removed?"
+			res.render('error', data)
 		}
 		
 
@@ -898,7 +906,7 @@ app.post('/projects/new', function (req, res) {
 	var project = req.body;
 	project.creator = req.session.username;
 	project.created = Date.now();
-	project.status = "pending"
+	project.status = "new"
 	project.costtodate = 0;
 	console.log(project)
 	db.projects.save( project, function(err, saved) {
@@ -942,7 +950,7 @@ app.post('/projects/new', function (req, res) {
 						console.log("EMAIL SENT")
 					})
 			})
-		}
+		} else { console.log("EMAIL DISABLED. NOT IN PRODUCTION MODE.")}
 			
 	});
 });
@@ -1322,9 +1330,20 @@ tasks 		/work/tasks
 
 app.get('/work', function (req, res) {
 	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect};
-	res.render('work', data);
-	//work dashboard
-	//shows summaries on invoices, projects
+
+	db.projects.find({}, function (err, result) {
+		data.projects = result;
+
+		for (var r in result) {
+			var createddate = new Date(result[r].created);
+			result[r].createdformatted = createddate.toISOString();
+			var updateddate = new Date(result[r].created);
+			result[r].updatedformatted = updateddate.toISOString();			
+		}
+
+		res.render('work', data);	
+	})
+
 });
 
 app.get('/work/invoices', function (req, res) {

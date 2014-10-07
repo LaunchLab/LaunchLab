@@ -28,7 +28,7 @@
     <div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #888;">
        
 
-       <div class="pure-g">
+       <div class="pure-g" style="border-top: 2px solid #eee;">
 
  
             
@@ -37,7 +37,7 @@
 
             <!-- start project summary -->
             <div class="pure-u-1-1">
-                <h3>Invoices Overview - <a href="/work/invoices/new">Create Invoice</a></h3>     
+                <h3>Recent Invoices <a href="/work/invoices/new" style="float:right;"><i class="fa fa-fw fa-plus-circle" style="color: rgb(125,175,125);"></i> new invoice</a></h3>     
 
 
                 <p>
@@ -45,11 +45,51 @@
                 </p>
 
                 <p>
+                    <div class="pure-g">
                     {% for invoice in invoices %}
-                    <a href="/work/invoices/edit/{{invoice._id.toHexString(); }}">{{ invoice.status}} - {{invoice.issuedate.toISOString() }} - {{invoice.id }}</a><br>
+
+                    <div class="pure-u-1" style="background: rgb(245,245,245); margin-bottom: 0.25em; padding: 0.5em;">
+
+                            <div class="pure-g">
+
+                                <div class="pure-u-1-12" style="font-size: 1.3em;">
+                                    {{ invoice.id }}
+                                    {{ invoice.status}}
+                                    {% if invoice.status == "new" %}
+                                        <i class="fa fa-fw fa-exclamation-circle" style="color: rgb(125,175,125);"></i>
+                                    {% endif %}
+                                </div>
+
+                                <div class="pure-u-1-8">
+                                    <a href="/work/invoices/edit/{{invoice._id.toHexString(); }}">see this invoice</a> 
+                                </div>
+                                <div class="pure-u-1-8">
+                                    <a href="/{{ project.creator }}" >{{ invoice.creator }}</a>
+                                </div>
+
+                                <div class="pure-u-1-6">
+                                    {{invoice.issuedate.toISOString() }}
+                                </div>
+                                
+                                <div class="pure-u-1-6">
+                                    <span class="timeago" title="{{invoice.issuedate.toISOString() }}">{{invoice.issuedate.toISOString() }}</span>
+                                </div>
+
+                                
+
+                            </div>
+                            
+                    </div>
+
+
+
+
+
+
                     {% endfor %}
-                    //Draft - Not sent yet - 1 - company (project name) - R100,000.00<br>
-                    //Waiting - Yesterday 12:00 - 2 - company (project name) - R50,000.00<br>
+                    </div>
+
+                   
                 </p>
             </div>
             <!-- end project summary -->
@@ -69,6 +109,9 @@
 </div>
 
 
+<script>
+$("span.timeago").timeago();
+</script>
 
 
 

@@ -47,9 +47,33 @@ input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px white inset;
 }
 
-/*
-UPLOAD
-*/
+.uibutton {
+    color: #ccc;
+}
+
+.uibutton:hover {
+    color: #0096ff;
+    cursor: pointer;
+}
+
+.taskform {
+
+}
+
+
+
+
+
+.taskform input[type="text"]:focus {
+    border: 2px solid #0096ff;
+    
+}
+
+
+
+
+
+
 
 .delimage:hover {
     color: #f00;
@@ -290,7 +314,14 @@ FRONT SIGNUP SPLASH
 }
 
 .briefbutton {
-    float:right;
+    text-align: center;
+    color: #e14c07;
+}
+
+.briefbutton span:hover {
+    text-align: center;
+    color: #f18904;
+    cursor: pointer;
 }
 
 
@@ -403,6 +434,12 @@ FRONT SIGNUP SPLASH
     border: 2px solid #e14c07;
     
 }
+
+.taskform input[type="text"]:focus {
+    border: 2px solid #0096ff;
+    
+}
+
 
 /*
  * -- taglineON STYLES --
@@ -859,7 +896,7 @@ border-radius: 5px;
 .persononline { color: rgb(109, 159, 21); font-size: 12px;}
 .avatarimg { width: 60px; height: 60px; float:left;}
 
-.timeago { font-size: 10px; color: rgb(115, 115, 115); width: 100%; text-align:right;}
+.timeago { }
 
 .message {
     padding: 10px;
@@ -935,6 +972,7 @@ border-radius: 5px;
 
 .formtextarea { width: 97%; min-height: 75px; resize:vertical ;}
 
+abbr { text-decoration: none;}
 
 *::-webkit-input-placeholder {
     color: rgb(188, 199, 211);
