@@ -149,6 +149,8 @@ app.get('/market', function (req, res) {
 	
 })
 
+
+
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
@@ -233,14 +235,14 @@ app.get('/tow/attendance', function (req, res) {
 
 */
 
-app.get('/user/:id', function (req, res) {
+app.get('/user/:ids', function (req, res) {
 	console.log(req.params)
 	var ObjectId = mongojs.ObjectId;
 
 	var data = {username: req.session.username, password: req.session.password}
 	data.socketserver = socketconnect;
 
-	db.users.find({"_id": ObjectId(req.params.id)}, function(err, users) {
+	db.users.find({"_ids": ObjectId(req.params.id)}, function(err, users) {
 		if (err) {
 			res.status(404);
 			res.render('error', data)
@@ -833,6 +835,24 @@ app.get('/', function (req, res) {
 
 */
 
+app.post('/project/:id/tasks/new', function (req, res) {
+	console.log(req.params)
+	console.log('NEW TASK ')
+	console.log(req.body)
+	var ObjectId = mongojs.ObjectId;
+	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, result) {
+		console.log(result)
+		if (result.tasks == undefined) { result.tasks = []}
+		result.tasks.push(req.body);
+		//update db
+		db.projects.update({"_id":ObjectId(req.params.id)}, result, function (err, result) {
+			res.end("1")
+		});
+		//end update
+	})
+	
+})
+
 
 app.get('/project/*', function (req, res) {
 	console.log("!!")
@@ -875,6 +895,9 @@ app.get('/project/*', function (req, res) {
 				data.messagearray = JSON.stringify(messages);
 				console.log(messages)
 				console.log("#############")
+
+				var projectjson = JSON.stringify(project);
+				data.projectjson = projectjson
 				res.render('project', data);
 			} )
 		} else {

@@ -6,12 +6,25 @@
   {% parent %}
   <script src="/lib/scrypt.js"></script>
   <script src="/lib/socket.io.min.js"></script>
+  <script src="/lib/swig.min.js"></script>
 {% endblock %}
 
 {% block content %}
 
 <script>
-var socket = io.connect('{{ socketserver }}');
+var socket = io.connect();
+var project = {{ projectjson|raw }};
+
+
+
+
+swig.run(tpl, {}, '/tpl.html');
+
+var test = swig.render(tpl, {
+    pagename: 'awesome people',
+    authors: ['Paul', 'Jim', 'Jane']
+});
+console.log(test)
 </script>
 
 
@@ -35,18 +48,109 @@ var socket = io.connect('{{ socketserver }}');
                     <form class="pure-form taskform">
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-2-3">
-                                <input id="projecttitle" class="backgroundinputs" data-backgroundinfo="projecttitle" type="text" name="projecttitle" placeholder="Individual task title">
+                                <input id="taskTitle" class="backgroundinputs" data-backgroundinfo="taskTitle" type="text" name="taskTitle" placeholder="Individual task title">
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
-                                <input id="projecttitle" class="backgroundinputs" data-backgroundinfo="projecttitle" type="text" name="projecttitle" placeholder="Hours">
+                                <input id="taskTimeEstimated" class="backgroundinputs" data-backgroundinfo="taskTimeEstimated" type="text" name="taskTimeEstimated" placeholder="Hours">
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6" style="text-align:center;margin-top: 0.5em;">
-                                <span style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> Add</span>
+                                <span id="btnAddTask" style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> Add</span>
                             </div>                            
                         </div>
-                        
                     </form>
-                    Research existing tools | 2h
+
+                    <div id="taskList">
+                        <!-- taskList start -->
+                        <div id="taskListP" class="pure-g">
+                            {% for task in project.tasks %}
+                            <div class="pure-u-1" style="margin-top: 0.25em; background: rgb(245,245,245);">
+                                <div class="pure-g">
+                                    <div class="pure-u-1-2">
+
+                                <div style="width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;">
+                                    <i class="fa fa-fw fa-exclamation-circle" style="color: #0096ff;"></i>
+                                </div>
+                                <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
+                                    <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">ready</a><br>
+                                    <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">{{ task.title }}</a> 
+                                </div>
+
+                                    </div>
+                                    <div class="pure-u-1-2" style="text-align:right; padding: 0.25em;">
+                                        {{ task.timeEstimated }} h
+                                    </div>                                    
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- taskList end -->
+                    </div>
+
+                    <script>
+                        //TASK HANDLER
+                     $("#btnAddTask").click( function () {
+                        var newtask = {}
+
+                        newtask.title = $("#taskTitle").val();
+                        if (newtask.title == "") { $("#taskTitle").focus(); return; }
+
+                        newtask.timeEstimated = $("#taskTimeEstimated").val();
+                        if (newtask.timeEstimated == "") { $("#taskTimeEstimated").focus(); return; }
+
+                        console.log(project)
+                        if (project.tasks == undefined) { project.tasks = []; }
+                        project.tasks.push(newtask);
+                        console.log(project._id);
+                        
+                        $.post( "/project/"+project._id+"/tasks/new", newtask, function( taskId ) {
+                            console.log(taskId);
+                        });
+
+                        $("#taskTitle").val("");
+                        $("#taskTimeEstimated").val("");
+
+                        //taskRender();
+                        addTask(newtask)
+                     })
+
+                     var taskRender = function () {
+                        var htmlrendered = ""
+                        htmlrendered += "<div id=\"taskListP\" class=\"pure-g\">"
+                        for (var t in project.tasks) {
+                            htmlrendered += "<div class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
+                            htmlrendered += "<div style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
+                            htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
+                            htmlrendered += "<div style=\"padding-left: 1em; width: 100%; margin-left: 36px; position:relative;\">";
+                            htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;\">ready</a><br>";
+                            htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;\">";
+                            htmlrendered += project.tasks[t].title;
+                            htmlrendered += "</a></div></div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
+                            htmlrendered += project.tasks[t].timeEstimated + "h";
+                            htmlrendered += "</div></div></div>";
+                        }
+                        $("#taskList").html(htmlrendered); //clear
+                     }
+
+                     var addTask = function (task) {
+                        var htmlrendered = ""
+                        
+                        htmlrendered += "<div class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
+                        htmlrendered += "<div style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
+                        htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
+                        htmlrendered += "<div style=\"padding-left: 1em; width: 100%; margin-left: 36px; position:relative;\">";
+                        htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;\">ready</a><br>";
+                        htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;\">";
+                        htmlrendered += task.title;
+                        htmlrendered += "</a></div></div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
+                        htmlrendered += task.timeEstimated + "h";
+                        htmlrendered += "</div></div></div>";
+                        
+                        $("#taskListP").append(htmlrendered).children(':last').hide().fadeIn(300); //clear
+                     }
+
+                    </script>
+
+                   
                 </div>
 
             </div>
@@ -219,6 +323,7 @@ var rendermessage = function(data) {
     
     //APPENDS INTO THE DOM
     $("#talkstream").append(htmlmessage);
+    
     $("abbr.timeago").timeago();
     
     $("img").error(function () { 
