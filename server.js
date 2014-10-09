@@ -182,6 +182,12 @@ app.get('/offerings/view/*', function (req, res) {
 				result.offering_id = result._id.toHexString();
 				result.descriptionmarked = marked(result.description);
 				console.log(result);
+
+				if (result.views == undefined) { result.views = 1; }
+				result.views = result.views + 1;
+
+				db.offerings.update({"_id": ObjectId(mongoid) }, result)
+
 				var editbool = 0;
 				if (req.session.username == "rouan") { editbool = 1}
 				if (req.session.username == result.creator) { editbool = 1}
@@ -189,6 +195,7 @@ app.get('/offerings/view/*', function (req, res) {
 					data.offering = result;
 					data.editable = editbool;
 					data.creator = creatorresult;
+					
 					res.render('offerings_view', data);	
 				})
 			} else res.render('error', data);
