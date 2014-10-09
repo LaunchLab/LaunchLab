@@ -150,6 +150,22 @@ app.get('/market', function (req, res) {
 })
 
 
+/*   ANGULAR 
+
+
+*/
+
+
+app.get('/ang', function (req, res) {
+	//swig.setDefaults({ varControls: ['<%=', '%>'] }); //. Defaults to ['{{', '}}'].
+	res.sendFile(__dirname + '/views/angular.html')
+	//swig.setDefaults({ varControls: ['{{', '}}'] })
+});
+
+
+
+
+
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
