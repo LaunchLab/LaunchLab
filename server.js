@@ -857,19 +857,73 @@ app.get('/', function (req, res) {
 ##        ##     ##  #######   ######  ########  ######     ##    
 
 */
+var ObjectId = mongojs.ObjectId;
+app.post('/project/:id/tasks/update/:created', function (req, res) {
+	console.log(req.params)
+	console.log(req.body)
+	
+	//find the project
+	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, project) {
+		if (project.tasks == undefined) { project.tasks = []}
+		//find the individual sub task
+		for (var t in project.tasks) {
+			if (project.tasks[t].created == req.params.created) {
+				//found task
+
+				switch (project.tasks[t].status) {
+                    case "new":
+                        {  project.tasks[t].status = "started"; 
+                        	req.body.started = Date.now();
+                        	req.body.startedby = req.session.username;
+
+                    	}
+                        break;
+                    case "started":
+                        {  project.tasks[t].status = "completed";  
+                        	req.body.completed = Date.now();
+                        	req.body.completedby = req.session.username;
+
+                    	}
+                        break;
+                }
+
+				project.tasks[t] = req.body;
+				db.projects.update({"_id":ObjectId(req.params.id)},project, function (err, result) {
+					res.end('1')
+				})
+			}
+		}
+		//update task
+		//update project entry in database
+	});//endfindone
+
+
+
+
+	
+});
 
 app.post('/project/:id/tasks/new', function (req, res) {
 	console.log(req.params)
 	console.log('NEW TASK ')
 	console.log(req.body)
+	req.body.status = "new"
 	var ObjectId = mongojs.ObjectId;
 	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, result) {
 		console.log(result)
 		if (result.tasks == undefined) { result.tasks = []}
+		req.body.created = Date.now();
+		req.body.creator = req.session.username;
 		result.tasks.push(req.body);
+
+
+
+		var createddate = new Date(req.body.created);
+		req.body.createdformatted = createddate.toISOString();
+
 		//update db
 		db.projects.update({"_id":ObjectId(req.params.id)}, result, function (err, result) {
-			res.end("1")
+			res.end(JSON.stringify(req.body))
 		});
 		//end update
 	})
@@ -877,16 +931,17 @@ app.post('/project/:id/tasks/new', function (req, res) {
 })
 
 
-app.get('/project/*', function (req, res) {
+app.get('/project/:id', function (req, res) {
 	console.log("!!")
 	var data = {}
 			data.username = req.session.username;
 			data.password = req.session.password; 
 			data.email = req.session.email;
 			data.socketserver = socketconnect;
+	
 	//bugfix chop to correct length
-	var projectid = req.url.slice(9);
-	projectid = projectid.slice(0,"53e48f68832871c41306702d".length)
+	var projectid = req.params.id;
+	
 
 
 	var ObjectId = mongojs.ObjectId;
@@ -899,7 +954,13 @@ app.get('/project/*', function (req, res) {
 			project.id = project._id.toHexString();
 			//project._id = JSON.stringify(project._id);
 
+			if (project.tasks == undefined) { project.tasks = []}
+			project.tasks = project.tasks.sort(function(a,b) { return b.created - a.created } );
+
 			data.project = project;
+
+			var createddate = new Date(project.created);
+			project.createdformatted = createddate.toISOString();
 
 			console.log("searching for messages")
 			db.messages.find( { "message.room" : project.id}, function (err, messages) {
@@ -921,6 +982,8 @@ app.get('/project/*', function (req, res) {
 
 				var projectjson = JSON.stringify(project);
 				data.projectjson = projectjson
+
+
 				res.render('project', data);
 			} )
 		} else {

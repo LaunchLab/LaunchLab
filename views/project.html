@@ -25,7 +25,7 @@ var project = {{ projectjson|raw }};
         <div class="pure-g">
             <div class="l-box-lrg pure-u-1 pure-u-md-1-2">
                 <h1 style="font-weight: 700; font-size: 2em; margin-top: 1em;">{{ project.projecttitle }}</h1>
-                
+                <span style="font-size: 0.75em;">created by <a href="/{{ project.creator }}">{{ project.creator }}</a> <span class="timeago" title="{{ project.createdformatted }}">{{ project.createdformatted }}</span> on {{ project.createdformatted }}</span><br>
                 <span>{{ project.projectdetails }}</span><br><br>
                 
                 <div class="pure-g">
@@ -66,12 +66,23 @@ var project = {{ projectjson|raw }};
                         pr.textAlign(pr.CENTER);
                         pr.text("work\nhours", 30, 15);
 
+                        //get start and end times
+                        var timeStart = 9999999999999999999;
+                        var timeEnd = 0;
+                        
+                        for (var t in project.tasks) {
+                            if (project.tasks[t].created < timeStart) { timeStart = project.tasks[t].created; }
+                            if (project.tasks[t].started > timeEnd) { timeEnd = project.tasks[t].started; } 
+                            if (project.tasks[t].done > timeEnd) { timeEnd = project.tasks[t].started; } 
+                        }
+                        console.log(timeStart)
+                        console.log(timeEnd)
 
                         //get ranges
                         var maxrange = 0;
                         var range = 0;
                         for (var t in project.tasks) {
-                            range += parseFloat(project.tasks[t].timeEstimated);
+                            range += parseFloat(project.tasks[t].timeEstimated); //amount of work not really time
                         }
                             
                         if ((range > 100000) && (range < 1000000)) { maxrange = Math.ceil(range/100000)*100000;}
@@ -91,7 +102,9 @@ var project = {{ projectjson|raw }};
                         var divisions = 5;
                         var graphDivDistance = graphdeltaY / divisions;
 
-                        console.log(maxrange)
+
+
+                        
 
                         //GRID LINES HORIZONTAL
                         for (var y = 0; y <= divisions; y++) {
@@ -120,8 +133,28 @@ var project = {{ projectjson|raw }};
                         var yoffsetaccum = 0;
                         for (var t in project.tasks) {
                             pr.strokeWeight(3);
-                            pr.stroke(0,146,255,255)
-                            pr.fill(0,146,255,100);
+
+                           switch (project.tasks[t].status) {
+                                case "new":
+                                    {  
+                                        pr.stroke(0,146,255,200)
+                                        pr.fill(0,146,255,100);
+                                    }
+                                    break;
+                                case "started":
+                                    {  
+                                        pr.stroke(103,211,17,200)
+                                        pr.fill(103,211,17,100);
+                                    }
+                                    break;
+                                case "completed":
+                                    {  
+                                        pr.stroke(255,187,0,200)
+                                        pr.fill(255,187,0,100);
+                                    }
+                                    break;
+
+                            }
 
                             var yoffset = project.tasks[t].timeEstimated / maxrange * graphdeltaY;
                             
@@ -130,9 +163,7 @@ var project = {{ projectjson|raw }};
                         }
             
 
-                      pr.stroke(255,255,0)
-                      pr.line(250,50,pr.mouseX,pr.mouseY)
-                    }
+                    }//enddraw
 
                   }
 
@@ -178,35 +209,17 @@ var project = {{ projectjson|raw }};
                     <div id="taskList">
                         <!-- taskList start -->
                         <div id="taskListP" class="pure-g">
-                            {% for task in project.tasks %}
-                            <div class="pure-u-1" style="margin-top: 0.25em; background: rgb(245,245,245);">
-                                <div class="pure-g">
-                                    <div class="pure-u-1-2">
-
-                                <div style="width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;">
-                                    <i class="fa fa-fw fa-exclamation-circle" style="color: #0096ff;"></i>
-                                </div>
-                                <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
-                                    <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">ready</a><br>
-                                    <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">{{ task.title }}</a> 
-                                </div>
-
-                                    </div>
-                                    <div class="pure-u-1-2" style="text-align:right; padding: 0.25em;">
-                                        {{ task.timeEstimated }} h
-                                    </div>                                    
-                                </div>
-                            </div>
-                            {% endfor %}
+                            
                         </div>
                         <!-- taskList end -->
                     </div>
 
                     <script>
+                    $("span.timeago").timeago();
                         //TASK HANDLER
                      $("#btnAddTask").click( function () {
                         var newtask = {}
-
+                        newtask.status = "new";
                         newtask.title = $("#taskTitle").val();
                         if (newtask.title == "") { $("#taskTitle").focus(); return; }
 
@@ -215,54 +228,125 @@ var project = {{ projectjson|raw }};
 
                         console.log(project)
                         if (project.tasks == undefined) { project.tasks = []; }
-                        project.tasks.push(newtask);
+                        
+
+
+
                         console.log(project._id);
                         
                         $.post( "/project/"+project._id+"/tasks/new", newtask, function( taskId ) {
-                            console.log(taskId);
+                
+                            project.tasks.push(JSON.parse(taskId));
+                            project.tasks = project.tasks.sort(function(a,b) { return b.created - a.created } );
+
+                            addTask(JSON.parse(taskId))
+                            $("#taskTitle").val("");
+                            $("#taskTimeEstimated").val("");
                         });
 
-                        $("#taskTitle").val("");
-                        $("#taskTimeEstimated").val("");
-
-                        //taskRender();
-                        addTask(newtask)
+                        
                      })
 
-                     var taskRender = function () {
-                        var htmlrendered = ""
-                        htmlrendered += "<div id=\"taskListP\" class=\"pure-g\">"
-                        for (var t in project.tasks) {
-                            htmlrendered += "<div class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
-                            htmlrendered += "<div style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
-                            htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
-                            htmlrendered += "<div style=\"padding-left: 1em; width: 100%; margin-left: 36px; position:relative;\">";
-                            htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;\">ready</a><br>";
-                            htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;\">";
-                            htmlrendered += project.tasks[t].title;
-                            htmlrendered += "</a></div></div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
-                            htmlrendered += project.tasks[t].timeEstimated + "h";
-                            htmlrendered += "</div></div></div>";
-                        }
-                        $("#taskList").html(htmlrendered); //clear
-                     }
+                    
+                     var hoverfin = function () {
+                            //over
+                            $(this).css("opacity", "0.5");
+                            $(this).css("cursor", "pointer");
+                         }
 
-                     var addTask = function (task) {
+                     var hoverfout = function () {
+                            //out
+                            $(this).css("opacity", "1.0")
+                         }    
+
+                    var clickf = function ()   {
+                            //over
+                            
+
+                            for (var t in project.tasks){
+                                //find
+
+                                if (project.tasks[t].created == $(this).data("created")) {
+                                    
+                                    switch (project.tasks[t].status) {
+                                        case "new":
+                                            {  project.tasks[t].status = "started"; }
+                                            break;
+                                        case "started":
+                                            {  project.tasks[t].status = "completed";  }
+                                            break;
+                                        case "completed":
+                                            {   return; }
+                                            break;
+
+                                    }
+
+             
+
+                                    console.log(project.tasks[t].status)
+                                    $.post( "/project/"+project._id+"/tasks/update/"+$(this).data("created"), project.tasks[t], function( taskId ) {
+                                        tasksListrender(1);
+                                    });
+                                    
+                                } //ifend
+                                
+                            } //for end
+
+         
+                         }                                        
+                     
+                     var addTask = function (task, reverse, animspeed) {
                         var htmlrendered = ""
                         
-                        htmlrendered += "<div class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
-                        htmlrendered += "<div style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
-                        htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
-                        htmlrendered += "<div style=\"padding-left: 1em; width: 100%; margin-left: 36px; position:relative;\">";
-                        htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;\">ready</a><br>";
-                        htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;\">";
-                        htmlrendered += task.title;
-                        htmlrendered += "</a></div></div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
+                        htmlrendered += "<div data-created=\""+task.created+"\" class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
+                        htmlrendered += "<div class=\"taskicon\" style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
+                        
+                        if (task.status == "new") { 
+                            htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
+                        }
+                        if (task.status == "started") { 
+                            htmlrendered += "<i class=\"fa fa-fw fa-arrow-circle-right\" style=\"color: #67d311;\"></i></div>";
+                        }  
+                        if (task.status == "completed") { 
+                            htmlrendered += "<i class=\"fa fa-fw fa-check-circle\" style=\"color: #ffbb00;\"></i></div>";
+                        } 
+                        
+                        htmlrendered +='<div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">';
+                        htmlrendered +='<span style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">';
+                        htmlrendered +='<span class="timeago" title="'+task.createdformatted+'">'+task.createdformatted+'</span> by <a href="/'+ task.creator +'" >'+ task.creator +'</a></span><br>';
+                        htmlrendered +='<a href="/'+ task.creator +'" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">'+ task.title +'</a> ';
+                        htmlrendered +='</div>';
+
+                        htmlrendered += "</div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
                         htmlrendered += task.timeEstimated + "h";
                         htmlrendered += "</div></div></div>";
                         
-                        $("#taskListP").append(htmlrendered).children(':last').hide().fadeIn(300); //clear
+                        var animspeedparam = animspeed;
+                        if (animspeed == undefined) {
+                            animspeedparam = 1000;
+                        }
+
+                        if (reverse == 1) {
+                            $("#taskListP").append(htmlrendered).children(':last').hide().fadeIn(animspeedparam).hover( hoverfin , hoverfout ).click( clickf ); //clear
+                        } else {
+                            $("#taskListP").prepend(htmlrendered).children(':first').hide().fadeIn(animspeedparam).hover( hoverfin , hoverfout ).click( clickf ); //clear
+                        }
+
+                        $("span.timeago").timeago();
                      }
+
+                    var tasksListrender = function(animspeed) {
+                        $("#taskList").html('<div id="taskListP" class="pure-g"></div>');
+                         
+                        for (var t in project.tasks) {
+                            addTask(project.tasks[t], 1, animspeed)
+                        }
+                    }
+
+                    tasksListrender();
+
+
+
 
                     </script>
 
