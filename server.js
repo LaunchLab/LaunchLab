@@ -199,7 +199,7 @@ app.get('/offerings/view/*', function (req, res) {
 				result.descriptionmarked = marked(result.description);
 				console.log(result);
 
-				if (result.views == undefined) { result.views = 1; }
+				if (result.views == undefined) { result.views = 0; }
 				result.views = result.views + 1;
 
 				db.offerings.update({"_id": ObjectId(mongoid) }, result)
@@ -1249,6 +1249,8 @@ app.post('/offerings/edit/:id', function (req, res) {
 		newOffering.modified = Date.now();
 		newOffering.title = req.multipartparse.fields.title[0]
 		newOffering.description = req.multipartparse.fields.description[0]
+		newOffering.price = parseFloat(req.multipartparse.fields.price[0]);
+		newOffering.saleoption = req.multipartparse.fields.saleoption[0]
 
 		for (var file in uploadedFilenames) {
 			if (newOffering.samplefiles) { 
@@ -1434,6 +1436,7 @@ invoices	/work/invoices
 clients		/work/clients
 projects 	/work/projects
 tasks 		/work/tasks
+pricing 	/work/pricing		lets users set prices on their goods/services
 
 */
 

@@ -23,6 +23,7 @@ div class="content-wrapper">
                 <div class="pure-u-1 pure-u-md-1-2 ">
                 	<div class="uploadimgblock" style="margin: 1em; ">
 
+
 <form action="/offerings/imageupload/{{ offering.offering_id }}"
       class="dropzone"
       id="my-awesome-dropzone"></form>
@@ -68,6 +69,8 @@ div class="content-wrapper">
                 	<!-- start FORM -->
 					<form class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post" action="/offerings/edit/{{ offering.offering_id }}">
 						<fieldset>
+							<h1>Edit your entry</h1>
+
 					        <div class="pure-control-group">
 					            <label for="title">Title</label>
 					            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title }}" placeholder="Short description of offering ">
@@ -75,12 +78,45 @@ div class="content-wrapper">
 
 					        <div class="pure-control-group">
 					            <label for="description">Description ( <a href="http://daringfireball.net/projects/markdown/basics">markdown</a> allowed )</label>
-					            <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering.">{{ offering.description}}</textarea>
+					            <textarea id="description" name="description" class="backgroundtextareas" rows="25" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering." >{{ offering.description}}</textarea>
 					        </div>
 
+					        <h2>Options (experimental)</h2>
 
 
-					
+					        <div class="pure-g">
+					        	<div class="pure-u-1" id="saleoptions">
+					        		<input type="radio" id="saleoptionsnosale" name="saleoption" value="nosale" > No sale. (For display only)<br>
+									<input type="radio" id="saleoptionsprice" name="saleoption" value="price" > For sale at fixed price. Choose for quick orders.<br>
+									<input type="radio" id="saleoptionsquote" name="saleoption" value="quote" > For sale at per quote price. Choose this to custom quote for each order. (future)<br>
+					        	</div>
+					        </div>
+
+					        <div class="pure-g" id="salePrice">
+					        	<div class="pure-u-1 pure-u-md-1-4 labell inputlabel">Price (R)</div>
+								<div class="pure-u-1 pure-u-md-3-4 profiledata"><input id="price" class="backgroundinputs" type="text" name="price" placeholder="" value="{{ offering.price }}"></div>
+							</div>
+
+						<script>
+						$("input[name=saleoption]:radio").change(function () {
+							console.log($(this).val());
+							if ($(this).val() == "nosale" ) { $("#salePrice").hide(); }
+							if ($(this).val() == "price" ) { $("#salePrice").show(); }
+							if ($(this).val() == "quote" ) { $("#salePrice").hide(); }
+						});
+
+						var rendersaleoptions = function () {
+							var html = "";
+							var saleoption =  {% if offering.saleoption == undefined %} "nosale"; {% endif %}  {% if offering.saleoption != undefined %} "{{offering.saleoption}}"; {% endif %} 
+							console.log(saleoption)
+
+							if (saleoption == "nosale" ) { $("#salePrice").hide(); $("#saleoptionsnosale").prop('checked', true); }
+							if (saleoption == "price" ) { $("#salePrice").show(); $("#saleoptionsprice").prop('checked', true);}
+							if (saleoption == "quote" ) { $("#salePrice").hide(); $("#saleoptionsquote").prop('checked', true);}
+						}
+
+						rendersaleoptions();
+						</script>
 						<br>
 					
 

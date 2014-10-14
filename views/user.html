@@ -34,6 +34,11 @@
                 <a href="mailto:{{ user.email }}"><i class="fa fa-fw fa-envelope "></i> {{ user.email }}</a><br>
                 <a href="tel:{{ user.phonenumber }}"><i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}</a><br>
                 <a href="http://{{ user.website }}"><i class="fa fa-fw fa-globe "></i> {{ user.website }}</a><br>
+
+                {% if user.bitcoinaddress != "" %} 
+                    <a href="http://{{ user.bitcoinaddress }}"><i class="fa fa-fw fa-bitcoin "></i> {{ user.bitcoinaddress }}</a><br>
+                {% endif %}
+                
                 <br><br>
                    {% if username == user.username %}
                                 <a class="" href="/profile" ><i class="fa fa-fw fa-edit "></i> Edit your profile</a> <br>

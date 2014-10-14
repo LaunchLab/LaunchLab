@@ -35,11 +35,32 @@
     				</div>
 
     				<div class="pure-u-1 pure-u-md-1-2" style="text-align:right">
+
+                    {% if offering.saleoption == "price" %} 
+                        <div style="background: #eee; padding: 1em;">
+                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Order this for R{{ parseFloat(offering.price).toFixed(2) }}</a><br>
+                        </div>
+                    {% endif %}
+
+                    {% if offering.saleoption == "nosale" %} 
+                        <div style="background: #eee; padding: 1em;">
+                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Contact</a><br>
+                        </div>
+                    {% endif %}
+
+                    <br>
+
+
     					{% if editable == 1 %} 
-    				<a href="/offerings/edit/{{ offering.offering_id }}" ><i class="fa fa-fw fa-edit"></i> Edit this </a><br>
-    				<a href="/offerings/delete/{{ offering.offering_id }}" ><i class="fa fa-fw fa-times"></i> Delete</a><br>
+    				<a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(55,55,55, 0.5);"><i class="fa fa-fw fa-edit"></i> Edit </a> &nbsp;&nbsp;&nbsp;
+    				<a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(55,55,55, 0.5);"><i class="fa fa-fw fa-times"></i> Delete</a><br>
     				{% endif %}
-    				<a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Contact</a><br>
+
+   
+
+
+ 
+
     				</div>
 
     			 	<div class="pure-u-1">
