@@ -38,14 +38,24 @@
 
                     {% if offering.saleoption == "price" %} 
                         <div style="background: #eee; padding: 1em;">
-                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Order this for R{{ parseFloat(offering.price).toFixed(2) }}</a><br>
+                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-shopping-cart"></i> Add to cart for R{{ parseFloat(offering.price).toFixed(2) }}</a><br>
                         </div>
                     {% endif %}
+                    
 
+                    
                     {% if offering.saleoption == "nosale" %} 
-                        <div style="background: #eee; padding: 1em;">
+                        {% if offering.creator != username %}
+                         <div style="background: #eee; padding: 1em;">
                             <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Contact</a><br>
-                        </div>
+                         </div>  
+                        {% endif %}
+                    {% endif %}
+
+                    {% if offering.saleoption == "quote" %} 
+                         <div style="background: #eee; padding: 1em;">
+                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-shopping-cart"></i> Add to cart</a><br>
+                         </div>  
                     {% endif %}
 
                     <br>
