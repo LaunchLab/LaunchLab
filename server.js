@@ -680,6 +680,71 @@ app.get('/login', function (req, res) {
 })
 
 
+
+/*
+
+ #######  ########  ########  ######## ########  
+##     ## ##     ## ##     ## ##       ##     ## 
+##     ## ##     ## ##     ## ##       ##     ## 
+##     ## ########  ##     ## ######   ########  
+##     ## ##   ##   ##     ## ##       ##   ##   
+##     ## ##    ##  ##     ## ##       ##    ##  
+ #######  ##     ## ########  ######## ##     ## 
+
+ */
+
+
+
+app.get('/offerings/neworder/:id', function (req, res) {
+	//ADD TO CART
+	//adds a certain offering to a user's cart. Effectively letting them build their own quote/invoice.
+	//bugfix chop to correct length
+
+	var mongoid = req.params.id
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(req.params.id)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		if (result) {
+			result.offering_id = req.params.id;
+
+				var blankOrder = {}
+				blankOrder.creator = req.session.username;
+				blankOrder.created = Date.now();
+				blankOrder.offeringid = req.params.id;
+				blankOrder.status = "new";
+				blankOrder.title = "";
+				blankOrder.description = "";
+				blankOrder.price = "";
+				blankOrder.samplefiles = [];
+
+				db.orders.save(blankOrder, function (err, result) {
+					console.log("new order made")
+					console.log(result)
+					var orderid = result._id.toHexString();
+					res.redirect("/orders/edit/"+orderid); //this should redirect to the new blank offering once we have a database entry
+				})
+			
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.post('/profile', function (req,res) {
 	db.users.update({username: req.session.username}, {'$set' : req.body }, function (err, user) {
 		console.log(user)
