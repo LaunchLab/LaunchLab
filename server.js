@@ -252,7 +252,9 @@ app.get('/offerings/view/*', function (req, res) {
 					data.editable = editbool;
 					data.creator = creatorresult;
 					data.jsonimages = JSON.stringify(result.samplefiles);
-					data.avatar = gravatar.url(req.session.email, {s: '100', r: 'pg', d: '404'});
+					data.avatar = "";
+					if (req.session.email) { data.avatar = gravatar.url(req.session.email, {s: '100', r: 'pg', d: '404'});	}
+					 
 					res.render('offerings_view', data);	
 				})
 			} else res.render('error', data);
