@@ -115,6 +115,20 @@ app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
+
+function limitlng (input, idx) { 
+
+
+	if(input.length > idx) {
+	    input = input.substring(0,idx-1)+"...";
+	}
+
+	return input; }
+swig.setFilter('limitlng', limitlng);
+
+
+
+
 ////////////////
 // CACHING 
 
@@ -609,23 +623,25 @@ function checkAuth(req, res, next) {
   			socketlog("anonymous visitor active on page "+ req.url )
 
   			if (req.url == '/') {
+				
+  				
+				var data = {};
 				db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-					var sorted = [];
-
-					if (err) {
-						res.render('error', {message: "Database not running?"})
-					} else {
-						if (results.length > 0 ) {
-							sorted = results.sort(function(a,b) { return b.created - a.created } );
-						}
-
-						for (var a in sorted) {
-							sorted[a].id = sorted[a]._id.toHexString();
-						}
-
-						res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: sorted, offeringsjson: JSON.stringify(sorted) });
+					var sorted = results.sort(function(a,b) { return b.created - a.created } );
+					for (var a in sorted) {
+						sorted[a].id = sorted[a]._id.toHexString();
+						sorted[a].description = "...";
 					}
-				})//end find
+					data.offerings = sorted;
+					
+					data.offeringsjson = JSON.stringify(sorted);
+					res.render('home_loggedin', data);
+				})
+
+
+
+
+
   			} else {
   				res.redirect('/login');
   			}
@@ -902,8 +918,11 @@ app.get('/', function (req, res) {
 					var sorted = results.sort(function(a,b) { return b.created - a.created } );
 					for (var a in sorted) {
 						sorted[a].id = sorted[a]._id.toHexString();
+						sorted[a].description = "..."
+						
 					}
 					data.offerings = sorted;
+
 					data.offeringsjson = JSON.stringify(sorted);
 					res.render('home_loggedin', data);
 				})

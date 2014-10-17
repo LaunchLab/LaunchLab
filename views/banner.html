@@ -6,22 +6,22 @@
     <div class="pure-g">
         
         <div class="pure-u-1 pure-u-md-2-3">
-           <a href="/offerings/view/{{ offerings[0].id }}"> 
+           <a id="bannerLink" href="/offerings/view/{{ offerings[0].id }}"> 
             <div id="bannerImage" class="bannerImage" style='background-image: url("/offerings/{{ offerings[0].samplefiles[0] }}");' ></div>
            </a>
          </div>
 
         <div class="pure-u-1 pure-u-md-1-3 bannerText">
           <div class="bannerTextWrap">
-            <h1 id="bannerTitle">{{ offerings[0].title }}</h1>
-            <p id="bannerDescription">{{ offerings[0].description }}</p>
+            <h1 id="bannerTitle"></h1>
+            <p id="bannerDescription"></p>
           </div>
             
           <div class="creatorBlock" id="bannerCreator">
-            BY <a href="/{{ offerings[0].creator }}">{{ offerings[0].creator }}</a>
+            BY <a href="/"></a>
           </div>
 
-          <a class="thickBlock" href="/offerings/view/{{ offerings[0].id }}">
+          <a id="bannerLinkButton" class="thickBlock" href="/offerings/view/{{ offerings[0].id }}">
             <div>
                 VIEW THIS PROJECT
             </div>
@@ -41,7 +41,7 @@
 </div>
 
 <script>
-  var offerings = {{ offeringsjson|raw }};
+  var offerings = {{ offeringsjson|safe }};
   var displayedId = 0;
   
   var leftBanner = function () {
@@ -62,12 +62,28 @@
 
   var updateBanner = function () {
     $("#bannerTitle").html(offerings[displayedId].title)
-    $("#bannerDescription").html(offerings[displayedId].description)
-    $("#bannerImage").css("background-image", 'url("/offerings/'+offerings[displayedId].samplefiles[0]+'")')
 
-    var creatorHtml = 'BY <a href="/'+offerings[displayedId].creator+'">'+offerings[displayedId].creator+'</a>'
-    $("#bannerCreator").html(creatorHtml)
-    console.log( 'url("/offerings/'+offerings[displayedId].samplefiles[0]+'")')
+      var shortdesc = "";
+
+      function limitlng (input, idx) { 
+        if(input.length > idx) {
+          input = input.substring(0,idx-1)+"...";
+        }
+        return input; 
+      }
+
+      shortdesc = limitlng(offerings[displayedId].descriptionmarked, 50);
+
+      $("#bannerDescription").html("");
+      $("#bannerDescription").html(shortdesc);
+      $("#bannerImage").css("background-image", 'url("/offerings/'+offerings[displayedId].samplefiles[0]+'")');
+
+      var creatorHtml = 'BY <a href="/'+offerings[displayedId].creator+'">'+offerings[displayedId].creator+'</a>'
+      $("#bannerCreator").html(creatorHtml)
+      console.log( 'url("/offerings/'+offerings[displayedId].samplefiles[0]+'")')
+
+      $("#bannerLink").attr("href", "/offerings/view/"+offerings[displayedId].id )
+      $("#bannerLinkButton").attr("href", "/offerings/view/"+offerings[displayedId].id )
   }
 
   function keyDown( event ) {
@@ -75,10 +91,9 @@
     if (event.keyCode == 39) {  rightBanner(); }
   }
 
-
+  updateBanner();
 
   document.addEventListener( 'keydown', keyDown, false );
-  document.addEventListener( 'keyup', keyUp, false );
 
 </script>
 
@@ -156,7 +171,10 @@ a.thickBlock:hover div {
   text-align: center;
   padding: 2em;
   font-size: 1em;
+
 }  
+
+
 
 .bannerTextWrap h1 {
   text-transform: uppercase;
