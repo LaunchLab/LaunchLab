@@ -922,7 +922,7 @@ app.get('/', function (req, res) {
 						
 					}
 					data.offerings = sorted;
-
+					data.avatar = gravatar.url(req.session.email, {s: '100', r: 'pg', d: '404'});
 					data.offeringsjson = JSON.stringify(sorted);
 					res.render('home_loggedin', data);
 				})
