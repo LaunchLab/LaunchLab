@@ -1,0 +1,88 @@
+<!-- FOOTER START -->
+<div class="footer">
+  <div class="footerWrap">
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-3 footerpadd">
+        
+        <a href="/"><img src="/images/logograyscale.png"></a><br>
+        <a href="github.com">proudly opensource</a>
+      </div>
+      <div class="pure-u-1 pure-u-md-1-3 footerpadd">
+      <h3>Location</h3>
+      Openwindow Campus<br>
+      John Vorster Drive Ext. East<br>
+      Southdowns, Irene<br>
+      Centurion<br>
+      South Africa<br>
+      
+      </div>
+      <div class="pure-u-1 pure-u-md-1-3 footerpadd">
+      <h3>Contact</h3>
+      <a href="mailto:rouan@8bo.org">rouan@8bo.org</a><br>
+      +27 (12) 648 9241
+
+      </div>
+    </div>
+    
+    
+  </div>  
+</div>
+
+<style>
+  .footer {
+    background: rgb(39,37,38);
+    height: 200px;
+    width: 100%;
+    margin-top: 3em;
+    padding-top: 2em;
+    color: rgb(106,106,106);
+    font-size: 0.75em;
+  }
+  .footerpadd {
+    padding: 2em;
+  }
+
+  .footerpadd h3 {
+    color: rgb(106,106,106);
+  }
+
+  .footerpadd a {
+    color: rgb(106,106,106);
+  }
+
+  .footerpadd a:hover {
+    color: rgb(255,255,255);
+  }
+
+@media (max-width: 1200px) {
+  .footerWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .footerWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+
+</style>
+<script type="text/javascript">
+
+  var resizeFooter = function () {
+    //$(".bannerWrap").height($(".bannerWrap").width()*0.375)
+    var change = window.innerHeight - ($(".footer").offset().top );
+    if (change < 300) { change = 300;}
+    $(".footer").height(  change  )
+  }
+  
+
+  
+  resizeFooter();
+
+  window.addEventListener( 'resize', resizeFooter, false );
+</script>
+<!-- FOOTER END -->

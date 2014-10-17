@@ -1,44 +1,224 @@
-{% for offering in offerings %}
-            
-                <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
-                    
-                    
-                    <div class="market-container-wrap" style="position: relative;">
+<div class="gallery">
+  <div class="galleryWrap">
+    <div class="pure-g">
+
+    <div class="pure-u-1 galleryFilters">
+        <ul>
+            <li class="active">ALL</li>
+            <li>ARTICLES</li>
+            <li>PROJECTS</li>
+            <li>SERVICES</li>
+            <li>PRODUCTS</li>
+            <li>EVENTS</li>
+            <li>TUTORIALS</li>
+            <li>COURSES</li>
+        </ul>
+    </div>
+
+    {% for offering in offerings %}
+                {% if offerings[0].title != offering.title %}
+                    <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
                         
-                        <div class="market-container portrait">
-                            <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link">
-                                <div class="market-container-imagewrap" style='background-image: url("/offerings/{{ offering.samplefiles[0] }}");'>
-                                    
+                        
+                        <div class="market-container-wrap" style="position: relative;">
+                            
+                            <div class="market-container portrait">
+                                <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link">
+                                    <div class="market-container-imagewrap" style='background-image: url("/offerings/{{ offering.samplefiles[0] }}");'>
+                                        
+                                    </div>
+                               </a>
+
+                                <div style="padding: 0.5em;">
+                                    <span class="market-title" >
+                                        <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link productgallery" >
+                                            {{ offering.title }}
+                                        </a>
+                                        </span><br>
                                 </div>
-                           </a>
 
-                            <div style="padding: 0.5em;">
-                                <span class="market-title" >
-                                    <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link productgallery" >
-                                        {{ offering.title }}
-                                    </a>
-                                    </span><br>
-                            </div>
+                                {% if offering.saleoption == "price" %}
+                                <div style="position: absolute; top : 16em; left: 0.5em; font-size: 1em;font-weight: 700;">
+                                    <i class="fa fa-bitcoin"></i> {{ offering.price }}
+                                </div>
+                                {% endif %}
 
-                            {% if offering.saleoption == "price" %}
-                            <div style="position: absolute; top : 16em; left: 0.5em; font-size: 1em;">
-                                <i class="fa fa-bitcoin"></i> {{ offering.price }}
-                            </div>
-                            {% endif %}
-
-                            <div class="galleryBy" style="text-transform: uppercase;">
-                                <span class="market-creator" >by <a href="/{{ offering.creator }}">{{ offering.creator }}</a></span>
+                                <div class="galleryBy" style="text-transform: uppercase;">
+                                    <span class="market-creator" >by <a href="/{{ offering.creator }}">{{ offering.creator }}</a></span>
+                                </div>
+                                
                             </div>
                             
                         </div>
-                        
-
-
-
-
+                         
                     </div>
-                     
+              {% endif %}
+        {% endfor %}
+    </div>
+  </div>
+</div>
 
-                </div>
-                
-            {% endfor %}
+<style>
+
+
+
+.galleryFilters {
+    background: rgb(39,37,38);
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+
+}
+.galleryFilters ul {
+    margin: 0;
+    padding: 0;
+}
+
+.galleryFilters li {
+    float: left;
+    list-style-type: none;
+    margin-right: 1.5em;
+    font-size: 1.12em;
+    color: rgb(125,125,125);
+}
+
+.galleryFilters li:hover {
+    cursor: pointer;
+}
+
+.galleryFilters li.active {
+    color: rgb(255,255,255);
+}
+
+  .gallery {
+    width: 100%;
+  }
+
+@media (max-width: 1200px) {
+  .galleryWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .galleryWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+
+
+.galleryBy {
+    padding: 0.5em;
+    text-align: right;
+    position: absolute;
+    top: 285px;
+}
+
+.market-link:hover .market-container {
+    
+    background: rgba(235,235,235,1);
+
+}
+
+.market-link:hover .market-title {
+    color: rgb(80,80,80); 
+}
+
+.market-link:hover .market-creator {
+    
+    color: rgba(80,80,80,0.5); 
+}
+
+.market-title {
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 700; 
+    font-size: 1em;
+}
+
+.market-title a{   
+    font-weight: 700; 
+    font-size: 1em;
+}
+
+.market-title a:hover {   
+    color: rgb(255, 255, 255); 
+    
+    font-size: 1em;
+}
+
+a.productgallery {
+    color: #e14c07;
+}
+
+a.productgallery:hover {
+    color: #fff;
+}
+
+.market-creator {
+    font-size: 0.7em;
+    color: rgba(255,255,255,0.4); 
+}
+
+.market-creator a{
+    font-size: 1em;
+    color: rgba(255,255,255,0.5); 
+}
+
+.market-creator a:hover{
+    font-size: 1em;
+    color: rgb(225, 76, 7); 
+}
+
+.market-container-wrap {
+    margin: 0.1em;
+    position: relative;
+}
+
+.market-container {
+ 
+    width: 100%;
+    height: 325px;
+    float: left;
+    overflow: hidden;
+    margin: 0px;
+
+    background: rgba(25,25,25,1);
+}
+
+.market-link:hover .market-container-imagewrap {
+    border-bottom: 5px solid rgb(225, 76, 7); 
+}
+
+.market-container-imagewrap {
+    height:225px;
+    overflow: hidden;
+    border-bottom: 5px solid rgba(255,255,255,0.1);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.market-container-imagewrap img {
+    height:100%;
+}
+
+.market-container img {
+    display: block;
+}
+
+.portrait img {
+    width: 100%;
+}
+
+.landscape img {
+    height: 100%;
+}
+
+/*
+FRONT SIGNUP SPLASH
+*/
+
+</style>

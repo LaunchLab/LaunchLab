@@ -163,8 +163,34 @@ app.get('/ang', function (req, res) {
 });
 
 
+app.get('/register', function (req, res) { 
+	if (req.session.username) {
+		res.redirect('/');
+	} else {
+		res.render('register');
+	}
+})
+
+/*
 
 
+ ######     ###    ########  ######## 
+##    ##   ## ##   ##     ##    ##    
+##        ##   ##  ##     ##    ##    
+##       ##     ## ########     ##    
+##       ######### ##   ##      ##    
+##    ## ##     ## ##    ##     ##    
+ ######  ##     ## ##     ##    ##   
+
+
+*/
+
+
+
+app.get('/cart', function (req,res) {
+	//Displays the user's cart.
+	res.render('cart', { username: req.session.username, password: req.session.password});	
+})
 
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -565,21 +591,7 @@ app.get('/offerings/order/:id', function (req, res) {
 	})
 });
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-/*
 
- ######  ########  ######  ##     ## ########  #### ######## ##    ## 
-##    ## ##       ##    ## ##     ## ##     ##  ##     ##     ##  ##  
-##       ##       ##       ##     ## ##     ##  ##     ##      ####   
- ######  ######   ##       ##     ## ########   ##     ##       ##    
-      ## ##       ##       ##     ## ##   ##    ##     ##       ##    
-##    ## ##       ##    ## ##     ## ##    ##   ##     ##       ##    
- ######  ########  ######   #######  ##     ## ####    ##       ##    
-
-*/
-
-
-/* #######################################################################  MUST BE LOGGED IN BELOW ######### */
 
 var gravatar = require('gravatar');
 
@@ -598,8 +610,21 @@ function checkAuth(req, res, next) {
 
   			if (req.url == '/') {
 				db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
-					var sorted = results.sort(function(a,b) { return b.created - a.created } );
-					res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: sorted });
+					var sorted = [];
+
+					if (err) {
+						res.render('error', {message: "Database not running?"})
+					} else {
+						if (results.length > 0 ) {
+							sorted = results.sort(function(a,b) { return b.created - a.created } );
+						}
+
+						for (var a in sorted) {
+							sorted[a].id = sorted[a]._id.toHexString();
+						}
+
+						res.render('home_loggedout', { loggedout: true, socketserver: socketconnect, offerings: sorted, offeringsjson: JSON.stringify(sorted) });
+					}
 				})//end find
   			} else {
   				res.redirect('/login');
@@ -642,9 +667,21 @@ function checkAuth(req, res, next) {
   }
 
 }
-/////////////////////////////////////////////////////////////////////
-//OPTIONAL LOGGED IN
+/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/*
 
+ ######  ########  ######  ##     ## ########  #### ######## ##    ## 
+##    ## ##       ##    ## ##     ## ##     ##  ##     ##     ##  ##  
+##       ##       ##       ##     ## ##     ##  ##     ##      ####   
+ ######  ######   ##       ##     ## ########   ##     ##       ##    
+      ## ##       ##       ##     ## ##   ##    ##     ##       ##    
+##    ## ##       ##    ## ##     ## ##    ##   ##     ##       ##    
+ ######  ########  ######   #######  ##     ## ####    ##       ##    
+
+*/
+
+
+/* #######################################################################  MUST BE LOGGED IN BELOW ######### */
 
 
 
@@ -678,6 +715,8 @@ app.get('/login', function (req, res) {
 		res.render('login', { loginpage: true });
 	}
 })
+
+
 
 
 
@@ -861,7 +900,11 @@ app.get('/', function (req, res) {
 
 	db.offerings.find({"title": { "$ne": "" }}, function(err, results) {
 					var sorted = results.sort(function(a,b) { return b.created - a.created } );
+					for (var a in sorted) {
+						sorted[a].id = sorted[a]._id.toHexString();
+					}
 					data.offerings = sorted;
+					data.offeringsjson = JSON.stringify(sorted);
 					res.render('home_loggedin', data);
 				})
 
@@ -1224,7 +1267,7 @@ app.post('/offerings/imageupload/:id', function (req, res) {
 			var newfilename = Date.now()+req.multipartparse.files.file[f].originalFilename
 			var dest = fs.createWriteStream(__dirname+'/content/offerings/'+newfilename);
 
-			console.log("COPY FILE!!!")
+			console.log("COPY FILE!!! IF YOU GET A CRASH MAKE SURE /content/offerings folder exists")
 			uploadedFilenames.push(newfilename) 
 
 			source.pipe(dest);
