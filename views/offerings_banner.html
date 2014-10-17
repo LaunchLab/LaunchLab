@@ -95,6 +95,7 @@
 
   var updateBanner = function () {
       $("#bannerImage").css("background-image", 'url("/offerings/'+images[displayedId]+'")');
+      $("#bannerLink").attr("href", '/offerings/'+images[displayedId] );
       if (images.length == 1) {
         $("#bannerLeft").hide();
         $("#bannerRight").hide();
