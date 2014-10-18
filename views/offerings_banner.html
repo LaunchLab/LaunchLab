@@ -15,7 +15,10 @@
           <div class="bannerTextWrap">
             <h1 id="bannerTitle">{{ offering.title }}</h1>
             <p id="bannerDescription">
-              {{ offering.views }} views
+              {{ offering.views }} views<br>
+              {% if offering.saleoption == "price" %} 
+              PRICE <i class="fa fa-bitcoin"></i>{{ parseFloat(offering.price).toFixed(2) }}
+              {% endif %}
             </p>
           </div>
             
@@ -30,7 +33,7 @@
 
                           <a id="bannerLinkButton" class="thickBlock" href="/offerings/order/{{ offering.offering_id }}">
                             <div>
-                                <i class="fa fa-fw fa-shopping-cart"></i> BUY FOR <i class="fa fa-bitcoin"></i>{{ parseFloat(offering.price).toFixed(2) }}
+                                <i class="fa fa-fw fa-shopping-cart"></i> ADD TO CART 
                             </div>
                           </a>
 
@@ -218,15 +221,18 @@ a.thickBlock:hover div {
     var bannerheight = $(".bannerWrap").width()*0.375;
     
     if (window.innerWidth < 768) {
-      $(".bannerWrap").height(bannerheight*2);
+      $(".bannerWrap").height(bannerheight*3);
+      $(".bannerImage").height(bannerheight*2);
+      $(".bannerText").height(bannerheight);
+      $(".bannerNav").height(bannerheight*2);      
     } else {
       $(".bannerWrap").height(bannerheight);  
+      $(".bannerImage").height(bannerheight);
+      $(".bannerText").height(bannerheight);
+      $(".bannerNav").height(bannerheight);
     }
 
-    $(".bannerImage").height(bannerheight);
-    $(".bannerText").height(bannerheight);
     
-    $(".bannerNav").height(bannerheight);
     var postop = 128; //$(".bannerWrap").offset().top;
     console.log(postop)
     $(".bannerNav").css("top", postop );

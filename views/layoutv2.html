@@ -47,7 +47,7 @@
     <div class="topnavProfileName">
       <a href="/{{ username }}">
         <div class="topnavProfilePicture" style="background-image: url(/images/avatar.jpg)">
-          <img src="{{ avatar }}" width="40" height="40" onError="this.onerror=null;this.src='/images/avatar.jpg';" >
+          <img src="{{ session.avatar }}" width="40" height="40" onError="this.onerror=null;this.src='/images/avatar.jpg';" >
         </div>      
         <div class="topnavProfileNameButton">
           {{ username }}
@@ -78,7 +78,7 @@
     <div class="topnavCart">
       <a href="/cart">
         <div class="topnavCartButton">
-          <i class="fa fa-shopping-cart carticon"></i> TOTAL &nbsp;&nbsp;&nbsp; <span class="spotcolour"><i class="fa fa-bitcoin"></i> 0.00</span>
+          <i class="fa fa-shopping-cart carticon"></i> TOTAL &nbsp;&nbsp;&nbsp; <span class="spotcolour"><i class="fa fa-bitcoin"></i> {{ session.carttotal }}</span>
         </div> 
       </a>
     </div>

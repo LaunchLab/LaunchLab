@@ -9,12 +9,16 @@
 
 {% block content %}
 
-<!-- BANNER START -->
-{% include "./banner.html" %}
-<!-- BANNER END -->
+{% if offerings.length != 0 %}
 
-<!-- start gallery -->
-{% include "./gallery.html" %}
-<!-- end gallery -->
+	<!-- BANNER START -->
+	{% include "./banner.html" %}
+	<!-- BANNER END -->
+
+	<!-- start gallery -->
+	{% include "./gallery.html" %}
+	<!-- end gallery -->
+
+{% endif %}
 
 {% endblock %}

@@ -4,9 +4,49 @@
     <div class="pure-g">
         
         <div class="pure-u-1 pure-u-md-2-3">
-           <a href="/"> 
-            <div class="cartList" ></div>
-           </a>
+            <div class="cartList" >
+              <div class="pure-g">
+
+
+          {% if cart.length == 0 %}
+          
+            <div class="pure-u-1 emptycart">
+                YOUR CART IS EMPTY
+            </div>
+        
+          {% endif %}
+
+
+            {% for order in cart %}
+              <div class="pure-u-1 cartItem">
+
+              <a href="/offerings/view/{{ order.offering._id.toHexString() }}">
+                <div class="cartItemPicture" style="background-image: url('/offerings/{{ order.offering.samplefiles[0] }}')">
+                </div>
+                </a>
+
+                <div class="cartItemDetails">
+                  <a href="/cart/delete/{{ order._id.toHexString() }} ">
+                  <div class="detailsCancel">
+                     <i class="fa fa-times "></i>
+                  </div>
+                  </a>
+
+
+                  <div class="detailsPrice">
+                     <i class="fa fa-bitcoin"></i> {{ order.price }}
+                  </div>
+                  <div class="detailsOptions">
+                     {{ order.projecttitle }}
+                  </div>
+                  
+                </div>
+                
+              </div>
+            {% endfor %}
+              </div>
+            </div>
+           
          </div>
 
         <div class="pure-u-1 pure-u-md-1-3 cartText">
@@ -17,16 +57,18 @@
           <div class="cartTextWrap">
             <h3>DETAILS</h3>
             <div class="cartDetailEntry">
-              SUBTOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0.00</span>
+              SUBTOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 
+                {{ session.carttotal }}
+              </span>
             </div>            
             <div class="cartDetailEntry">
-              SALES TAX <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0.00</span>
+              SALES TAX <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0</span>
             </div>  
             <div class="cartDetailEntry">
-              SHIPPING <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0.00</span>
+              SHIPPING <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0</span>
             </div>            
             <div class="cartDetailEntry">
-              TOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0.00</span>
+              TOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> {{ session.carttotal }}</span>
             </div> 
           </div>
 
@@ -35,11 +77,23 @@
           </div>
 
 
+          {% if cart.length > 0 %}
           <a class="thickBlock" href="/">
             <div>
-                MAKE PAYMENT 
+                MAKE PAYMENT
             </div>
           </a>
+          {% endif %}
+
+          {% if cart.length == 0 %}
+          
+            <div class="thickBlockdisabled">
+                MAKE PAYMENT
+            </div>
+        
+          {% endif %}
+
+
       </div>
 
     </div>
@@ -50,11 +104,80 @@
 
 <style>
 
+.emptycart {
+  text-align: center;
+
+  color: rgb(125,125,125);
+}
+
+.detailsCancel {
+  width: 40px;
+  float:right;
+  
+  height: 80px;
+  text-align: center;
+  padding-top: 27px;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.detailsCancel:hover {
+  background: rgb(45,32,32);
+}
+
+.detailsOptions {
+  margin-right: 150px;
+  overflow: hidden;
+  padding: 0.5em;  
+  padding-left: 1em;  
+  text-transform: uppercase;
+  font-size: 20px;
+  padding: 0.5em;
+  padding-top: 27px;
+  min-height: 80px;
+}
+
+.detailsPrice {
+  float: right;
+  width: 140px;
+  
+  font-size: 20px;
+  padding: 0.5em;
+  padding-top: 27px;
+}
+
+.cartItemDetails {
+
+  min-height: 80px;
+  margin-left: 80px;
+}
+
+.cartItem {
+  min-height: 80px;
+  background: rgb(32,32,32);
+  margin-bottom: 1px;
+  margin-right: 1px;
+}
+
+.cartItemPicture {
+  height: 80px;
+  width: 80px;
+  overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    overflow: hidden;  
+     float:left;
+}
+
+
+
 .cartDetailEntry {
 }
 
 .DetailEntryAmount {
   float: right;
+  width: 100px;
 }
 
 .creatorBlock {
@@ -87,13 +210,33 @@ a.thickBlock:hover div {
   color: rgb(225,76,7);
 }
 
+
+.thickBlockdisabled  {
+  background: rgb(76,76,76);
+  height: 47px;
+  text-transform: uppercase;
+  text-align: center;
+  bottom:0;
+  position: absolute;
+  width: 100%;
+  padding-top: 10px;
+  font-weight: 700;
+  color: rgb(155,155,155);
+  cursor: default;
+}
+
+.thickBlockdisabled:hover  {
+   background: rgb(76,76,76);
+  color: rgb(155,155,155);
+}
+
+
 .cartList { 
   background: rgb(39,37,38);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;
     overflow: hidden;
-    height: 300px;
 }
 .cartText { 
   background: rgb(32,31,32); 
@@ -135,8 +278,26 @@ a.thickBlock:hover div {
 
 <script type="text/javascript">
   var resizecart = function () {
-    $(".cartTextWrap").css("font-size", Math.round($(".cartWrap").width()*0.015));
-    $(".cartList").height($(".cartText").height() );
+
+    var cartfontsize = 0; //fancy center vertical
+    if ($(".cartWrap").width() > 768) {
+      $(".cartTextWrap").css("font-size", Math.round($(".cartWrap").width()*0.015));  
+      cartfontsize = Math.round($(".cartWrap").width()*0.025);
+      $(".emptycart").css("font-size", cartfontsize);  
+      
+    } else {
+      $(".cartTextWrap").css("font-size", Math.round(768*0.015));  
+      cartfontsize = Math.round(768*0.025);
+      $(".emptycart").css("font-size", cartfontsize);  
+
+    }
+    
+    if (  $(".cartText").height() > $(".cartList").height()  ) {
+        $(".cartList").height( $(".cartText").height()   )
+        $(".emptycart").css("margin-top",  0);  
+        $(".emptycart").css("margin-top",  ($(".cartText").height() /2) - Math.round(cartfontsize/2) );  
+    }
+    
   }
 
   resizecart();

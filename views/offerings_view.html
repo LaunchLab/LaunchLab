@@ -29,26 +29,6 @@
                     <a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(200,200,200, 0.5);"><i class="fa fa-fw fa-times"></i> Delete</a><br>
                     {% endif %}
 
-                    {% if offering.saleoption == "price" %} 
-                        <div style="background: #eee; padding: 1em;">
-                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-shopping-cart"></i> Add to cart for R{{ parseFloat(offering.price).toFixed(2) }}</a><br>
-                        </div>
-
-                        <a href="/offerings/neworder/{{ offering.offering_id }}" ><i class="fa fa-fw fa-shopping-cart"></i> (temp) Add to cart for R{{ parseFloat(offering.price).toFixed(2) }}</a><br>
-                    {% endif %}
-                    
-                    {% if offering.saleoption == "quote" %} 
-                         <div style="background: #eee; padding: 1em;">
-                            <a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-shopping-cart"></i> Add to cart</a><br>
-                         </div>  
-                    {% endif %}
-
-                  
-
-
-
-
-
 
 
 

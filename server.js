@@ -185,26 +185,7 @@ app.get('/register', function (req, res) {
 	}
 })
 
-/*
 
-
- ######     ###    ########  ######## 
-##    ##   ## ##   ##     ##    ##    
-##        ##   ##  ##     ##    ##    
-##       ##     ## ########     ##    
-##       ######### ##   ##      ##    
-##    ## ##     ## ##    ##     ##    
- ######  ##     ## ##     ##    ##   
-
-
-*/
-
-
-
-app.get('/cart', function (req,res) {
-	//Displays the user's cart.
-	res.render('cart', { username: req.session.username, password: req.session.password});	
-})
 
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -225,13 +206,14 @@ app.get('/cart', function (req,res) {
 
 
 
-app.get('/offerings/view/*', function (req, res) {
+app.get('/offerings/view/:id', function (req, res) {
 	//bugfix chop to correct length
-	var mongoid = req.url.slice( '/offerings/view/'.length );
-	mongoid = mongoid.slice(0,24); //the length of a mongo id
+	var mongoid = req.params.id;
 
 	var ObjectId = mongojs.ObjectId;
+
 	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect}
+	data.session = req.session;
 
 	db.offerings.findOne({"_id": ObjectId(mongoid) }, function (err, result) {			
 			if (result) {
@@ -387,7 +369,7 @@ app.post('/login', function (req, res) {
 	{
 		if ( err || !users) { 
 			console.log("DB error"); 
-			res.render('home_loggedout', { foo: "Database error. Database offline?" });
+			res.render('home', { foo: "Database error. Database offline?" });
 		} else {
 			console.log(users)
 
@@ -401,7 +383,7 @@ app.post('/login', function (req, res) {
 				  	req.session.username = req.body.username
 					req.session.password = req.body.password
 					req.session.email = users[0].email
-					res.redirect('back'); 
+					res.redirect("/"); 
 				} else {
 					//username exists
 					//password wrong
@@ -432,7 +414,7 @@ app.post('/', function(req, res){
 	{
 		if ( err || !users) { 
 			console.log("DB error"); 
-			res.render('home_loggedout', { foo: "Database error. Database offline?" });
+			res.render('home', { foo: "Database error. Database offline?" });
 		} else {
 			console.log(users)
 
@@ -598,9 +580,23 @@ app.get('/offerings/order/:id', function (req, res) {
 			result.offering_id = req.params.id;
 			if ((!req.session.username)||(!req.session.password)) 
   			{	
-  				res.render('offerings_order', { loggedout: true, socketserver: socketconnect, offering: result });
+  				res.redirect("/register");
   			} else {
-  				res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
+				var project = {}
+				project.projecttitle = "client order for " + result.title;
+				project.offeringid = ObjectId(req.params.id);
+				project.offering = result;
+				project.projectdetails = "client: " + req.session.username +" offering: "+result.title+" price: B" + result.price;
+				project.price = result.price;
+				project.creator = req.session.username;
+				project.created = Date.now();
+				project.status = "new"
+				project.costtodate = 0;
+				console.log(project)
+
+  				db.projects.save( project );
+  				res.redirect("/cart");
+  				//res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
   			}
 
 			
@@ -638,7 +634,8 @@ function checkAuth(req, res, next) {
 					data.offerings = sorted;
 					
 					data.offeringsjson = JSON.stringify(sorted);
-					res.render('home_loggedin', data);
+					console.log("DEBUG")
+					res.render('home', data);
 				})
 
 
@@ -663,7 +660,7 @@ function checkAuth(req, res, next) {
 	{
 		if ( err || !users) { 
 			console.log("DB error. Is mongod running?");
-			res.render('home_loggedout', { foo: "Error. Database offline." });
+			res.render('home', { foo: "Error. Database offline." });
 		} else 
 		{
 
@@ -676,9 +673,18 @@ function checkAuth(req, res, next) {
 				// https://github.com/emerleite/node-gravatar
 				var avatar = gravatar.url(req.session.db.email, {s: '200', r: 'pg', d: '404'});
 				req.session.avatar = avatar;
-				next(); 
+				db.projects.find({"creator":req.session.username}, function (err, orders) {
+					req.session.carttotal = 0;
+					for (var x in orders) {
+						req.session.carttotal += orders[x].price;
+					}
+									
+					next();
+				})
+
+ 
 			}
-			if (users.length == 0) { res.render('home_loggedout', { foo: "wrong username and password. check your CAPSLOCK" }); }
+			if (users.length == 0) { res.render('home', { foo: "wrong username and password. check your CAPSLOCK" }); }
 		}
 	});
 
@@ -728,15 +734,48 @@ function enforceLogin(req, res, next) {
 
 
 app.get('/login', function (req, res) { 
-	if (req.session.username) {
-		res.redirect('/');
-	} else {
-		res.render('login', { loginpage: true });
-	}
+
+	res.render('login', { loginpage: true });
 })
 
 
+/*
 
+
+ ######     ###    ########  ######## 
+##    ##   ## ##   ##     ##    ##    
+##        ##   ##  ##     ##    ##    
+##       ##     ## ########     ##    
+##       ######### ##   ##      ##    
+##    ## ##     ## ##    ##     ##    
+ ######  ##     ## ##     ##    ##   
+
+
+*/
+
+
+
+app.get('/cart', function (req,res) {
+	//Displays the user's cart.
+	console.log("cart")
+	console.log(JSON.stringify(req.session));
+	db.projects.find({"creator":req.session.username}, function (err, orders) {
+
+		res.render('cart', { username: req.session.username, password: req.session.password, userdb: req.session.db, session: req.session, cart: orders });			
+	});
+})
+
+
+app.get('/cart/delete/:id', function (req,res) {
+	//delete an item from customer cart, before payment
+	var ObjectId = mongojs.ObjectId;
+	console.log("cart delete item")
+
+	var deleteid = req.params.id;
+	db.projects.remove({"creator":req.session.username, "_id": ObjectId(deleteid) }, function (err, orders) {
+		res.redirect("/cart");
+	});
+})
 
 
 /*
@@ -927,7 +966,8 @@ app.get('/', function (req, res) {
 					data.offerings = sorted;
 					data.avatar = gravatar.url(req.session.email, {s: '100', r: 'pg', d: '404'});
 					data.offeringsjson = JSON.stringify(sorted);
-					res.render('home_loggedin', data);
+					data.session = req.session;
+					res.render('home', data);
 				})
 
 	/*
@@ -966,7 +1006,7 @@ app.get('/', function (req, res) {
 				//
 			}
 			data.offerings = offerings;
-			res.render('home_loggedin', data);
+			res.render('home', data);
 		})//end find
 
 		
@@ -1139,7 +1179,8 @@ app.get('/projects/new', function (req, res) {
 });
 
 app.post('/projects/new', function (req, res) {
-	//CREATE NEW PROJECT
+	//CREATE NEW PROJECT (MANUAL ENTRY) 
+	//USUALLY CLIENTS WOULD CLICK ADD TO CART WHICH AUTO FILLS OUT PROJECT
 	console.log(req.body)
 	//res.end("it worked")
 	var project = req.body;
