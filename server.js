@@ -1,4 +1,25 @@
-//sudo NODE_ENV=production nodemon server
+/* 	LaunchLab 0.1 
+	
+	Developed by Rouan van der Ende (rouan@8bo.org)
+
+	OpenSource under MIT licence
+	- - - - - - - - - - - - -
+
+	To run in production mode with emails and cacheing enabled:
+
+	# sudo NODE_ENV=production nodemon server	
+
+	
+
+	- - - - - - - - - - - - - -
+
+	Cool ASCII Titles from (use banner3 font):
+	http://www.network-science.de/ascii/
+*/
+
+/* BITCOIN MASTER ACCOUNT */
+
+var bitcoinMasterWallet = "1EZ6S8YqfxzfMKCCtpzKeEJW1qMthQnCuD";
 
 var production = false;	
 if (process.env.NODE_ENV == "production") {
@@ -8,15 +29,8 @@ if (process.env.NODE_ENV == "production") {
 	console.log("\nSTARTING LAUNCHLAB in DEVELOPMENT mode. Use for production:\n\tsudo NODE_ENV=production nodemon server\n\n")
 }
 
-		//make sure this is true when in production
-// enables cacheing and emails to be sent
-
 var enableEmail = production;		
 var enableArduino = false;		//set this to true if you want arduino sensor access on server side
-
-/*
-	==================================================
-*/
 
 //var socketconnect = 'http://fluentart.com/';
 var socketconnect = '/';
@@ -30,6 +44,8 @@ var fs = require('fs');
 var app = express();
 var swig = require('swig');
 var marked = require('marked'); // https://github.com/chjj/marked
+
+var https = require('https');
 
 var serveStatic = require('serve-static')
 var favicon = require('serve-favicon');
@@ -318,8 +334,6 @@ app.get('/user/:ids', function (req, res) {
 });
 
 app.get('/:username', function (req, res,next) {
-	console.log(req.params)
-
 	var data = {username: req.session.username, password: req.session.password}
 	data.socketserver = socketconnect;
 
@@ -583,7 +597,7 @@ app.get('/offerings/order/:id', function (req, res) {
   				res.redirect("/register");
   			} else {
 				var project = {}
-				project.projecttitle = "client order for " + result.title;
+				project.projecttitle = result.title;
 				project.offeringid = ObjectId(req.params.id);
 				project.offering = result;
 				project.projectdetails = "client: " + req.session.username +" offering: "+result.title+" price: B" + result.price;
@@ -777,6 +791,67 @@ app.get('/cart/delete/:id', function (req,res) {
 	});
 })
 
+/*
+
+########     ###    ##    ## ##     ## ######## ##    ## ######## 
+##     ##   ## ##    ##  ##  ###   ### ##       ###   ##    ##    
+##     ##  ##   ##    ####   #### #### ##       ####  ##    ##    
+########  ##     ##    ##    ## ### ## ######   ## ## ##    ##    
+##        #########    ##    ##     ## ##       ##  ####    ##    
+##        ##     ##    ##    ##     ## ##       ##   ###    ##    
+##        ##     ##    ##    ##     ## ######## ##    ##    ##    
+
+
+*/
+
+app.get('/payment', function (req, res) {
+	var btc_address = bitcoinMasterWallet;
+    var api_url = 'https://blockchain.info/api/receive';
+    var callback_url = 'http://launchlabapp.com/paymentcallback';
+
+    var url = api_url + '?method=create&address=' + btc_address + '&callback=' + encodeURIComponent(callback_url);
+	if (btc_address)
+    {
+        https.get(url, function(resp) {
+            console.log("Calling Blockchain API at " + url)
+            var body = '';
+
+            resp.on('data', function(chunk) {
+                body += chunk;
+            });
+
+            resp.on('end', function() {
+                try
+                {
+                    console.log('Blockchain returns: ' + body);
+
+                    res.json(JSON.parse(body));
+                }
+                catch(e)
+                {
+                    msg.error = e;
+                }           
+
+            });
+        }).on('error', function(e) {
+            msg.error = e;
+        });
+    }
+});
+
+/* https://blockchain.info/api/receive?method=create&address=$receiving_address&callback=$callback_url */
+
+app.get('/paymentcallback', function (req, res) {
+	//to seperate phplike url parameters
+	var url = require('url');
+	var url_parts = url.parse(req.url, true);
+	var query = url_parts.query;
+
+	console.log(query);
+
+	res.send("*ok*");
+	res.end(); //duno if to end or not?
+});
 
 /*
 

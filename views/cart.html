@@ -9,7 +9,336 @@
 
 {% block content %}
 
-{% include "./cart_contents.html" %}
+<!-- cart START -->
+<div class="cart container">
+  <div class="cartWrap">
+    <div class="pure-g">
+        
+        <div class="pure-u-1 pure-u-md-2-3">
+            <div class="cartList" >
+              <div class="pure-g">
+
+
+          {% if cart.length == 0 %}
+          
+            <div class="pure-u-1 emptycart">
+                YOUR CART IS EMPTY
+            </div>
+        
+          {% endif %}
+
+
+            {% for order in cart %}
+              <div class="pure-u-1 cartItem">
+
+              <a href="/offerings/view/{{ order.offering._id.toHexString() }}">
+                <div class="cartItemPicture" style="background-image: url('/offerings/{{ order.offering.samplefiles[0] }}')">
+                </div>
+                </a>
+
+                <div class="cartItemDetails">
+                  <a href="/cart/delete/{{ order._id.toHexString() }} ">
+                  <div class="detailsCancel">
+                     <i class="fa fa-times "></i>
+                  </div>
+                  </a>
+
+
+                  <div class="detailsPrice">
+                     <i class="fa fa-bitcoin"></i> {{ order.price }}
+                  </div>
+                  <div class="detailsOptions">
+                     {{ order.projecttitle }}
+                  </div>
+                  
+                </div>
+                
+              </div>
+            {% endfor %}
+              </div>
+            </div>
+           
+         </div>
+
+        <div class="pure-u-1 pure-u-md-1-3 cartText">
+          <div class="cartTextWrap" style="margin-top: 2em; margin-bottom: 2em;">
+            <p>Final costs for shipping and sales tax will be calculated once you enter your payment information.</p>
+          </div>
+
+          <div class="cartTextWrap">
+            <h3>DETAILS</h3>
+            <div class="cartDetailEntry">
+              SUBTOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 
+                {{ session.carttotal }}
+              </span>
+            </div>            
+            <div class="cartDetailEntry">
+              SALES TAX <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0</span>
+            </div>  
+            <div class="cartDetailEntry">
+              SHIPPING <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0</span>
+            </div>            
+            <div class="cartDetailEntry">
+              TOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> {{ session.carttotal }}</span>
+            </div> 
+          </div>
+
+          <div class="cartTextWrap" style="margin-top: 2em; margin-bottom: 5em;">
+          <p>You will be charged by LaunchLab, NPO. Our Delivery Methods, Return Policy and Privacy Statement are available <a href="/terms">here</a>.</p>
+          </div>
+
+
+          {% if cart.length > 0 %}
+          
+            <div id="paymentButton">
+                MAKE PAYMENT
+            </div>
+          
+          {% endif %}
+
+          {% if cart.length == 0 %}
+          
+            <div class="thickBlockdisabled">
+                MAKE PAYMENT
+            </div>
+        
+          {% endif %}
+
+
+      </div>
+
+    </div>
+
+     <div class="pure-g">
+     	 <div class="pure-u-1">
+     	 	PAYMENT ADDRESS: <span id="paymentaddress"></span>
+     	 </div>
+     </div>
+
+  </div>
+</div> 
+
+
+<script>
+	
+	$("#paymentButton").click( function () {
+		$.get( "/payment", function( data ) {
+		  $( "#paymentaddress" ).html( data.input_address );
+		  console.log(data);
+		});
+	})
+
+</script>
+
+
+<style>
+
+#paymentButton {
+  background: rgb(225,76,7);
+  height: 47px;
+  text-transform: uppercase;
+  text-align: center;
+  bottom:0;
+  position: absolute;
+  width: 100%;
+  padding-top: 10px;
+  font-weight: 700;
+  color: rgb(255,255,255);
+  cursor: pointer;
+}
+
+#paymentButton:hover {
+  background: rgb(255,255,255);
+  color: rgb(225,76,7);
+}
+
+
+
+.emptycart {
+  text-align: center;
+
+  color: rgb(125,125,125);
+}
+
+.detailsCancel {
+  width: 40px;
+  float:right;
+  
+  height: 80px;
+  text-align: center;
+  padding-top: 27px;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.detailsCancel:hover {
+  background: rgb(45,32,32);
+}
+
+.detailsOptions {
+  margin-right: 150px;
+  overflow: hidden;
+  padding: 0.5em;  
+  padding-left: 1em;  
+  text-transform: uppercase;
+  font-size: 20px;
+  padding: 0.5em;
+  padding-top: 27px;
+  min-height: 80px;
+}
+
+.detailsPrice {
+  float: right;
+  width: 140px;
+  
+  font-size: 20px;
+  padding: 0.5em;
+  padding-top: 27px;
+}
+
+.cartItemDetails {
+
+  min-height: 80px;
+  margin-left: 80px;
+}
+
+.cartItem {
+  min-height: 80px;
+  background: rgb(32,32,32);
+  margin-bottom: 1px;
+  margin-right: 1px;
+}
+
+.cartItemPicture {
+  height: 80px;
+  width: 80px;
+  overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    overflow: hidden;  
+     float:left;
+}
+
+
+
+.cartDetailEntry {
+}
+
+.DetailEntryAmount {
+  float: right;
+  width: 100px;
+}
+
+.creatorBlock {
+  height: 47px;
+  bottom: 47px;
+  position: absolute;  
+  width: 100%;
+  text-align: center;  
+  color: rgb(125,125,125);
+}
+
+.creatorBlock a{
+}
+
+
+
+
+.thickBlockdisabled  {
+  background: rgb(76,76,76);
+  height: 47px;
+  text-transform: uppercase;
+  text-align: center;
+  bottom:0;
+  position: absolute;
+  width: 100%;
+  padding-top: 10px;
+  font-weight: 700;
+  color: rgb(155,155,155);
+  cursor: default;
+}
+
+.thickBlockdisabled:hover  {
+   background: rgb(76,76,76);
+  color: rgb(155,155,155);
+}
+
+
+.cartList { 
+  background: rgb(39,37,38);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    overflow: hidden;
+}
+.cartText { 
+  background: rgb(32,31,32); 
+  position: relative;}
+
+.cartTextWrap {
+  text-align: left;
+  padding: 0em 2em 0 2em;
+  font-size: 1em;
+}  
+
+.cartTextWrap p {
+  line-height: 1.2em;
+  font-weight: 400;
+  font-size: 0.8em;
+  color: rgb(200,200,200);
+  margin-top: 0;
+}  
+
+.cartTextWrap h3 {
+  color: rgb(225,76,7);
+  margin: 0;
+}
+
+@media (max-width: 1200px) {
+  .cartWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .cartWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+</style>
+
+<script type="text/javascript">
+  var resizecart = function () {
+
+    var cartfontsize = 0; //fancy center vertical
+    if ($(".cartWrap").width() > 768) {
+      $(".cartTextWrap").css("font-size", Math.round($(".cartWrap").width()*0.015));  
+      cartfontsize = Math.round($(".cartWrap").width()*0.025);
+      $(".emptycart").css("font-size", cartfontsize);  
+      
+    } else {
+      $(".cartTextWrap").css("font-size", Math.round(768*0.015));  
+      cartfontsize = Math.round(768*0.025);
+      $(".emptycart").css("font-size", cartfontsize);  
+
+    }
+    
+    if (  $(".cartText").height() > $(".cartList").height()  ) {
+        $(".cartList").height( $(".cartText").height()   )
+        $(".emptycart").css("margin-top",  0);  
+        $(".emptycart").css("margin-top",  ($(".cartText").height() /2) - Math.round(cartfontsize/2) );  
+    }
+    
+  }
+
+  resizecart();
+
+  window.addEventListener( 'resize', resizecart, false );
+</script>
+<!-- cart END -->
 
 
 {% endblock %}
