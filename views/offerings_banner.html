@@ -17,7 +17,7 @@
             <p id="bannerDescription">
               {{ offering.views }} views<br>
               {% if offering.saleoption == "price" %} 
-              PRICE <i class="fa fa-bitcoin"></i>{{ parseFloat(offering.price).toFixed(2) }}
+              PRICE <i class="fa fa-bitcoin"></i>{{ offering.price }}
               {% endif %}
             </p>
           </div>

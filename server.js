@@ -55,7 +55,7 @@ var session = require('cookie-session')
 var compress = require('compression');
 
 var databaseUrl = "mydb"; // "username:password@example.com/mydb"
-var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders", "invoices"]
+var collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders", "invoices", "payments"]
 var mongojs = require("mongojs");
 var db = mongojs.connect(databaseUrl, collections);
 
@@ -64,6 +64,31 @@ var scrypt = require("./scrypt.js"); // modified https://github.com/tonyg/js-scr
 app.use(compress());
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
+
+/* BITCOIN PAYMENT INCOMING */
+
+
+app.get('/paymentcallback', function (req, res) {
+	//to seperate phplike url parameters
+	var url = require('url');
+	var url_parts = url.parse(req.url, true);
+	var query = url_parts.query;
+	console.log(query);
+	db.payments.save(query);
+	res.send("*ok*");
+	res.end(); //duno if to end or not?
+});
+
+app.get('/payments', function (req, res) {
+	db.payments.find({}, function (err, results) {
+		res.json(results);
+	});
+})
+
+/* END BITCOIN PAYMENT INCOMING */
+
+
+
 
 app.use(function(req, res, next) {
 
@@ -841,17 +866,7 @@ app.get('/payment', function (req, res) {
 
 /* https://blockchain.info/api/receive?method=create&address=$receiving_address&callback=$callback_url */
 
-app.get('/paymentcallback', function (req, res) {
-	//to seperate phplike url parameters
-	var url = require('url');
-	var url_parts = url.parse(req.url, true);
-	var query = url_parts.query;
 
-	console.log(query);
-
-	res.send("*ok*");
-	res.end(); //duno if to end or not?
-});
 
 /*
 
