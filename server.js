@@ -85,8 +85,11 @@ app.get('/paymentcallback/:id', function (req, res) {
 		if (invoice.paymentsrecords == undefined) {
 			invoice.paymentsrecords = [];
 		}
-		invoice.paymentsrecords.push(query);
+		
+		io.to(invoice.blockchainapi.input_address).emit('payment recieved'):
 
+		invoice.paymentsrecords.push(query);
+		db.invoices.update({"_id": ObjectId(invoiceid)}, invoice); //UPDATES INVOICE IN DATABASE
 	})
 	res.send("*ok*");
 	res.end(); //duno if to end or not?
@@ -819,7 +822,6 @@ app.get('/cart', function (req,res) {
 	console.log("cart")
 	console.log(JSON.stringify(req.session));
 	db.projects.find({"creator":req.session.username}, function (err, orders) {
-
 		res.render('cart', { username: req.session.username, password: req.session.password, userdb: req.session.db, session: req.session, cart: orders });			
 	});
 })

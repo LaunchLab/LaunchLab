@@ -5,6 +5,7 @@
 {% block head %}
   {% parent %}
   <script src="/lib/scrypt.min.js"></script>
+  <script src="/lib/socket.io.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -125,12 +126,30 @@
 
 
 <script>
+
+	var socket = io.connect();
+	
+	socket.on('connect', function() {
+		console.log("LISTENING");
+	});
+
 	$("#paymentaddressWrap").hide();
 	$("#paymentButton").click( function () {
 		$("#paymentButton").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 		$.get( "/payment", function( data ) {
 		  $("#cartmainhider").hide();
 		  $( "#paymentaddress" ).html( data.input_address );
+
+		   console.log("JOIN CHANNEL")
+		   socket.join(data.input_address);
+
+		   socket.on('payment', function(id, msg){
+			    //socket.broadcast.to(id).emit('my message', msg);
+			    console.log(id)
+			    console.log(msg)
+			});
+		
+
 		  $("#paymentaddressWrap").fadeIn(300);
 		  //footer resize
 		  resizeFooter();
