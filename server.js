@@ -86,7 +86,7 @@ app.get('/paymentcallback/:id', function (req, res) {
 			invoice.paymentsrecords = [];
 		}
 		
-		io.to(invoice.blockchainapi.input_address).emit('payment recieved'):
+		io.to(invoice.blockchainapi.input_address).emit('payment recieved');
 
 		invoice.paymentsrecords.push(query);
 		db.invoices.update({"_id": ObjectId(invoiceid)}, invoice); //UPDATES INVOICE IN DATABASE
