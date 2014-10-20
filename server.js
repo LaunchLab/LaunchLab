@@ -68,13 +68,26 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 /* BITCOIN PAYMENT INCOMING */
 
 
-app.get('/paymentcallback', function (req, res) {
+app.get('/paymentcallback/:id', function (req, res) {
+	var invoiceid = req.params.id
 	//to seperate phplike url parameters
 	var url = require('url');
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
 	console.log(query);
 	db.payments.save(query);
+
+	var ObjectId = mongojs.ObjectId;
+	
+	db.invoices.findOne({"_id": ObjectId(invoiceid)}, function (err, invoice) {
+		console.log(" ** PAYMENT RECIEVED! **");
+
+		if (invoice.paymentsrecords == undefined) {
+			invoice.paymentsrecords = [];
+		}
+		invoice.paymentsrecords.push(query);
+
+	})
 	res.send("*ok*");
 	res.end(); //duno if to end or not?
 });
@@ -712,10 +725,17 @@ function checkAuth(req, res, next) {
 				// https://github.com/emerleite/node-gravatar
 				var avatar = gravatar.url(req.session.db.email, {s: '200', r: 'pg', d: '404'});
 				req.session.avatar = avatar;
-				db.projects.find({"creator":req.session.username}, function (err, orders) {
+				/*
+
+					status = new     -new cart item, not paid for yet and not started on yet
+					status = paid    -paid for in full
+
+				*/
+				db.projects.find({"creator":req.session.username, "status": "new"}, function (err, projects) {
+					console.log(projects);
 					req.session.carttotal = 0;
-					for (var x in orders) {
-						req.session.carttotal += orders[x].price;
+					for (var x in projects) {
+						req.session.carttotal += projects[x].price;
 					}
 									
 					next();
@@ -830,41 +850,89 @@ app.get('/cart/delete/:id', function (req,res) {
 */
 
 app.get('/payment', function (req, res) {
-	var btc_address = bitcoinMasterWallet;
-    var api_url = 'https://blockchain.info/api/receive';
-    var callback_url = 'http://launchlabapp.com/paymentcallback';
 
-    var url = api_url + '?method=create&address=' + btc_address + '&callback=' + encodeURIComponent(callback_url);
-	if (btc_address)
-    {
-        https.get(url, function(resp) {
-            console.log("Calling Blockchain API at " + url)
-            var body = '';
 
-            resp.on('data', function(chunk) {
-                body += chunk;
-            });
 
-            resp.on('end', function() {
-                try
-                {
-                    console.log('Blockchain returns: ' + body);
+    /* USER CLICKED MAKE PAYMENT
+    we create a new order and save their cart contents and payment details so we can confirm payment confirmation
+    */
 
-                    res.json(JSON.parse(body));
-                }
-                catch(e)
-                {
-                    msg.error = e;
-                }           
+    //CART CONTENTS UNPAID FOR (INVOICE BASICLLY)
+	/*
 
-            });
-        }).on('error', function(e) {
-            msg.error = e;
-        });
-    }
-});
+		status = new     -new cart item, not paid for yet and not started on yet
+		status = paid    -paid for in full
 
-/* https://blockchain.info/api/receive?method=create&address=$receiving_address&callback=$callback_url */
+	*/
+	db.projects.find({"creator":req.session.username, "status": "new"}, function (err, projects) {
+		//calculate cart total
+		var carttotal = 0;
+		for (var x in projects) {
+			carttotal += projects[x].price;
+		}
+
+		//create invoice
+		var invoice = {}
+		invoice.creator = req.session.username;
+		invoice.created = Date.now();
+		invoice.status = "new";
+		invoice.total = "";
+		invoice.issuedate = new Date(); // MM/DD/YYYY
+		invoice.payments = 0;
+		invoice.from = {}; 	//launchlab company?
+		invoice.for = req.session.username;;
+		invoice.items = projects;
+
+		db.invoices.save(invoice, function (err, result) {
+			var invoiceid = result._id.toHexString();
+			//GOT INVOICE ID.
+
+			/* BLOCKCHAIN API START */
+			/* https://blockchain.info/api/receive?method=create&address=$receiving_address&callback=$callback_url */
+			var btc_address = bitcoinMasterWallet;
+		    var api_url = 'https://blockchain.info/api/receive';
+		    var callback_url = 'http://launchlabapp.com/paymentcallback/'+invoiceid;
+
+		    var url = api_url + '?method=create&address=' + btc_address + '&callback=' + encodeURIComponent(callback_url);
+			if (btc_address)
+		    {
+		        https.get(url, function(resp) {
+		            console.log("Calling Blockchain API at " + url)
+		            var body = '';
+
+		            resp.on('data', function(chunk) {
+		                body += chunk;
+		            });
+
+		            resp.on('end', function() {
+		                try
+		                {
+		                    console.log('Blockchain returns: ' + body);
+
+		                    invoice.blockchainapi = JSON.parse(body);
+		                    var ObjectId = mongojs.ObjectId;
+		                    db.invoices.update({"_id": ObjectId(invoiceid)}, invoice, function (err, result) {
+		                    	res.json(JSON.parse(body));
+		                    } )
+		                    
+		                }
+		                catch(e)
+		                {
+		                    msg.error = e;
+		                }           
+
+		            });
+		        }).on('error', function(e) {
+		            msg.error = e;
+		        });
+		    }
+		    /* BLOCKCHAIN API END */
+		
+		})//SAVED INVOICE
+	});//END PROJECTS/CART FIND
+});//END ROUTE
+
+
 
 
 
