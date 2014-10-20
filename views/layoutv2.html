@@ -57,7 +57,8 @@
 
     <div class="topnavOptions">
         <div class="topnavOptionsButton">
-          <i class="fa fa-gear"></i>
+          
+          <i class="fa fa-edit "></i>
         </div> 
     </div>
 
@@ -110,9 +111,11 @@
 </div>
 
 <div class="topnavOptionsMenu">
-  <a href="/profile"><i class="fa fa-fw fa-edit "></i> edit profile</a><br>
-  <a href="/offerings/new"><i class="fa fa-fw fa-upload "></i> upload</a><br>
-  <a href="/logout"><i class="fa fa-fw fa-times "></i> logout</a><br>
+  <ul>
+    <li><a href="/offerings/new"><i class="fa fa-fw fa-upload "></i> UPLOAD</a></li>
+    <li><a href="/profile"><i class="fa fa-fw fa-gear"></i> PROFILE</a> </li>
+    <li><a href="/logout"><i class="fa fa-fw fa-times "></i> LOGOUT</a></li>
+  </ul>
 </div>
 
 <script>
@@ -190,8 +193,21 @@
   position: fixed;
   background: rgb(32,31,32);
   top:0;
-  padding: 0.5em;
+  padding: 1em;
+  opacity: 0.9;
 }
+
+.topnavOptionsMenu ul {
+  float:left;
+  list-style-type:none;
+  margin: 0em;
+  padding: 0em;
+}
+
+.topnavOptionsMenu li {
+  padding: 0.1em;
+}
+
 
 /* TOP NAVIGATION BAR */
 .spotcolour {
@@ -342,7 +358,6 @@ div.topnavProfileNameButton {
 <!-- LOGO TOP LOGO START -->
 <div class="topbranding">
   <div class="topbrandingWrap">
-
     <div class="topbrandingLogo">
       <a href="/" class="logobranding">
         <img src="/images/logo.png" width="175">     
