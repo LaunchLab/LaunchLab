@@ -117,8 +117,15 @@
      	 	<span id="paymentaddress"></span>
      	 	<p>After sending bitcoin please wait for page to reload.</p>
      	 	</div>
-     	 	
      	 </div>
+
+     	 <div class="pure-u-1" id="paymentCompleted">
+     	 	<div>
+	     	 	<h3>PAYMENT RECIEVED!</h3>
+	     	 	<p>Thank you.</p>
+     	 	</div>
+     	 </div>
+
      </div>
 
   </div>
@@ -130,24 +137,28 @@
 	var socket = io.connect();
 	
 	socket.on('connect', function() {
-		console.log("LISTENING");
+		console.log("CONNECTED")
+	});
+
+	socket.on('payment', function(id, msg){
+	    //socket.broadcast.to(id).emit('my message', msg);
+	    console.log(id)
+	    console.log(msg)
+	    $("#paymentaddressWrap").hide();
+	    $("#paymentCompleted").show();
 	});
 
 	$("#paymentaddressWrap").hide();
+	$("#paymentCompleted").hide();
+	
 	$("#paymentButton").click( function () {
 		$("#paymentButton").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 		$.get( "/payment", function( data ) {
 		  $("#cartmainhider").hide();
 		  $( "#paymentaddress" ).html( data.input_address );
-
-		   console.log("JOIN CHANNEL")
-		   socket.join(data.input_address);
-
-		   socket.on('payment', function(id, msg){
-			    //socket.broadcast.to(id).emit('my message', msg);
-			    console.log(id)
-			    console.log(msg)
-			});
+		  	console.log("JOIN CHANNEL")
+		  	socket.emit('room', {room: data.input_address });
+		  	
 		
 
 		  $("#paymentaddressWrap").fadeIn(300);
@@ -160,6 +171,17 @@
 
 
 <style>
+
+#paymentCompleted {
+  margin-top: 1em;
+  background: rgb(32,31,32); 	
+  text-align: center;
+  padding: 1em;
+}
+
+#paymentaddressWrap h3 .bitcoin {
+	color: rgb(225,76,7);
+}
 
 #paymentaddressWrap {
   margin-top: 1em;

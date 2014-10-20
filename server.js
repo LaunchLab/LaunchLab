@@ -96,6 +96,8 @@ app.get('/paymentcallback/:id', function (req, res) {
 });
 
 app.get('/payments', function (req, res) {
+	
+	io.sockets.in("test").emit('payment', "completed");
 	db.payments.find({}, function (err, results) {
 		res.json(results);
 	});
