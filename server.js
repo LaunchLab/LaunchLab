@@ -78,10 +78,10 @@ app.get('/paymentcallback/:id', function (req, res) {
 	db.payments.save(query);
 
 	var ObjectId = mongojs.ObjectId;
-	
-	db.invoices.findOne({"_id": ObjectId(invoiceid)}, function (err, invoice) {
-		console.log(" ** PAYMENT RECIEVED! **");
+	console.log(" ** PAYMENT RECIEVED! **");
 
+	db.invoices.findOne({"_id": ObjectId(invoiceid)}, function (err, invoice) {
+		
 		if (invoice.paymentsrecords == undefined) {
 			invoice.paymentsrecords = [];
 		}
@@ -90,13 +90,13 @@ app.get('/paymentcallback/:id', function (req, res) {
 
 		invoice.paymentsrecords.push(query);
 		db.invoices.update({"_id": ObjectId(invoiceid)}, invoice); //UPDATES INVOICE IN DATABASE
+		res.send("*ok*");	
 	})
-	res.send("*ok*");
-	res.end(); //duno if to end or not?
+	
+	
 });
 
 app.get('/payments', function (req, res) {
-	
 	io.sockets.in("test").emit('payment', "completed");
 	db.payments.find({}, function (err, results) {
 		res.json(results);
@@ -901,7 +901,7 @@ app.get('/payment', function (req, res) {
 			if (btc_address)
 		    {
 		        https.get(url, function(resp) {
-		            console.log("Calling Blockchain API at " + url)
+		            //console.log("Calling Blockchain API at " + url)
 		            var body = '';
 
 		            resp.on('data', function(chunk) {
@@ -911,7 +911,7 @@ app.get('/payment', function (req, res) {
 		            resp.on('end', function() {
 		                try
 		                {
-		                    console.log('Blockchain returns: ' + body);
+		                    //console.log('Blockchain returns: ' + body);
 
 		                    invoice.blockchainapi = JSON.parse(body);
 		                    var ObjectId = mongojs.ObjectId;
