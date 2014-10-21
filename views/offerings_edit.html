@@ -75,7 +75,7 @@
 					        	<div class="pure-u-1" id="typeoptions">
 					        		<label for="title">Type of post</label>
 									<select id="typeoption" name="typeoption">
-										<option value="project" selected> PORTFOLIO</option>
+										<option value="portfolio" selected> PORTFOLIO</option>
 										<option value="job"> JOB</option>
 										<option value="article"> ARTICLE</option>
 										<option value="service" > SERVICE</option>
@@ -122,9 +122,9 @@
 						</div>
 
 						<script>
-						var typeoption =  {% if offering.typeoption == undefined %} "project"; {% endif %}  {% if offering.typeoption != undefined %} "{{offering.typeoption}}"; {% endif %} 
+						var typeoption =  {% if offering.typeoption == undefined %} "portfolio"; {% endif %}  {% if offering.typeoption != undefined %} "{{offering.typeoption}}"; {% endif %} 
 						var saleoption =  {% if offering.saleoption == undefined %} "nosale"; {% endif %}  {% if offering.saleoption != undefined %} "{{offering.saleoption}}"; {% endif %} 
-
+						console.log(typeoption);
 						$("#typeoption").change( function() {
 							$( "#typeoption option:selected" ).each(function() {
 								typeoption = $(this).val();
@@ -143,7 +143,7 @@
 						var rendersaleoptions = function () {
 							var html = "";
 
-							if ( typeoption == "project") { $("#monetization").hide(); }
+							if ( typeoption == "portfolio") { $("#monetization").hide(); }
 							if ( typeoption == "job") 	 { $("#monetization").hide(); } //future: perhaps job pricing to make tasks faster
 							if ( typeoption == "article") { $("#monetization").hide(); }
 							if ( typeoption == "service") { $("#monetization").show(); }

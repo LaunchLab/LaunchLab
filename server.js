@@ -1598,7 +1598,7 @@ app.post('/offerings/edit/:id', function (req, res) {
 		newOffering.price = parseFloat(req.multipartparse.fields.price[0]);
 		newOffering.typeoption = req.multipartparse.fields.typeoption[0]
 		newOffering.saleoption = req.multipartparse.fields.saleoption[0]
-
+		console.log("- - - -")
 		console.log(req.multipartparse.fields)
 
 		for (var file in uploadedFilenames) {
