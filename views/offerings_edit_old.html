@@ -1,23 +1,22 @@
-{% extends 'layoutv2.html' %}
+{% extends 'layout.html' %}
 
-{% block title %}LaunchLab{% endblock %}
+{% block title %}Edit {{ offering.title }}{% endblock %}
 
 {% block head %}
   {% parent %}
-  <script src="/lib/scrypt.min.js"></script>
-  <script src="/lib/dropzone.js"></script>
 {% endblock %}
 
 {% block content %}
 
 
-<div class="banner container">
-  	<div class="bannerWrap">
-    	<div class="pure-g">
-        	<div class="pure-u-1">
+
+
+
+ <script src="/lib/dropzone.js"></script>
+
 
 <!-- start market -->
-
+<div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #000;">
 <div class="pure-g" style="margin-top: 60px;">
 
            
@@ -141,8 +140,22 @@
                 </div> 
             
 
-
+</div>
 </div> 
+<!-- end market -->
+
+
+
+
+
+    
+
+
+  
+
+    {% include "./footer.html" %}
+
+</div>
 
 <script>
 var sizeblock = function () {
@@ -160,12 +173,7 @@ var sizeblock = function () {
 sizeblock();
 </script>
 
-<!-- end market -->
 
 
-			</div>
-		</div>        
-	</div>        
-</div>  
 
 {% endblock %}
