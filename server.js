@@ -1488,7 +1488,20 @@ app.post('/offerings/imageupload/:id', function (req, res) {
 			var source = fs.createReadStream(req.multipartparse.files.file[f].path);
 
 			//var dest = fs.createWriteStream(__dirname+'/files'+req.multipartparse.files.file[f].path);
-			
+			console.log("work - extension limit")
+			console.log(req.multipartparse.files.file[f].originalFilename)
+			//extension check
+			var a = req.multipartparse.files.file[f].originalFilename;
+			var aext = a.slice(a.length-4, a.length)
+			console.log(aext)
+			if (aext == ".jpg") { console.log("correct")} else {
+				alert("test");
+				console.log("block");
+				res.send("/error");
+				return;
+				
+			}
+
 			var newfilename = Date.now()+req.multipartparse.files.file[f].originalFilename
 			var dest = fs.createWriteStream(__dirname+'/content/offerings/'+newfilename);
 
