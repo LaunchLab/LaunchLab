@@ -43,11 +43,9 @@ a:hover {
     color: rgb(225,76,7);
 }
 
-input {
-    padding: 0.5em;
-    border: 2px solid rgb(39,37,38);
-}
+
 
 input:focus {
     border: 2px solid rgb(225,76,7);
 }
+

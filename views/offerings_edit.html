@@ -11,12 +11,12 @@
 {% block content %}
 
 
-<div class="banner container">
-  	<div class="bannerWrap">
+<div class="edit container">
+  	<div class="pageWrap">
     	<div class="pure-g">
         	<div class="pure-u-1">
 
-<!-- start market -->
+<!-- start editform -->
 
 <div class="pure-g" style="margin-top: 60px;">
 
@@ -66,24 +66,37 @@
 
                 </script>   
                    
-                <div class="pure-u-1 pure-u-md-1-2 ">
+                <div class="pure-u-1 pure-u-md-1-2 darkRight">
                 	<!-- start FORM -->
 					<form class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post" action="/offerings/edit/{{ offering.offering_id }}">
 						<fieldset>
-							<h1>Edit your entry</h1>
+
+					        <div class="pure-g">
+					        	<div class="pure-u-1" id="typeoptions">
+					        		<label for="title">Type of post</label>
+									<select id="typeoption" name="typeoption">
+										<option value="project" selected> PORTFOLIO</option>
+										<option value="job"> JOB</option>
+										<option value="article"> ARTICLE</option>
+										<option value="service" > SERVICE</option>
+										<option value="tutorial"> TUTORIAL</option>
+										<option value="course"> COURSE</option>
+									</select>
+					        	</div>
+					        </div>
 
 					        <div class="pure-control-group">
 					            <label for="title">Title</label>
-					            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title }}" placeholder="Short description of offering ">
+					            <input id="title" class="backgroundinputs" type="text" name="title" value="{{ offering.title }}" placeholder="Heading">
 					        </div>
 
 					        <div class="pure-control-group">
-					            <label for="description">Description ( <a href="http://daringfireball.net/projects/markdown/basics">markdown</a> allowed )</label>
-					            <textarea id="description" name="description" class="backgroundtextareas" rows="25" placeholder="Long description what you are offering. This should inform and convince the buyer in you and your offering." >{{ offering.description}}</textarea>
+					            <label for="description">Body content ( <a href="http://daringfireball.net/projects/markdown/basics">markdown</a> allowed )</label>
+					            <textarea id="description" name="description" class="backgroundtextareas" rows="25" placeholder="Body content" >{{ offering.description}}</textarea>
 					        </div>
 
-					        <h2>Options (experimental)</h2>
-
+					    <div id="monetization">
+					        <h2>Monetization</h2>
 
 					        <div class="pure-g">
 					        	<div class="pure-u-1" id="saleoptions">
@@ -94,15 +107,32 @@
 					        </div>
 
 					        <div class="pure-g" id="salePrice">
-					        	<div class="pure-u-1 pure-u-md-1-4 labell inputlabel">Price <i class="fa fa-bitcoin"></i></div>
+					        	<div class="pure-u-1 pure-u-md-1-4  inputlabel">Price in <i class="fa fa-bitcoin"></i>itcoin</div>
 								<div class="pure-u-1 pure-u-md-3-4 profiledata"><input id="price" class="backgroundinputs" type="text" name="price" placeholder="" value="{{ offering.price }}"></div>
 							</div>
 
+
 					        <div class="pure-g">
-					        	<div class="pure-u-1"><b>Please note that launchlab takes 10% of the sales price. So the amount that you enter above will NOT be the amount that you recieve. If you charge 1.0 bitcoin, you will recieve only 0.9 bitcoin.</b> </div>
+					        	<div class="pure-u-1" >
+					        	    <div class="editTextWrap" style="margin-top: 2em; ">
+							          <p>Please note that launchlab takes 10% of the sales price. So the amount that you enter above will NOT be the amount that you recieve. If you charge 1.0 bitcoin, you will recieve only 0.9 bitcoin. </p>
+							          </div>
+							      </div>
 							</div>
+						</div>
 
 						<script>
+						var typeoption =  {% if offering.typeoption == undefined %} "project"; {% endif %}  {% if offering.typeoption != undefined %} "{{offering.typeoption}}"; {% endif %} 
+						var saleoption =  {% if offering.saleoption == undefined %} "nosale"; {% endif %}  {% if offering.saleoption != undefined %} "{{offering.saleoption}}"; {% endif %} 
+
+						$("#typeoption").change( function() {
+							$( "#typeoption option:selected" ).each(function() {
+								typeoption = $(this).val();
+								console.log($(this).val());
+							});
+							rendersaleoptions();
+						})
+
 						$("input[name=saleoption]:radio").change(function () {
 							console.log($(this).val());
 							if ($(this).val() == "nosale" ) { $("#salePrice").hide(); }
@@ -112,8 +142,17 @@
 
 						var rendersaleoptions = function () {
 							var html = "";
-							var saleoption =  {% if offering.saleoption == undefined %} "nosale"; {% endif %}  {% if offering.saleoption != undefined %} "{{offering.saleoption}}"; {% endif %} 
-							console.log(saleoption)
+
+							if ( typeoption == "project") { $("#monetization").hide(); }
+							if ( typeoption == "job") 	 { $("#monetization").hide(); } //future: perhaps job pricing to make tasks faster
+							if ( typeoption == "article") { $("#monetization").hide(); }
+							if ( typeoption == "service") { $("#monetization").show(); }
+							if ( typeoption == "tutorial"){ $("#monetization").hide(); } //future: perhaps ticket sales at some point
+							if ( typeoption == "course")  { $("#monetization").show(); } //experimental: course sales
+
+							$("#typeoption").val(typeoption);
+
+							/////////////
 
 							if (saleoption == "nosale" ) { $("#salePrice").hide(); $("#saleoptionsnosale").prop('checked', true); }
 							if (saleoption == "price" ) { $("#salePrice").show(); $("#saleoptionsprice").prop('checked', true);}
@@ -123,12 +162,14 @@
 						rendersaleoptions();
 						</script>
 						<br>
+
+				      
 					
 
 					        <div class="pure-controls">
 					            <button type="submit" class="pure-button pure-button-primary"><i class="fa fa-fw fa-check"></i> Save changes</button> 
-								    <span  style="color: rgba(55,55,55,0.75); margin-left: 1em; ">
-					    				<a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(55,55,55, 0.5); margin-right: 1em;"><i class="fa fa-times"></i> delete</a>
+								    <span  style="color: rgba(255,255,255,0.75); margin-left: 1em; ">
+					    				<a href="/offerings/delete/{{ offering.offering_id }}" style="margin-right: 1em; margin-top: 1em; float:right;"><i class="fa fa-times"></i> delete</a>
 					    			</span>
 
 					        </div>
@@ -143,6 +184,74 @@
 
 
 </div> 
+
+<style>
+
+select {
+    border:none;
+    outline:none;
+    display: inline-block;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    cursor:pointer;
+}
+
+.salePrice {
+	color: rgb(255,255,255);
+}
+
+.editText { 
+  background: rgb(32,31,32); 
+  position: relative;}
+
+.editTextWrap {
+  text-align: left;
+  font-size: 1em;
+}  
+
+.editTextWrap p {
+  line-height: 1.2em;
+  font-weight: 400;
+  font-size: 0.8em;
+  color: rgb(200,200,200);
+  margin-top: 0;
+}  
+
+.editTextWrap h3 {
+  color: rgb(225,76,7);
+  margin: 0;
+}
+
+input.title {
+    padding: 0.5em;
+    border: 2px solid rgb(39,37,38);
+    width: 100%;
+}
+
+textarea { width: 100%;}
+
+.darkRight {
+	background: rgb(39,37,38);
+	  text-align: left;
+  padding: 2em;
+  font-size: 1em;
+}
+
+@media (max-width: 1200px) {
+  .pageWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .pageWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+</style>
 
 <script>
 var sizeblock = function () {
@@ -160,7 +269,7 @@ var sizeblock = function () {
 sizeblock();
 </script>
 
-<!-- end market -->
+<!-- end editform -->
 
 
 			</div>
