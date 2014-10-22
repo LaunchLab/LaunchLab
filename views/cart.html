@@ -46,7 +46,7 @@
 
 
                   <div class="detailsPrice">
-                     <i class="fa fa-bitcoin"></i> {{ order.price }}
+                     R {{ order.price }}
                   </div>
                   <div class="detailsOptions">
                      {{ order.projecttitle }}
@@ -69,18 +69,18 @@
           <div class="cartTextWrap">
             <h3>DETAILS</h3>
             <div class="cartDetailEntry">
-              SUBTOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 
-                {{ session.carttotal }}
+              SUBTOTAL <span class="DetailEntryAmount">R 
+                {{ session.carttotal.toFixed(2) }}
               </span>
             </div>            
             <div class="cartDetailEntry">
-              SALES TAX <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0</span>
+              SALES TAX <span class="DetailEntryAmount">R 0</span>
             </div>  
             <div class="cartDetailEntry">
-              SHIPPING <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> 0</span>
+              SHIPPING <span class="DetailEntryAmount">R 0</span>
             </div>            
             <div class="cartDetailEntry">
-              TOTAL <span class="DetailEntryAmount"><i class="fa fa-bitcoin"></i> {{ session.carttotal }}</span>
+              TOTAL <span class="DetailEntryAmount">R {{ session.carttotal.toFixed(2) }}</span>
             </div> 
           </div>
 
@@ -113,9 +113,9 @@
      <div class="pure-g">
      	 <div class="pure-u-1" id="paymentaddressWrap">
      	 	<div>
-     	 	<h3>SEND <span class="bitcoin"><i class="fa fa-bitcoin"></i> {{ session.carttotal }} </span> BITCOIN TO THIS WALLET ADDRESS:</h3>
+     	 	<h3>SEND <span class="currency">R {{ session.carttotal.toFixed(2) }} </span> TO THIS WALLET ADDRESS:</h3>
      	 	<span id="paymentaddress"></span>
-     	 	<p>After sending bitcoin please wait for page to reload.</p>
+     	 	<p>After sending currency please wait for page to update.</p>
      	 	</div>
      	 </div>
 
@@ -185,7 +185,7 @@
   padding: 1em;
 }
 
-#paymentaddressWrap h3 .bitcoin {
+#paymentaddressWrap h3 .currency {
 	color: rgb(225,76,7);
 }
 
@@ -196,7 +196,7 @@
   padding: 1em;
 }
 
-#paymentaddressWrap h3 .bitcoin {
+#paymentaddressWrap h3 .currency {
 	color: rgb(225,76,7);
 }
 

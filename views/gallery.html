@@ -6,11 +6,11 @@
         <ul>
             <li class="filters active" data-id="all">ALL</li>
             <li class="filters" data-id="portfolio">PORTFOLIOS</li>
-            <li class="filters" data-id="job">JOB</li>
-            <li class="filters" data-id="article">ARTICLES</li>
             <li class="filters" data-id="service">SERVICES</li>
-            <li class="filters" data-id="tutorial">TUTORIALS</li>
+            <li class="filters" data-id="job">JOBS</li>
             <li class="filters" data-id="course">COURSES</li>
+            <li class="filters" data-id="article">ARTICLES</li>
+            <li class="filters" data-id="tutorial">TUTORIALS</li>
         </ul>
     </div>
 
@@ -41,7 +41,7 @@ var rendergallery = function () {
             //$("#galleryItems").append('<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">'
             //$("#galleryItems").append(offerings[x].title);
 
-            entryhtml += '<div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-3">';
+            entryhtml += '<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">';
             entryhtml += '<div class="market-container-wrap" style="position: relative;">';
             entryhtml += '<div class="market-container portrait">';
             entryhtml += '<a href="/offerings/view/'+offerings[x]._id+'" class="market-link">';
@@ -58,7 +58,7 @@ var rendergallery = function () {
 
             if (offerings[x].saleoption == "price") {
                 entryhtml += '<div style="position: absolute; top : 16em; left: 0.5em; font-size: 1em;font-weight: 700;">';
-                entryhtml += '<i class="fa fa-bitcoin"></i>'+offerings[x].price;
+                entryhtml += 'R '+offerings[x].price.toFixed(2);
                 entryhtml += '</div>';
             }
 
