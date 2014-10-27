@@ -953,12 +953,14 @@ app.get('/payment', function (req, res) {
 		                }
 		                catch(e)
 		                {
-		                    msg.error = e;
+		                	console.log(e)
+		                    res.json({"error":e})
 		                }           
 
 		            });
 		        }).on('error', function(e) {
-		            msg.error = e;
+		        	console.log(e)
+		            res.json({"error":e})
 		        });
 		    }
 		    /* BLOCKCHAIN API END */
@@ -1221,6 +1223,41 @@ app.get('/', function (req, res) {
 
 */
 var ObjectId = mongojs.ObjectId;
+
+app.post('/project/:id/brief', function (req, res) {
+	//get a project briefing
+	console.log(req.params)
+	console.log(req.body)
+	
+	//find the project
+	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, project) {
+		project.brief = req.body;
+		db.projects.update({"_id":ObjectId(req.params.id)}, project, function (err, result) {
+			res.json({"result":result})
+		});
+	});
+});
+
+app.get('/project/:id/brief', function (req, res) {
+	//get a project briefing
+	console.log(req.params)
+	console.log(req.body)
+	
+	var data = {}
+	data.username = req.session.username;
+	data.password = req.session.password; 
+	data.email = req.session.email;
+	data.socketserver = socketconnect;
+
+	//find the project
+	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, project) {
+		data.project = project;
+		res.render("project_brief",data)
+	});
+});
+
+
+
 app.post('/project/:id/tasks/update/:created', function (req, res) {
 	console.log(req.params)
 	console.log(req.body)

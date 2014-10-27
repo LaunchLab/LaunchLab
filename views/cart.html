@@ -19,14 +19,18 @@
               <div class="pure-g">
 
                 {% for order in projects %}
-                {% if order.paid > 0 %}
+              
                 <!-- projectItem START -->
                 <div class="pure-u-1 projectItem">
                   <div class="pure-g">
 
                   
                     <div class="projectItemDesc pure-u-1-2">
-                      <div class="projectItemTitle">{{ order.projecttitle }}
+                      <div class="projectItemTitle">
+                          {% if order.brief.title %}
+                            {{ order.brief.title }}
+                          {% endif %}
+                          {{ order.projecttitle }}
                       </div>
                       <div class="projectItemProvider">
                         <a href="/{{ order.offering.creator }}">{{ order.offering.creator }}</a>
@@ -58,7 +62,7 @@
                         </div>
 
                         <div class="projectItemFundingTOTAL">TOTAL: R {{ order.paid }}</div>
-                        <div class="projectItemFundingETA">ETA: -H</div>
+                        <div class="projectItemFundingETA">ETA: ??</div>
                       </div>
                       {% endif %}
 
@@ -80,23 +84,23 @@
                       
                       <div class="projectItemStatus">
                        
-                      
-                        <a href="/project/{{ order._id.toHexString() ">
-                          <div class="detailsBusy">
-                            <i class="fa fa-flask fa-2x"></i><br>
-                            <span>BUSY</span>
-                          </div>
-                        </a>
-                   
+{% if order.brief  %}
+<a href="/project/{{ order._id.toHexString() }} ">
+  <div class="detailsBusy">
+    <i class="fa fa-flask fa-2x"></i><br>
+    <span>BUSY</span>
+  </div>
+</a>
+{% endif %}
 
-
-                        <a href="/project/{{ order._id.toHexString() }}">
-                          <div class="detailsBrief">
-                            <i class="fa fa-file-text-o fa-2x"></i><br>
-                            <span>BRIEF REQUIRED</span>
-                          </div>
-                        </a>
-                    
+{% if order.brief == undefined %}
+<a href="/project/{{ order._id.toHexString() }}/brief">
+  <div class="detailsBrief">
+    <i class="fa fa-file-text-o fa-2x"></i><br>
+    <span>BRIEF REQUIRED</span>
+  </div>
+</a>
+{% endif %}       
 
 
                         {% if order.paid == 0 %}
@@ -113,7 +117,7 @@
                   </div>
                 </div>
                 <!-- projectItem END-->
-                {% endif %}
+                
                 {% endfor %}
 
               </div>
@@ -131,6 +135,7 @@
 .detailsCancel { color: rgb(125,125,125);}
 .detailsCancel:hover { color: rgb(255,75,75);}
 .detailsBrief { padding-top: 1em; color: rgb(224,77,10); }
+.detailsBrief:hover { color: rgb(255,255,255); background: rgb(224,77,10);}
 
 .projectItemFundingWrap { margin: 0.5em; }
 .projectItemFunding { color: rgb(153,223,11); }
