@@ -647,6 +647,7 @@ app.get('/offerings/order/:id', function (req, res) {
 				project.created = Date.now();
 				project.status = "new"
 				project.paid = 0;
+				project.used = 0;
 				console.log(project)
 
   				db.projects.save( project );
@@ -738,7 +739,7 @@ function checkAuth(req, res, next) {
 					console.log(projects);
 					req.session.carttotal = 0;
 					for (var x in projects) {
-						req.session.carttotal += projects[x].price;
+						req.session.carttotal += projects[x].price - projects[x].paid;
 					}
 									
 					next();
@@ -821,8 +822,21 @@ app.get('/cart', function (req,res) {
 	//Displays the user's cart.
 	console.log("cart")
 	console.log(JSON.stringify(req.session));
-	db.projects.find({"creator":req.session.username}, function (err, orders) {
-		res.render('cart', { username: req.session.username, password: req.session.password, userdb: req.session.db, session: req.session, cart: orders });			
+	db.projects.find({"creator":req.session.username}, function (err, projects) {
+		var cartitems = []
+		for (var item in projects) {
+
+			if (projects[item].paid < projects[item].price) {
+				cartitems.push(projects[item])
+			}
+
+			projects[item].funded = (projects[item].paid - projects[item].used) / projects[item].price * 100.0;
+			projects[item].completed = projects[item].used / projects[item].paid * 100.0;
+
+
+			
+		}
+		res.render('cart', { username: req.session.username, password: req.session.password, userdb: req.session.db, session: req.session, cart: cartitems, projects: projects });			
 	});
 })
 
@@ -866,12 +880,24 @@ app.get('/payment', function (req, res) {
 		status = paid    -paid for in full
 
 	*/
-	db.projects.find({"creator":req.session.username, "status": "new"}, function (err, projects) {
+	db.projects.find({"creator":req.session.username, "status": "new", paid: 0 } , function (err, projects) {
 		//calculate cart total
 		var carttotal = 0;
 		for (var x in projects) {
 			carttotal += projects[x].price;
+
+			/* JIPPO PAYMENT - debug*/
+			projects[x].paid = projects[x].price;
+			var ObjectId = mongojs.ObjectId;
+			
+			db.projects.update({"_id": projects[x]._id}, projects[x] , function (err, result) {
+				console.log("PAID PROJECT")
+			})
+
+			/* END JIPPO PAYMENT - debug*/
 		}
+
+
 
 		//create invoice
 		var invoice = {}
@@ -1266,6 +1292,19 @@ app.post('/project/:id/tasks/new', function (req, res) {
 	})
 	
 })
+
+app.get('/paid/:id', function (req, res) {
+	//debug
+	var projectid = req.params.id;
+	var ObjectId = mongojs.ObjectId;
+	db.projects.findOne({"_id": ObjectId(projectid)}, function(err, project) {
+		project.paid = project.price;
+		
+		db.projects.update({"_id": ObjectId(projectid)}, project, function(err,result) {
+			res.redirect("/work/invoices")
+		});
+	});
+});
 
 
 app.get('/project/:id', function (req, res) {

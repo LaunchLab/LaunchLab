@@ -10,7 +10,180 @@
 
 {% block content %}
 
+<!-- projects -->
+<div class="projects container">
+  <div class="projectsWrap">
+    <div class="pure-g">
+        <div class="pure-u-1">
+            <div class="projectsList" >
+              <div class="pure-g">
+
+                {% for order in projects %}
+                {% if order.paid > 0 %}
+                <!-- projectItem START -->
+                <div class="pure-u-1 projectItem">
+                  <div class="pure-g">
+
+                  
+                    <div class="projectItemDesc pure-u-1-2">
+                      <div class="projectItemTitle">{{ order.projecttitle }}
+                      </div>
+                      <div class="projectItemProvider">
+                        <a href="/{{ order.offering.creator }}">{{ order.offering.creator }}</a>
+                      </div>
+                    </div>
+
+                    <div class="projectItemActions pure-u-1-12">
+                      {% if order.attachments.length > 0 %}
+                      <div class="projectItemActionsAttachments">
+                        <a href="/"><i class="fa fa-files-o fa-2x iconActive"></i></a>
+                      </div>
+                      {% endif %}
+
+                      {% if order.attachments.length == 0 %}
+                      <div class="projectItemActionsAttachments">
+                        <i class="fa fa-files-o fa-2x iconActive"></i>
+                      </div>
+                      {% endif %}                      
+                    </div>
+
+                    <div class="projectItemFunding pure-u-1-4">
+                      {% if order.paid > 0 %}
+                      <div class="projectItemFundingWrap">
+                        <div class="projectItemFundingSpent">USED: R {{ order.used }}</div>
+                        <div class="projectItemFunding">PAID: R {{ order.paid }}</div>
+                        
+                        <div class="projectItemFundingBar">
+                            <div class="projectItemFundingBarFill" style="width: {{ order.funded }}%; "></div>
+                        </div>
+
+                        <div class="projectItemFundingTOTAL">TOTAL: R {{ order.paid }}</div>
+                        <div class="projectItemFundingETA">ETA: -H</div>
+                      </div>
+                      {% endif %}
+
+                        {% if order.paid == 0 %}
+                        <div class="projectItemPrice"> R {{ order.price }} </div>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="projectItemProgress pure-u-1-12">
+                        {% if order.paid > 0 %}
+                        <div class="projectItemProgressPercentage">{{ order.completed }}%</div>
+                        {% endif %}
+
+
+                    </div>
+
+                    <div class="projectItemProgress pure-u-1-12">
+                      
+                      <div class="projectItemStatus">
+                       
+                      
+                        <a href="/project/{{ order._id.toHexString() ">
+                          <div class="detailsBusy">
+                            <i class="fa fa-flask fa-2x"></i><br>
+                            <span>BUSY</span>
+                          </div>
+                        </a>
+                   
+
+
+                        <a href="/project/{{ order._id.toHexString() }}">
+                          <div class="detailsBrief">
+                            <i class="fa fa-file-text-o fa-2x"></i><br>
+                            <span>BRIEF REQUIRED</span>
+                          </div>
+                        </a>
+                    
+
+
+                        {% if order.paid == 0 %}
+                          <a href="/cart/delete/{{ order._id.toHexString() }} ">
+                          <div class="detailsCancel">
+                             <i class="fa fa-times "></i>
+                          </div>
+                          </a>
+                        {% endif %}
+                      </div>
+                        
+                    </div>
+
+                  </div>
+                </div>
+                <!-- projectItem END-->
+                {% endif %}
+                {% endfor %}
+
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<style>
+
+.iconActive { color: ;}
+
+.detailsBusy { padding-top: 1em;}
+.detailsCancel { color: rgb(125,125,125);}
+.detailsCancel:hover { color: rgb(255,75,75);}
+.detailsBrief { padding-top: 1em; color: rgb(224,77,10); }
+
+.projectItemFundingWrap { margin: 0.5em; }
+.projectItemFunding { color: rgb(153,223,11); }
+.projectItemFundingSpent { float:right; color: rgb(255,255,255); }
+
+
+.projectItemFundingBar { height: 5px; background: rgb(125,125,125); }
+.projectItemFundingBarFill { height: 5px; background: rgb(153,223,11); width: 50%;}
+.projectItemFundingETA { font-size: 0.75em;}
+.projectItemFundingTOTAL {  font-size: 0.75em; float: right; color: rgb(125,125,125); }
+
+.projectItemProgressPercentage {  color: rgb(153,223,11); font-size: 1.5em; margin-top: 1.1em; text-align: center;}
+
+.projectItemPrice {  color:  rgb(225,76,7); font-size: 1.5em; margin-top: 1.1em; text-align: center;}
+
+.projectItemActionsAttachments a { color: rgb(153,223,11);}
+.projectItemActionsAttachments a:hover { color: rgb(255,255,255);}
+.projectItemActionsAttachments { margin-top: 1.5em; color: rgb(45,45,45);}
+
+.projectItemStatus {  text-align: center; }
+.projectItemStatus span { font-size: 0.5em; }
+.projectItemStatus a { color: rgb(153,223,11);}
+.projectItemStatus a:hover { color: rgb(255,255,255);}
+
+.projectItemTitle { text-transform: uppercase; font-size: 1.25em; font-weight: 700; margin-top: 0.5em; margin-left: 16px;}
+.projectItemProvider { text-transform: uppercase; margin-left: 16px; margin-bottom: 0.3em; }
+.projectItemProvider a { color: rgb(150,150,150); }
+.projectItemProvider a:hover { color: rgb(255,255,255); }
+
+.projectItem {
+  background: rgb(32,32,32);
+  margin-bottom: 0.5em;
+}
+
+@media (max-width: 1200px) {
+  .projectsWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .projectsWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+</style>
+<!-- projects end -->
+
+
 <!-- cart START -->
+{% if cart.length != 0 %}
 <div class="cart container">
   <div class="cartWrap">
     <div class="pure-g" id="cartmainhider">
@@ -130,7 +303,7 @@
 
   </div>
 </div> 
-
+{% endif %}
 
 <script>
 
