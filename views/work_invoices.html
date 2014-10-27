@@ -61,7 +61,7 @@
                                 </div>
 
                                 <div class="pure-u-1-8">
-                                    <a href="/work/invoices/edit/{{invoice._id.toHexString(); }}">see this invoice</a> 
+                                    <a href="/work/invoices/view/{{invoice._id.toHexString(); }}">see this invoice</a> 
                                 </div>
                                 <div class="pure-u-1-8">
                                     <a href="/{{ project.creator }}" >{{ invoice.creator }}</a>
@@ -75,7 +75,9 @@
                                     <span class="timeago" title="{{invoice.issuedate.toISOString() }}">{{invoice.issuedate.toISOString() }}</span>
                                 </div>
 
-                                
+                                <div class="pure-u-1-6">
+                                    R {{invoice.total.toFixed(2) }}
+                                </div>
 
                             </div>
                             

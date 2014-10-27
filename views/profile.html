@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layoutv2.html' %}
 
 {% block title %}LaunchLab New Project{% endblock %}
 
@@ -8,17 +8,9 @@
 
 {% block content %}
 
-
-
-
-
-
-<div class="content-wrapper-top" style="margin-top: 2em;">
+<div class="bannerWrap" >
     <div class="pure-g" >
-
-         <div class="l-box pure-u-1 pure-u-md-1-5 pure-u-lg-1-4"></div>
-
-            <div class="l-box pure-u-1 pure-u-md-3-5 pure-u-lg-1-2">
+            <div class="l-box pure-u-1 ">
 				
 
 
@@ -80,11 +72,37 @@
 
 </div>
 
-
+</div>
 </div>
 
-    {% include "./footer.html" %}
+<style>
 
-</div>
+input {
+	width: 100%;
+
+}
+
+.labell { color:rgb(125,125,125);}
+
+.bannerWrap {
+	background: rgb(39,37,38); 
+	padding: 24px;
+}
+
+@media (max-width: 1200px) {
+  .bannerWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bannerWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+</style>
+
 
 {% endblock %}

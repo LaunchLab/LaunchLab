@@ -13,98 +13,83 @@
     <div class="content">
     	<div class="pure-g" >
     		<div class="l-box pure-u-1">
-    			<h1 style="font-weight: 700; font-size: 2em; line-height: 0em; margin-top: 2em;"><i class="fa fa-fw fa-rocket " ></i> work dashboard (BETA!)</h1>
+    			<h1 style="font-weight: 700; font-size: 2em; line-height: 0em; margin-top: 2em;"><i class="fa fa-fw fa-reorder " ></i> invoices overview</h1>
     			
     			<p style="color: #888; margin-left: 1em;">
+                    
                     {% include "./work_nav.html" %}
+                    
     			</p>
     		</div>
 		</div>
     </div>
 
 <!-- start work dashboard -->
-    <div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #888;">
+    <div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #000;">
        
 
-       <div class="pure-g" style="border-top: 2px solid #eee;">
-
-            <!-- start time summary -->
-            <div class="pure-u-1-2" >
-                <h3>Time Summary</h3>                
-                <div class="pure-g">
-                    <div class="pure-u-1-2">
-                        <p>
-                            Hours Today: 0.5<br>
-                            Hours This woork: 2.2<br>
-                            Hours This Month: 6<br>
-                        </p>
-                    </div>
-                    <div class="pure-u-1-2">
-                     <p>
-                            Hours Yesterday: 0.5<br>
-                            Hours Last woork: 2.2<br>
-                            Hours Last Month: 6<br>
-                        </p>
-                    </div>            
-                </div>
-            </div>
-            <!-- end time summary -->
-            
-            <!-- start invoice summary -->
-            <div class="pure-u-1-2" >
-                <h3>Invoice Summary <a href="/work/invoices/new" style="float:right;"><i class="fa fa-fw fa-plus-circle" style="color: rgb(125,175,125);"></i> new invoice</a></h3>
-                
-                    <p>
-                        Amount Outstanding: R0.00 (0 invoices)<br>
-                        Amount Invoiced This Month: R0.00 (0 invoices)<br>
-                        Payments Received Last Month: R0.00<br>
-                        Payments Received This Year: R0.00<br>
-                    </p>
-                
-            </div>    
-            <!-- end invoice summary-->
-
+       <div class="pure-g">
 
             <!-- start project summary -->
-            <div class="pure-u-1-1" style="border-top: 2px solid #eee;">
-                <h3>Project Summary <a href="/projects/new" style="float:right;"><i class="fa fa-fw fa-plus-circle" style="color: rgb(125,175,125);"></i> new project</a></h3>
+            <div class="pure-u-1">
+                <h1>Invoice</h1>
 
+                <p>Invoice ID: {{ invoice.id }}<br>
+                    Issue Date: {{ invoice.issuedate.toISOString() }}<br>
+                    Due Date: {{ invoice.duedate.toISOString() }}<br>
+                    For: <a href="/{{ invoice.creator }}">{{ invoice.creator }}</a>
+                    
+
+      
+
+               
                 <div class="pure-g">
-                    <div class="pure-u-1" style="margin-bottom: 0.25em; padding: 0.5em;">
 
-                            <div class="pure-g" style="color: #ccc;">
 
-                                <div class="pure-u-1-12">
-                                    status
+<!-- start headings -->
+<div class="pure-u-1" style="border-bottom: 2px solid rgb(0,0,0);">
+
+                    <div class="pure-u-1" >
+
+                            <div class="pure-g">
+
+                                <div class="pure-u-1-12" style="font-size: 1.3em;">
+
                                 </div>
 
                                 <div class="pure-u-1-8">
-                                    title
+       
                                 </div>
                                 <div class="pure-u-1-8">
-                                    owner
-                                </div>
-                                
-                                <div class="pure-u-1-6">
-                                    last activity
+                                  
                                 </div>
 
                                 <div class="pure-u-1-6">
-                                    created
+                                
                                 </div>
                                 
                                 <div class="pure-u-1-6">
-                                    price
+                                    
                                 </div>
 
                                 <div class="pure-u-1-6">
-                                    paid
+                                    <h3>PRICE</h3>
+                                </div>
+
+                                <div class="pure-u-1-6">
+                                    <h3>PAID</h3>
                                 </div>
 
                             </div>
                             
-                    </div>                    
-                {% for project in projects %}
+                    </div>
+
+                </div><!-- end headings -->
+
+
+
+
+{% for project in invoice.items %}
                     <div class="pure-u-1" style="background: rgb(245,245,245); margin-bottom: 0.25em; padding: 0.5em;">
 
                             <div class="pure-g">
@@ -131,11 +116,11 @@
                                 </div>
 
                                 <div class="pure-u-1-6">
-                                    {{ project.price }}
+                                    {{ project.price.toFixed(2) }}
                                 </div>
 
                                 <div class="pure-u-1-6">
-                                    {{ project.paid }}
+                                    {{ project.paid.toFixed(2) }}
                                 </div>
 
                             </div>
@@ -144,9 +129,49 @@
                     
 
                 {% endfor %}
-                </div>
 
-                
+                <div class="pure-u-1" style="border-top: 2px solid rgb(0,0,0);">
+
+                    <div class="pure-u-1" >
+
+                            <div class="pure-g">
+
+                                <div class="pure-u-1-12" style="font-size: 1.3em;">
+
+                                </div>
+
+                                <div class="pure-u-1-8">
+       
+                                </div>
+                                <div class="pure-u-1-8">
+                                  
+                                </div>
+
+                                <div class="pure-u-1-6">
+                                
+                                </div>
+                                
+                                <div class="pure-u-1-6">
+                                    <h3>TOTAL</h3>
+                                </div>
+
+                                <div class="pure-u-1-6">
+                                    <h3>{{ invoice.total.toFixed(2) }}</h3>
+                                </div>
+
+                                <div class="pure-u-1-6">
+                                    <h3>{{ invoice.payments.toFixed(2) }}</h3>
+                                </div>
+
+                            </div>
+                            
+                    </div>
+
+                </div><!-- end bottomline -->
+
+                </div>
+                   
+               
             </div>
             <!-- end project summary -->
 
@@ -165,9 +190,7 @@
 </div>
 
 
-<script>
-$("span.timeago").timeago();
-</script>
+
 
 
 

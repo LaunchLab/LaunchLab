@@ -92,8 +92,6 @@ app.get('/paymentcallback/:id', function (req, res) {
 		db.invoices.update({"_id": ObjectId(invoiceid)}, invoice); //UPDATES INVOICE IN DATABASE
 		res.send("*ok*");	
 	})
-	
-	
 });
 
 app.get('/payments', function (req, res) {
@@ -395,7 +393,7 @@ app.get('/:username', function (req, res,next) {
 
 				data.avatar = gravatar.url(users[0].email, {s: '100', r: 'pg', d: '404'});
 				//, title: {"$ne": ""}
-				db.offerings.find({"creator":data.user.username}, function (err, offerings) {
+				db.offerings.find({"creator":data.user.username, title: {"$ne": ""}}, function (err, offerings) {
 					data.offerings = offerings;
 					res.render('user', data)			
 				})
@@ -643,12 +641,12 @@ app.get('/offerings/order/:id', function (req, res) {
 				project.projecttitle = result.title;
 				project.offeringid = ObjectId(req.params.id);
 				project.offering = result;
-				project.projectdetails = "client: " + req.session.username +" offering: "+result.title+" price: B" + result.price;
+				project.projectdetails = "future projectdetails";
 				project.price = result.price;
 				project.creator = req.session.username;
 				project.created = Date.now();
 				project.status = "new"
-				project.costtodate = 0;
+				project.paid = 0;
 				console.log(project)
 
   				db.projects.save( project );
@@ -880,7 +878,14 @@ app.get('/payment', function (req, res) {
 		invoice.creator = req.session.username;
 		invoice.created = Date.now();
 		invoice.status = "new";
-		invoice.total = "";
+
+		//calculate total for the invoice
+		//todo: taxes and shipping
+		invoice.total = 0;
+		for (var p in projects) {
+			invoice.total += projects[p].price;
+		}
+		
 		invoice.issuedate = new Date(); // MM/DD/YYYY
 		invoice.payments = 0;
 		invoice.from = {}; 	//launchlab company?
@@ -1868,7 +1873,17 @@ app.get('/work/invoices/edit/:id', function (req, res) {
 		data.invoice = result;
 		res.render('work_invoices_edit', data);	
 	});
+});
 
+app.get('/work/invoices/view/:id', function (req, res) {
+	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect, userdb: req.session.db};
+	var dbid = req.params.id;
+	var ObjectId = mongojs.ObjectId;
+
+	db.invoices.findOne({"_id": ObjectId(dbid)}, function (err, result) {
+		data.invoice = result;
+		res.render('work_invoices_view', data);	
+	});
 });
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
