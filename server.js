@@ -1661,7 +1661,8 @@ app.post('/offerings/imagedelete/', function (req, res) {
 
 
 	/////////
-	db.offerings.find({"creator": req.session.username }, function(err, results) {
+	//db.offerings.find({"creator": req.session.username }, function(err, results) {
+	db.offerings.find({}, function(err, results) {
 		for (var a in results) {
 			for (var b in results[a].samplefiles) {
 				if (results[a].samplefiles[b] == req.body.delimage) {
