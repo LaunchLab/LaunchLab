@@ -2219,7 +2219,7 @@ var socketlog = function(message) {
 	console.log(message)
 }
 
-var server = app.listen(80, function() {
+var server = app.listen(8000, function() {
 	console.log(server.address())
     console.log('Listening on port %d', server.address().port);
 });
