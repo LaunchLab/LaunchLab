@@ -67,7 +67,7 @@ var rendergallery = function () {
            
 
             entryhtml += '<div class="galleryBy" style="text-transform: uppercase;">';
-            entryhtml += '<span class="market-creator" >by <a href="/'+offerings[x].creator+'">'+offerings[x].creator+'</a></span>';
+            entryhtml += '<span class="market-creator" >'+offerings[x].typeoption+' by <a href="/'+offerings[x].creator+'">'+offerings[x].creator+'</a></span>';
             entryhtml += '</div></div></div></div>';
 
             $("#galleryItems").append(entryhtml);
