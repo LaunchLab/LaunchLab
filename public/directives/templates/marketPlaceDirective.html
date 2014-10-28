@@ -1,0 +1,53 @@
+<gallery class="gallery">
+  <div class="galleryWrap">
+    <div class="pure-g">
+
+    <div class="pure-u-1 galleryFilters">
+        <ul>
+			<li><input type="radio" ng-model="tagFilter" value="" ng-change='filterUpdate(tagFilter)' ng-init="tagFilter = ''"></li>
+			<li><input type="radio" ng-model="tagFilter" value="article" ng-change='filterUpdate(tagFilter)'></li>
+			<li><input type="radio" ng-model="tagFilter" value="project" ng-change='filterUpdate(tagFilter)'></li>
+			<li><input type="radio" ng-model="tagFilter" value="service" ng-change='filterUpdate(tagFilter)'></li>
+			<li><input type="radio" ng-model="tagFilter" value="product" ng-change='filterUpdate(tagFilter)'></li>
+			<li><input type="radio" ng-model="tagFilter" value="event" ng-change='filterUpdate(tagFilter)'></li>
+			<li><input type="radio" ng-model="tagFilter" value="tutorial" ng-change='filterUpdate(tagFilter)'></li>
+			<li><input type="radio" ng-model="tagFilter" value="course" ng-change='filterUpdate(tagFilter)'></li>
+		</ul>
+    </div>
+
+                    <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5" ng-repeat="offering in offerings | filter:tagFilter"> <!--typeoption  track by $index-->
+                        
+                        
+                        <div class="market-container-wrap" style="position: relative;">
+                            
+                            <div class="market-container portrait">
+                                <a href="/#/offerings/view/{{ offering._id }}" class="market-link">
+                                    <div class="market-container-imagewrap" style='background-image: url("/offerings/{{ offering.samplefiles[0] }}");'>
+                                        
+                                    </div>
+                               </a>
+
+                                <div style="padding: 0.5em;">
+                                    <span class="market-title" >
+                                        <a href="/#/offerings/view/{{ offering._id }}" class="market-link productgallery" >
+                                            {{ offering.title }}
+                                        </a>
+                                        </span><br>
+                                </div>
+
+                                <div ng-if="offering.price" style="position: absolute; top : 16em; left: 0.5em; font-size: 1em;font-weight: 700;">
+                                    <i class="fa fa-bitcoin"></i> {{ offering.price }}
+                                </div>
+
+                                <div class="galleryBy" style="text-transform: uppercase;">
+                                    <span class="market-creator" >by <a href="/#/{{ offering.creator }}">{{ offering.creator }}</a></span>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                         
+                    </div>
+    </div>
+  </div>
+</gallery>

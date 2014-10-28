@@ -1,0 +1,48 @@
+    	<div class="pure-g" >
+    		<div class="l-box pure-u-1">
+    			<h1 style="font-weight: 700; font-size: 2em; line-height: 0em; margin-top: 2em;"><i class="fa fa-fw fa-reorder " ></i> invoices overview</h1>
+    			
+    			<p style="color: #888; margin-left: 1em;">
+                    <a href="/work"><i class="fa fa-fw fa-rocket " ></i> work</a> &nbsp;&nbsp;&nbsp;
+                    <a href="/work/invoices"><i class="fa fa-fw fa-reorder "></i> invoices</a> &nbsp;&nbsp;&nbsp;
+                    <a href="/work/tasks"><i class="fa fa-fw fa-tasks "></i> tasks</a> &nbsp;&nbsp;&nbsp;
+                    <a href="/work/clients"><i class="fa fa-fw fa-users "></i> clients</a> &nbsp;&nbsp;&nbsp;
+                    <a href="/work/projects"><i class="fa fa-fw fa-hdd-o "></i> projects</a> &nbsp;&nbsp;&nbsp;
+    			</p>
+    		</div>
+		</div>
+<!-- start work dashboard -->
+    <div class="ribbon l-box-lrg " style="background: rgb(255, 255, 255); color: #000;">
+       
+
+       <div class="pure-g">
+
+            <!-- start project summary -->
+            <div class="pure-u-2-3">
+                <h1>Invoice</h1>
+
+                <p>Invoice ID: {{ invoice.id }}<br>
+                    Issue Date: {{ invoice.issuedate.toISOString() }}<br>
+                    Due Date: {{ invoice.duedate.toISOString() }}<br>
+                    Subject: <input value="{{ invoice.subject }}" >
+
+                <p>
+                    status - issue date - ID - Client - Balance
+                </p>
+
+                <p ng-repeat="invoice in invoices">
+                    {{ invoice.status}} -  - {{invoice.id }}<br>
+                    //Draft - Not sent yet - 1 - company (project name) - R100,000.00<br>
+                    //Waiting - Yesterday 12:00 - 2 - company (project name) - R50,000.00<br>
+                </p>
+            </div>
+            <!-- end project summary -->
+
+
+        </div>
+
+
+
+
+        
+    </div> <!-- end work dashboard -->

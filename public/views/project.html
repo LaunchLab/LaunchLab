@@ -1,0 +1,359 @@
+<script>
+var socket = io.connect();
+var project = {{ projectjson|raw }};
+
+
+
+
+swig.run(tpl, {}, '/tpl.html');
+
+var test = swig.render(tpl, {
+    pagename: 'awesome people',
+    authors: ['Paul', 'Jim', 'Jane']
+});
+console.log(test)
+</script>
+        <div class="pure-g">
+            <div class="l-box-lrg pure-u-1 pure-u-md-1-2">
+                <h1 style="font-weight: 700; font-size: 2em; margin-top: 1em;">{{ project.projecttitle }}</h1>
+                
+                <span>{{ project.projectdetails }}</span><br><br>
+                <img src="/images/graph.jpg">
+
+                <div style="margin-top: 2em;">
+                    <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Tasks</span> 
+                </div>
+
+                <div style="margin-top: 2em;">
+                    <form class="pure-form taskform">
+                        <div class="pure-g">
+                            <div class="pure-u-1 pure-u-md-2-3">
+                                <input id="taskTitle" class="backgroundinputs" data-backgroundinfo="taskTitle" type="text" name="taskTitle" placeholder="Individual task title">
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6">
+                                <input id="taskTimeEstimated" class="backgroundinputs" data-backgroundinfo="taskTimeEstimated" type="text" name="taskTimeEstimated" placeholder="Hours">
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6" style="text-align:center;margin-top: 0.5em;">
+                                <span id="btnAddTask" style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> Add</span>
+                            </div>                            
+                        </div>
+                    </form>
+
+                    <div id="taskList">
+                        <!-- taskList start -->
+                        <div id="taskListP" class="pure-g">
+                            <div data-ng-repeat="task in project.tasks" class="pure-u-1" style="margin-top: 0.25em; background: rgb(245,245,245);">
+                                <div class="pure-g">
+                                    <div class="pure-u-1-2">
+
+                                <div style="width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;">
+                                    <i class="fa fa-fw fa-exclamation-circle" style="color: #0096ff;"></i>
+                                </div>
+                                <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
+                                    <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">ready</a><br>
+                                    <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">{{ task.title }}</a> 
+                                </div>
+
+                                    </div>
+                                    <div class="pure-u-1-2" style="text-align:right; padding: 0.25em;">
+                                        {{ task.timeEstimated }} h
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- taskList end -->
+                    </div>
+
+                    <script>
+                        //TASK HANDLER
+                     $("#btnAddTask").click( function () {
+                        var newtask = {}
+
+                        newtask.title = $("#taskTitle").val();
+                        if (newtask.title == "") { $("#taskTitle").focus(); return; }
+
+                        newtask.timeEstimated = $("#taskTimeEstimated").val();
+                        if (newtask.timeEstimated == "") { $("#taskTimeEstimated").focus(); return; }
+
+                        console.log(project)
+                        if (project.tasks == undefined) { project.tasks = []; }
+                        project.tasks.push(newtask);
+                        console.log(project._id);
+                        
+                        $.post( "/project/"+project._id+"/tasks/new", newtask, function( taskId ) {
+                            console.log(taskId);
+                        });
+
+                        $("#taskTitle").val("");
+                        $("#taskTimeEstimated").val("");
+
+                        //taskRender();
+                        addTask(newtask)
+                     })
+
+                     var taskRender = function () {
+                        var htmlrendered = ""
+                        htmlrendered += "<div id=\"taskListP\" class=\"pure-g\">"
+                        for (var t in project.tasks) {
+                            htmlrendered += "<div class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
+                            htmlrendered += "<div style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
+                            htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
+                            htmlrendered += "<div style=\"padding-left: 1em; width: 100%; margin-left: 36px; position:relative;\">";
+                            htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;\">ready</a><br>";
+                            htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;\">";
+                            htmlrendered += project.tasks[t].title;
+                            htmlrendered += "</a></div></div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
+                            htmlrendered += project.tasks[t].timeEstimated + "h";
+                            htmlrendered += "</div></div></div>";
+                        }
+                        $("#taskList").html(htmlrendered); //clear
+                     }
+
+                     var addTask = function (task) {
+                        var htmlrendered = ""
+                        
+                        htmlrendered += "<div class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
+                        htmlrendered += "<div style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
+                        htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
+                        htmlrendered += "<div style=\"padding-left: 1em; width: 100%; margin-left: 36px; position:relative;\">";
+                        htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;\">ready</a><br>";
+                        htmlrendered += "<a href=\"/rouan\" style=\"font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;\">";
+                        htmlrendered += task.title;
+                        htmlrendered += "</a></div></div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
+                        htmlrendered += task.timeEstimated + "h";
+                        htmlrendered += "</div></div></div>";
+                        
+                        $("#taskListP").append(htmlrendered).children(':last').hide().fadeIn(300); //clear
+                     }
+
+                    </script>
+
+                   
+                </div>
+
+            </div>
+
+            <div class="l-box-lrg pure-u-1 pure-u-md-1-2">
+
+                <script>
+                /*
+                <h4>{{ created }}</h4>
+                <p>
+                    _id: <br>
+                    id: {{ project.id }}<br>
+                    created: {{ project.created }}<br>
+                    step: {{ project.step }}<br>
+                    brieftype: {{ project.brieftype }}<br>
+                    <b>backgroundinfo</b><br>
+                    companyname: {{ project.backgroundinfo.companyname }}<br>
+                    overview: {{ project.backgroundinfo.overview }}<br>
+                    objectives: {{ project.backgroundinfo.objectives }}<br>
+                    timeframe: {{ project.backgroundinfo.timeframe }}<br>
+                    budget: {{ project.backgroundinfo.budget }}<br>
+                    audience: {{ project.backgroundinfo.audience }}<br>
+                    competitors: {{ project.backgroundinfo.competitors }}<br>
+                    purpose: {{ project.backgroundinfo.purpose }}<br>
+                    tone: {{ project.backgroundinfo.tone }}<br>
+                </p>
+                */
+                </script>
+
+                <div style="margin-top: 2em;">
+                    <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Members</span> 
+                </div>                
+
+                <div>
+                    <div class="pure-g">
+                        <!-- user start -->
+                        <div class="pure-u-1" style="margin-top: 0.25em;">
+                            <div style="width: 32px; height: 32px; background: #ccc; float:left;">
+                                <a href="/rouan"><img src="http://www.gravatar.com/avatar/1b83c0ee23f2bbc7a37d196d1b5bbf19?s=32&r=pg&d=404"></a>
+                            </div>
+                            <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
+                                <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">developer</a><br>
+                                <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">Rouan van der Ende</a> 
+                            </div>
+                        </div>
+                        <!-- user end -->
+
+                       <!-- user start -->
+                        <div class="pure-u-1" style="margin-top: 0.25em;">
+                            <div style="width: 32px; height: 32px; background: #ccc; float:left;">
+                                <a href="/rouan"><img src="/images/kevavatar.jpg" width="32" height="32"></a>
+                            </div>
+                            <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
+                                <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">designer</a><br>
+                                <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">Kevin Lawrie</a> 
+                            </div>
+                        </div>
+                        <!-- user end -->
+                        <div class="pure-u-1" style="margin-top: 1em;">
+                            <div class="pure-g">
+                                <div class="pure-u-1 pure-u-md-2-3">
+                                    <form class="pure-form">
+                                        <input id="projecttitle" class="backgroundinputs" data-backgroundinfo="projecttitle" type="text" name="projecttitle" placeholder="Username or email">
+                                    </form>
+                                </div>
+                                <div class="pure-u-1 pure-u-md-1-3" style="text-align:center;margin-top: 0.5em;">
+                                    <span style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> Invite Member</span>
+                                </div>  
+                            </div> 
+                        </div>
+
+                    </div>
+                    
+                </div>
+
+                <div style="margin-top: 2em;">
+                    <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Discussion</span> 
+                </div>
+
+
+                <div id="talkstream">
+
+                </div><!-- END TALKSTREAM -->
+
+                <!-- START INPUT -->
+
+
+
+                <div class="pure-g-r inputbox">
+                    <div class="pure-u-1-3">
+
+                    </div>
+
+
+
+                    <div class="pure-u-1-3">
+                        <!-- message <div class="arrow-left"></div> -->     
+                            <form>              
+                                <input id="chatmessage" placeholder="type your message here."><button id="chatsend" class="pure-button">Send</button>
+                            </form>
+                        <!-- end message -->
+                    </div>
+
+                    <div class="pure-u-1-3"></div>
+                </div>
+
+                <!-- END INPUT -->
+
+
+            </div>
+
+           
+        </div>
+<script>
+var user = {}
+user.username = '{{ username }}';
+user.password = '{{ password }}'; 
+user.email = '{{ email }}';
+user.roomname = "{{ project.id }}";
+
+var messages = {{ messagearray|raw }}
+
+var rendermessage = function(data) {
+    var htmlperson = 
+    '<div class="person">'
+        +'<img src="'+data.message.avatar+'" class="avatarimg">'
+        
+        +'<div class="persondata">'
+            +'<div class="personname">'+data.message.username+'</div>'
+            +'<div class="persontitle">title <span class="persontask">task</span> </div>'
+            +'<div class="persononline">online</div>'
+        +'</div>'
+    +'</div>';
+
+    var left = '';
+    var right = '';
+    var side = '';
+    if (data.message.username == user.username) {
+        //We sent this so left align
+        left = htmlperson;
+        side = 'message_l';
+    } else {
+        //Someone sent this to us, so right align.
+        right = htmlperson;
+        side = 'message_r';
+    }
+    
+
+    var htmlmessage = 
+     '<div class="pure-g-r">'
+        +'<div class="pure-u-1-3">'+left+'</div>'
+        
+        +'<div class="pure-u-1-3">'
+            +'<div class="message '+side+'">'
+                +'<div class="messagetext">'+data.message.text+'</div>'
+                +'<div class="timeago"><abbr class="timeago" title="'+data.message.timestamp+'">'+data.message.timeformatted+'</abbr></div>'
+            +'</div>'
+        +'</div>'
+
+        +'<div class="pure-u-1-3">'+right+'</div>'
+    +'</div>'
+    
+    //APPENDS INTO THE DOM
+    $("#talkstream").append(htmlmessage);
+    
+    $("abbr.timeago").timeago();
+    
+    $("img").error(function () { 
+        //$(this).hide();
+        $(this).css({visibility:"hidden"}); 
+    });
+
+    
+}
+
+var rendermessages = function () {
+   for (var msgnum in messages ) {
+        var curdata = messages[msgnum];
+        rendermessage(curdata);        
+    }
+}
+
+socket.on('connect', function() {
+   // Connected, let's authenticate over sockets.
+   console.log("AUTH")
+   socket.emit('authenticate', {username: user.username, email: user.email, password: user.password });
+
+});
+
+socket.on('authed', function (data) {
+    if (data.auth == true) {
+        socket.emit('room', {room: "{{ project.id }}" });     
+    }
+});
+
+socket.on('message', function (data) {
+    //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.
+    //console.log(data)
+    messages.push(data)
+    rendermessage(data);
+    $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
+});
+
+$("#roomconnect").click( function() {
+    user.roomname = $("#roomname").val();
+    console.log("Connecting to room " + user.roomname )
+    socket.emit('room', {room: "{{ id }}" });
+});
+
+$("#chatsend").click( function(data) {
+    data.preventDefault();
+    console.log("Sending "+ $("#chatmessage").val() +" to "+ $("#roomname").val() )
+    var messagetextinput = $("#chatmessage").val();
+    socket.emit('message', {messagetext: messagetextinput} );
+    $("#chatmessage").val("")
+    $("#chatmessage").focus();
+})
+    
+    //do first render
+    rendermessages();
+    $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
+
+    $("img").error(function () { 
+        //$(this).hide();
+        $(this).css({visibility:"hidden"}); 
+    });
+
+</script>

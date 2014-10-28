@@ -1,0 +1,47 @@
+        <div class="pure-g" >
+            <div class="l-box pure-u-1">
+
+                <h1 style="font-weight: 700; font-size: 3em;">Contact Form</h1>
+                
+            </div>
+
+
+            <div class="l-box pure-u-1">
+
+
+
+                    <!-- start FORM -->
+                    <form class="pure-form pure-form-stacked" method="post" action="/offerings/contact/{{ offering.offering_id }}">
+
+                        <fieldset>
+
+                            <!-- {% if loggedout %} --> <!-- {% endif %} -->
+                            <div class="pure-control-group">
+                                <label for="description">Your email address</label>
+                                <input id="email" type="email" name="email" placeholder="Your email address" autocomplete="0">
+                            </div>
+
+                            <div class="pure-control-group">
+                                <label for="description">Your phone number</label>
+                                <input id="phonenumber" type="text" name="phonenumber" class="backgroundinputs"  placeholder="Phone number" autocomplete="off">
+                            </div>
+                            
+
+                            <div class="pure-control-group">
+                                <label for="description">Message to {{ offering.creator }} </label>
+                                <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="Leave your message here..."></textarea>
+                                <p style="text-align: right;"><a href="http://daringfireball.net/projects/markdown/basics" style="text-decoration: underline;">markdown</a> syntax is allowed.</p>
+                            </div>
+
+                            <div class="pure-controls">
+                                <button type="submit" class="pure-button pure-button-primary"><i class="fa fa-send "></i> Send</button> 
+
+                            </div>
+                            
+                        </fieldset>
+
+
+                        </form>     
+                        <!-- end form -->               
+            </div>
+        </div>

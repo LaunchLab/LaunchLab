@@ -1,0 +1,27 @@
+        <div class="pure-g" data-ng-repeat="offering in offerings">            
+                <div class="l-box pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
+                    
+                    <a href="/offerings/view/{{ offering.offering_id }}">
+                    <div class="market-container-wrap">
+
+                        <div class="market-container portrait" style="background: rgba(245,245,245,1);" >
+
+                            <div style="text-align: right; position: absolute; margin-left: 1em; padding-left: 1em; padding-right: 1em; background: #e14c07; color: #fff; padding-top: 1em; border-bottom: 3px solid rgba(0,0,0,0.25);" > <span style="color: rgba(255,255,255,0.5); font-size: 0.75em;">price</span><br> <span style="font-weight: 700;">R {{ offering.price }}</span>
+                            </div>
+
+                            <div class="market-container-imagewrap" style="border-bottom: 1px solid rgba(255,255,255,0.1)">
+                                <img src="/offerings/{{ offering.samplefiles }}" />
+                            </div>
+                           
+                            <div style="padding: 1em; ">
+                                <span style="color: #e14c07; font-weight: 500; font-size: 1.25em; ">{{ offering.title }}</span>
+                            </div>
+                            
+                        </div>
+
+                    </div>
+
+                     </a>
+
+                </div>
+        </div>

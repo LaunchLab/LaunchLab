@@ -1,0 +1,63 @@
+    	<div class="l-box pure-g" style="margin-top: 2em;">
+    		<div class="l-box pure-u-1 pure-u-md-1-2">
+                <div class="pure-g" >
+            <!-- start gallery -->
+            <div class="pure-u-1 pure-u-md-1-3" data-ng-repeat="offering in offerings">
+                    
+                    
+                    <div class="market-container-wrap">
+                        
+                        <div class="market-container portrait">
+                            <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link">
+                                <div class="market-container-imagewrap" style='background-image: url("/offerings/{{ offering.samplefiles }}");'>
+                                    
+                                </div>
+                           </a>
+
+                            <div style="padding: 0.5em;">
+                                <span class="market-title" >
+                                    <a href="/offerings/view/{{ offering._id.toHexString() }}" class="market-link">
+                                        {{ offering.title }}
+                                    </a>
+                                    </span><br>
+                            </div>
+
+                            <div class="galleryBy">
+                                <span class="market-creator" >by <a href="/{{ offering.creator }}">{{ offering.creator }}</a></span>
+                            </div>
+                            
+                        </div>
+                        
+
+
+
+
+                    </div>
+                     
+
+                </div>
+            <!-- end gallery -->
+                </div>
+    			
+    		</div>
+
+            <div class="l-box pure-u-1 pure-u-md-1-2" style="color: #666; margin-top: 1em; ">
+                <div style="height: 108px; width: 108px; background:rgb(245,245,245); border: 1px #eee solid; padding: 3px;">
+                    <a href="https://en.gravatar.com/"><img src="{{ avatar }}" width="100" height="100" ></a>
+                </div>
+                
+                    <h1 style="font-weight: 700; font-size: 2em; line-height: 0em;">{{ user.username }} ( {{ user.fullname }} )</h1>
+                
+
+                <i class="fa fa-fw fa-question-circle "></i> {{ user.shortbio }}<br>
+                <i class="fa fa-fw fa-map-marker"></i> {{ user.location }}<br>
+                <a href="mailto:{{ user.email }}"><i class="fa fa-fw fa-envelope "></i> {{ user.email }}</a><br>
+                <a href="tel:{{ user.phonenumber }}"><i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}</a><br>
+                <a href="http://{{ user.website }}"><i class="fa fa-fw fa-globe "></i> {{ user.website }}</a><br>
+                <br><br>
+                                <a ng-if="username == user.username" class="animate-if" class="" href="/profile" ><i class="fa fa-fw fa-edit "></i> Edit your profile</a> <br>
+                                <a ng-if="username == user.username" class="animate-if" class="" href="/offerings/new" ><i class="fa fa-fw fa-upload "></i> Upload your work</a> <br>
+                                <a ng-if="username !== user.username" class="animate-if" class="" href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope-o "></i> Send a message</a><br>
+            </div>
+
+		</div>

@@ -1,0 +1,54 @@
+    <div class="content brief">
+    	<div class="pure-g" >
+
+			<div class="l-box pure-u-1 pure-u-md-1-1 pure-u-lg-1-1"><br><br>
+			</div>
+
+
+			<div class="l-box pure-u-1 ">
+			<h1>Create new project</h1>
+			<form class="pure-form pure-form-stacked">
+			
+			<label>Title</label>
+			<input id="projecttitle" class="backgroundinputs" data-backgroundinfo="projecttitle" type="text" name="projecttitle" placeholder="Explain the project. ex. 'Design a new logo for a bakery'">
+
+			<label>Project summary</label>    	
+			<textarea id="projectdetails" class="backgroundtextareas" rows="16" placeholder="More details about your project. Explain what you need, and what kind of deliverables you expect."></textarea>
+
+			 	<div class="briefbutton"><span><i class="fa fa-4x fa-arrow-circle-right "></i></span></div>
+			 </form>
+
+
+
+		 	
+					
+		    </div>
+
+
+ </div>
+</div>
+<script>
+
+	
+			var briefdata = {}
+			var entry = {}
+
+			$('.briefbutton').click( function() {
+				briefdata.projecttitle = $("#projecttitle").val();
+				briefdata.projectdetails = $("#projectdetails").val(); 
+				briefdata.brief = entry
+
+				console.log(entry)
+				$.post( "/projects/new", briefdata, function( projectid ) {
+				  console.log("success! created.. project id is:")
+				  console.log(projectid)
+
+				  window.location.replace("/project/"+projectid); //similar to redirect
+
+				});
+				 
+			});
+
+	
+</script>
+{% endblock %}
