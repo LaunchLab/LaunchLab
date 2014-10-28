@@ -32,7 +32,6 @@
 var offerings = {{ offeringsjson|safe }};
 var typefilter = "all";
 //BUILD GALLERY
-console.log(offerings);
 var rendergallery = function () {
     $("#galleryItems").html('');
     for (var x in offerings) {

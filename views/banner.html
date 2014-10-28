@@ -42,7 +42,7 @@
 
 <script>
   var offerings = {{ offeringsjson|safe }};
-  var displayedId = 0;
+  var displayedId = Math.round(Math.random()*(offerings.length-1));
   
   var leftBanner = function () {
     displayedId -= 1;
@@ -79,8 +79,8 @@
       $("#bannerImage").css("background-image", 'url("/offerings/'+offerings[displayedId].samplefiles[0]+'")');
 
       var creatorHtml = 'BY <a href="/'+offerings[displayedId].creator+'">'+offerings[displayedId].creator+'</a>'
-      $("#bannerCreator").html(creatorHtml)
-      console.log( 'url("/offerings/'+offerings[displayedId].samplefiles[0]+'")')
+      $("#bannerCreator").html(creatorHtml);
+
 
       $("#bannerLink").attr("href", "/offerings/view/"+offerings[displayedId].id )
       $("#bannerLinkButton").attr("href", "/offerings/view/"+offerings[displayedId].id )
@@ -210,7 +210,7 @@ a.thickBlock:hover div {
     
     $(".bannerNav").height(bannerheight);
     var postop = 128; //$(".bannerWrap").offset().top;
-    console.log(postop)
+    
     $(".bannerNav").css("top", postop );
     $(".bannerNav i").css("margin-top",  (bannerheight/2)-10  );
     $(".bannerTextWrap").css("font-size", Math.round($(".bannerWrap").width()*0.015));
