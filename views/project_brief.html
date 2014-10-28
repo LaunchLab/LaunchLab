@@ -5,6 +5,7 @@
 {% block head %}
   {% parent %}
   <script src="/lib/scrypt.min.js"></script>
+    <script src="/lib/dropzone.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -47,6 +48,17 @@
 	            	<textarea id="formbrief" class="inputbox" placeholder="{{ project.brief.brief }}">{{ project.brief.brief }}</textarea> 
             	</div>
             </div>            
+
+            <div>
+            	<div class="wrapperpad">
+            		<span class="h3">JOB FILES</span>
+	             	<span class="darktext">needed to complete the job.
+	            	<br>    
+	            	<form action="/project/upload/{{ project._id.toHexString() }}"
+      class="dropzone"
+      id="my-awesome-dropzone"></form>
+            	</div>
+            </div>  
 
    </div>    
    

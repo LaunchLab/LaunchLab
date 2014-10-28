@@ -131,8 +131,14 @@ app.use(function(req, res, next) {
 			
 			expectmulti = true;
 		}
+
+		if (req.url.slice(0,'/project/upload/'.length) === '/project/upload/') {
+			
+			expectmulti = true;
+		}		
 	}
 
+	
 	if (expectmulti) {
 	    var form = new multiparty.Form();
 
@@ -621,6 +627,52 @@ app.post('/offerings/contact/*', function (req, res) {
 	res.render('offerings_confirm', { username: req.session.username, password: req.session.password, socketserver: socketconnect, userdb: req.session.db });
 });
 
+
+
+
+app.get('/offerings/quote/:id', function (req, res) {
+	//bugfix chop to correct length
+	var mongoid = req.params.id
+
+	var ObjectId = mongojs.ObjectId;
+
+	db.offerings.findOne({"_id": ObjectId(req.params.id)}, function(err, result) {
+		console.log("finding offering")
+		console.log(result)
+		
+		if (result) {
+			result.offering_id = req.params.id;
+			if ((!req.session.username)||(!req.session.password)) 
+  			{	
+  				res.redirect("/register");
+  			} else {
+				var project = {}
+				project.projecttitle = result.title;
+				project.offeringid = ObjectId(req.params.id);
+				project.offering = result;
+				project.projectdetails = "future projectdetails";
+
+				project.creator = req.session.username;
+				project.created = Date.now();
+				project.status = "new"
+				project.paid = 0;
+				project.used = 0;
+				console.log(project)
+
+  				db.projects.save( project , function (err, resultp) {
+
+  					res.redirect("/project/"+resultp._id.toHexString()+"/brief");	
+  				});
+  				
+  				//res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
+  			}
+
+			
+		} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+	})
+});
+
+
 app.get('/offerings/order/:id', function (req, res) {
 	//bugfix chop to correct length
 	var mongoid = req.params.id
@@ -739,7 +791,10 @@ function checkAuth(req, res, next) {
 					console.log(projects);
 					req.session.carttotal = 0;
 					for (var x in projects) {
-						req.session.carttotal += projects[x].price - projects[x].paid;
+						if (projects[x].price) {
+							req.session.carttotal += projects[x].price - projects[x].paid;	
+						}
+						
 					}
 									
 					next();
@@ -1223,6 +1278,91 @@ app.get('/', function (req, res) {
 
 */
 var ObjectId = mongojs.ObjectId;
+
+
+
+
+app.post('/project/upload/:id', function (req, res) {
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
+
+    //console.log(req.body) // with multipart there is no body.
+	console.log(req.multipartparse)
+
+	//bugfix chop to correct length
+	var mongoid = req.params.id; // req.url.slice( '/offerings/edit/'.length );
+	var ObjectId = mongojs.ObjectId;
+
+	console.log("multipartfiles:")
+	console.log(req.multipartparse.files)
+
+	var uploadedFilenames = []
+	for (var f in req.multipartparse.files.file) {
+		console.log("= = = = = = = = = = = = = = = = = =  ")
+		console.log(req.multipartparse.files.file[f])
+		console.log("= = = = = = = = = = = = = = = = = = ")
+		if (req.multipartparse.files.file[f].size > 0) {
+
+			var source = fs.createReadStream(req.multipartparse.files.file[f].path);
+
+			//var dest = fs.createWriteStream(__dirname+'/files'+req.multipartparse.files.file[f].path);
+			console.log("work - extension limit")
+			console.log(req.multipartparse.files.file[f].originalFilename)
+			//extension check
+			var a = req.multipartparse.files.file[f].originalFilename;
+			var aext = a.slice(a.length-4, a.length)
+			console.log(aext)
+			if (aext == ".jpg") { console.log("correct")} else {
+				alert("test");
+				console.log("block");
+				res.send("/error");
+				return;
+			}
+
+			var newfilename = Date.now()+req.multipartparse.files.file[f].originalFilename
+			var dest = fs.createWriteStream(__dirname+'/content/projects/'+newfilename);
+
+			console.log("COPY FILE!!! IF YOU GET A CRASH MAKE SURE /content/projects folder exists")
+			uploadedFilenames.push(newfilename) 
+
+			source.pipe(dest);
+
+			source.on('end', function() { 
+			/* copied */
+				
+			});
+			source.on('error', function(err) { /* error */ });
+		}
+	}
+
+	db.projects.findOne({"_id": ObjectId(mongoid)}, function(err, project) {
+		project.modified = Date.now();
+		if (project.brief == undefined) { project.brief = {}; }
+
+		for (var file in uploadedFilenames) {
+			if (project.brief.samplefiles) { 
+				project.brief.samplefiles.push(uploadedFilenames[file]) 
+			} else {
+				project.brief.samplefiles = []
+				project.brief.samplefiles.push(uploadedFilenames[file]) 
+			}
+		}
+
+	
+		db.projects.update({"_id": ObjectId(mongoid)}, project, function(err, updatedproject) {
+			console.log(updatedproject)
+			if (updatedproject) {
+				res.redirect('/project/'+mongoid)
+			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
+		});
+		//end update
+		
+
+	});
+	
+});
+
+
+
 
 app.post('/project/:id/brief', function (req, res) {
 	//get a project briefing
