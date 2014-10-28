@@ -24,18 +24,16 @@
                     <a href="https://en.gravatar.com/"><img src="{{ avatar }}" width="100" height="100" ></a>
                 </div>
                 
-                    <h1 style="font-weight: 700; font-size: 2em; line-height: 0em;">{{ user.username }} ( {{ user.fullname }} )</h1>
-                
-
-               <i class="fa fa-fw fa-question-circle "></i> {{ user.shortbio }}<br>
-                <i class="fa fa-fw fa-map-marker"></i> {{ user.location }}<br>
+                    <div style="font-weight: 700; font-size: 1.25em; color: white; line-height: 0em; margin-top: 1em;text-transform: uppercase;">{{ user.fullname }}</div>
+                 <div style="font-weight: 700; font-size: 1em; color: rgb(150,150,150); line-height: 0em; margin-top: 1.5em; margin-bottom: 1em; text-transform: uppercase;">{{ user.username }} </div>
+                    
                  <a href="mailto:{{ user.email }}"><i class="fa fa-fw fa-envelope "></i> {{ user.email }}</a>  <br> 
-                <a href="tel:{{ user.phonenumber }}"><i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}</a><br>
-                <a href="http://{{ user.website }}"><i class="fa fa-fw fa-globe "></i> {{ user.website }}</a><br>
 
-                {% if user.bitcoinaddress != "" %} 
-                    <a href="http://{{ user.bitcoinaddress }}"><i class="fa fa-fw fa-bitcoin "></i> {{ user.bitcoinaddress }}</a><br>
-                {% endif %}
+                {% if user.shortbio != "" %}<i class="fa fa-fw fa-question-circle "></i> {{ user.shortbio }}<br>{% endif %}
+                {% if user.location != "" %}<i class="fa fa-fw fa-map-marker"></i> {{ user.location }}<br>{% endif %}                 
+                {% if user.phonenumber != "" %}<a href="tel:{{ user.phonenumber }}"><i class="fa fa-fw fa-phone "></i> {{ user.phonenumber }}</a><br>{% endif %}
+                {% if user.website != "" %}<a href="http://{{ user.website }}"><i class="fa fa-fw fa-globe "></i> {{ user.website }}</a><br>{% endif %}
+                {% if user.bitcoinaddress != "" %}<a href="http://{{ user.bitcoinaddress }}"><i class="fa fa-fw fa-bitcoin "></i> {{ user.bitcoinaddress }}</a><br>{% endif %}
                 
                 <br><br>
                    {% if username == user.username %}

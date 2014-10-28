@@ -4,13 +4,13 @@
 
     <div class="pure-u-1 galleryFilters">
         <ul>
-            <li class="filters active" data-id="all">ALL</li>
-            <li class="filters" data-id="portfolio">PORTFOLIOS</li>
-            <li class="filters" data-id="service">SERVICES</li>
-            <li class="filters" data-id="job">JOBS</li>
-            <li class="filters" data-id="course">COURSES</li>
-            <li class="filters" data-id="article">ARTICLES</li>
-            <li class="filters" data-id="tutorial">TUTORIALS</li>
+            <li class="filters f1 active" data-id="all"><div class="filterblock">ALL</div></li>
+            <li class="filters f2" data-id="portfolio"><div class="filterblock">PORTFOLIOS</div></li>
+            <li class="filters f3" data-id="service"><div class="filterblock">SERVICES</div></li>
+            <li class="filters f4" data-id="job"><div class="filterblock">JOBS</div></li>
+            <li class="filters f5" data-id="course"><div class="filterblock">COURSES</div></li>
+            <li class="filters f6" data-id="article"><div class="filterblock">ARTICLES</div></li>
+            <li class="filters f7" data-id="tutorial"><div class="filterblock">TUTORIALS</div></li>
         </ul>
     </div>
 
@@ -56,11 +56,13 @@ var rendergallery = function () {
             entryhtml += '</span><br>';
             entryhtml += '</div>';
 
+            /* HIDE PRICE
             if (offerings[x].saleoption == "price") {
                 entryhtml += '<div style="position: absolute; top : 16em; left: 0.5em; font-size: 1em;font-weight: 700;">';
                 entryhtml += 'R '+offerings[x].price.toFixed(2);
                 entryhtml += '</div>';
             }
+            */
 
            
 
@@ -92,13 +94,35 @@ rendergallery();
 
 <style>
 
-.filters:hover {
-    color: rgb(225, 76, 7); 
+
+
+.f1 { color: rgb(225, 225, 225); }
+.f2 { color: rgb(210, 225, 32); }
+.f3 { color: rgb(225, 76, 7); }
+.f4 { color: rgb(32, 225, 159); }
+.f5 { color: rgb(225, 32, 90); }
+.f6 { color: rgb(32, 123, 225); }
+.f7 { color: rgb(159, 32, 225); }
+
+.f1:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+.f2:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+.f3:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+.f4:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+.f5:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+.f6:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+.f7:hover {  opacity: 1.0; background-color: rgb(15,15,15);}
+
+.active {
+    opacity: 1.0;    
+    background-color: rgb(5,5,5);
+    color: white;
 }
 
+.filters { font-weight: 700; font-size: 1.25em;}
+.filterblock {  padding: 1em; margin: 0;}
 .galleryFilters {
-    background: rgb(39,37,38);
-    padding: 1em;
+    background: rgb(32,32,32);
+ 
     margin-top: 1em;
     margin-bottom: 1em;
 
@@ -111,18 +135,16 @@ rendergallery();
 .galleryFilters li {
     float: left;
     list-style-type: none;
-    margin-right: 1.5em;
+    
     font-size: 1.12em;
-    color: rgb(125,125,125);
+    
 }
 
 .galleryFilters li:hover {
     cursor: pointer;
 }
 
-.galleryFilters li.active {
-    color: rgb(255,255,255);
-}
+
 
   .gallery {
     width: 100%;
@@ -175,6 +197,7 @@ rendergallery();
 .market-title a{   
     font-weight: 700; 
     font-size: 1em;
+    color: #fff;
 }
 
 .market-title a:hover {   
@@ -184,7 +207,7 @@ rendergallery();
 }
 
 a.productgallery {
-    color: #e14c07;
+    color: rgb(225,225,225);
 }
 
 a.productgallery:hover {

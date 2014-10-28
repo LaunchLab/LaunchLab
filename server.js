@@ -661,7 +661,7 @@ app.get('/offerings/quote/:id', function (req, res) {
 
   				db.projects.save( project , function (err, resultp) {
 
-  					res.redirect("/project/"+resultp._id.toHexString()+"/brief");	
+  					res.redirect("/project/brief/"+resultp._id.toHexString());	
   				});
   				
   				//res.render('offerings_order', { username: req.session.username, password: req.session.password, socketserver: socketconnect, offering: result, userdb: req.session.db });
@@ -1364,7 +1364,7 @@ app.post('/project/upload/:id', function (req, res) {
 
 
 
-app.post('/project/:id/brief', function (req, res) {
+app.post('/project/brief/:id', function (req, res) {
 	//get a project briefing
 	console.log(req.params)
 	console.log(req.body)
@@ -1378,7 +1378,7 @@ app.post('/project/:id/brief', function (req, res) {
 	});
 });
 
-app.get('/project/:id/brief', function (req, res) {
+app.get('/project/brief/:id', function (req, res) {
 	//get a project briefing
 	console.log(req.params)
 	console.log(req.body)
