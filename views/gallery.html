@@ -67,7 +67,13 @@ var rendergallery = function () {
 
             entryhtml += '<div class="galleryBy" style="text-transform: uppercase;">';
             entryhtml += '<span class="market-creator" >'+offerings[x].typeoption+' by <a href="/'+offerings[x].creator+'">'+offerings[x].creator+'</a></span>';
-            entryhtml += '</div></div></div></div>';
+            entryhtml += '</div>';
+
+            entryhtml += '<div class="galleryViews" style="text-transform: uppercase;">';
+            entryhtml += '<span class="market-creator" ><i class="fa fa-eye "></i> '+offerings[x].views+'</span>';
+            entryhtml += '</div>';
+
+            entryhtml += '</div></div></div>';
 
             $("#galleryItems").append(entryhtml);
             $("#galleryItems").fadeIn(100);
@@ -169,9 +175,16 @@ rendergallery();
 
 .galleryBy {
     padding: 0.5em;
+    position: absolute;
+    top: 285px;
+}
+
+.galleryViews {
+    padding: 0.5em;
     text-align: right;
     position: absolute;
     top: 285px;
+    right: 0.5em;
 }
 
 .market-link:hover .market-container {
