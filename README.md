@@ -2,7 +2,7 @@
 
 Under heavy development.
 
-USER STORIES (future)
+USER STORIES
 ============
 
 **Everyone:** See work examples and individuals portfolios for inspiration, to learn from and possibly collaborate with.
