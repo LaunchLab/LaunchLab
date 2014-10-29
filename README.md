@@ -1,6 +1,17 @@
 **Launch Lab Manual.**
 
+Under heavy development.
 
+USER STORIES (future)
+============
+
+**Everyone:** See work examples and individuals portfolios for inspiration, to learn from and possibly collaborate with.
+
+**Creative:** Can upload work examples and recieve project requests. Can manage the projects they are involved with and see if there are any raised issues on a project by project basis.
+
+**Mentors:** Can request a creative to help with projects. Can manage client relationships and projects that are moving through the system. Handle disputes, billing and operational admin tasks.
+
+**Clients:** See creative's work for inspiration, can request work to be done, track progress on projects, report on quality or raise issues so they can be resolved. Clients can access past projects, see versions of files and logs of communication on a per project basis. Clients can make payments online and see payment histories to see total project costs.
 
 TERMINOLOGY
 ===========
