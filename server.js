@@ -1374,6 +1374,40 @@ app.post('/project/brief/:id', function (req, res) {
 		project.brief = req.body;
 		db.projects.update({"_id":ObjectId(req.params.id)}, project, function (err, result) {
 			res.json({"result":result})
+
+
+
+			//SEND EMAILS WHEN BRIEF RECIEVED
+
+			if (enableEmail) 
+		  	{
+				var email = {}
+				email.from = "noreply@launchlabapp.com";
+				email.fromname = "Launch Lab";
+				email.subject = "Incoming brief from "+req.session.username+".";
+				email.body = "A user submitted a brief.\n\r";
+				email.body += "LINK:\n\r"
+				email.body += "http://launchlab.me/project/"+project._id.toHexString();
+				email.body += "\n\r"
+				email.body += "BRIEF:\n\r"
+				email.body += JSON.stringify(req.body)
+				email.body += "\n\r"
+				email.body += "PROJECT:\n\r"
+				email.body += JSON.stringify(project)
+				email.body += "\n\r"
+				
+				email.rcpt = "rouan@8bo.org";
+				email.rcptname = "Rouan van der Ende";
+				
+				mailbot.sendemail(email, function (data) { 
+					console.log("EMAIL SENT"); 
+					email.rcpt = "kevin@openwindow.co.za";
+					email.rcptname = "Kevin Lawrie";
+					mailbot.sendemail(email, function (data) { console.log("EMAIL SENT"); });
+				});
+			}
+
+			//END BRIEF EMAILS
 		});
 	});
 });

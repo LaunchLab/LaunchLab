@@ -83,8 +83,13 @@ $("#briefsubmit").click( function() {
 
 	form.title = $("#formtitle").val();
 	if (form.title == "") { $("#formtitle").focus(); return; }
+
 	form.brief = $("#formbrief").val();
 	if (form.brief == "") { $("#formbrief").focus(); return; }
+
+	form.deadline =$("#datepicker").val();
+	if (form.deadline == "") { $("#datepicker").focus(); return; }
+
 
 	$.post( "", form, function( data ) {
 		console.log(data);
