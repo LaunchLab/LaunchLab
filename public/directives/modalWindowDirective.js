@@ -1,4 +1,4 @@
-app.directive("modalWindow", function($compile, $timeout, $document, $location) {
+app.directive("modalWindow", function($compile, $timeout, $location) {
   return {
   	// required to make it work as an element
     restrict: 'E',
@@ -17,14 +17,13 @@ app.directive("modalWindow", function($compile, $timeout, $document, $location) 
     		$('.md-overlay').css('display', 'none');
     		$('.md-overlay').css('opacity', '0');
     	});
-
-    	$document.on(scope.use+'Open', function(event) {
-    		elements.find('modalWindow').prevObject[0].classList.add("md-show");
+    	scope.$root.$on(scope.use+'Open', function() {
+		    elements.find('modalWindow').prevObject[0].classList.add("md-show");
     		$('.md-overlay').css('display', 'initial');
     		$('.md-overlay').css('opacity', '1');
-    	});
+		});
 
-    	$document.on(scope.use+'Swap', function(event) {
+		scope.$root.$on(scope.use+'Swap', function() {
     		elements.find('modalWindow').prevObject[0].classList.remove("md-show");
     	});
 

@@ -19,11 +19,6 @@ app.directive('marketPlace', function(socket, $filter){
 		    scope.offerings = data.offerings;
 		    scope.$digest();
 		});
-	    /*scope.$watch(function(){
-	      return element[0].clientWidth * element[0].clientHeight;
-	    },function(){
-	    	//resize function
-	    });*/
 	
     }
   }

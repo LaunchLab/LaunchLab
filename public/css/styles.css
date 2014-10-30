@@ -7,7 +7,7 @@
 *******************************************************/
 button, input, select, textarea {
     padding: 7px;
-    margin-bottom: 2px;
+    margin-bottom: 40px;
 }
 input[type=submit] {
     background-color: #e14c07;
@@ -15,6 +15,56 @@ input[type=submit] {
     border: none;
     padding: 10px 30px 10px 30px;
     border-radius: 0px;
+}
+
+.animate-show {
+
+}
+.animate-hide {
+
+}
+
+.ng-show {
+
+}
+.ng-hide {
+
+}
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+div.galleryFilters ul li input[type=radio]  + label {
+    color:white;
+
+}
+
+div.galleryFilters ul li input[type=radio]:checked  + label {
+    color:orange;
+}
+
+div.galleryFilters ul li input[type=radio] {
+  visibility: hidden;
+  width:60px;
+}
+form label {
+    position: absolute;
+    margin-top: -30px;
+    color:white;
+}
+
+form label + input[type=radio] {
+  visibility: hidden;
+  width:60px;
+}
+label[for=clientRadio], label[for=mentorRadio], label[for=creativeRadio] {
+    border-radius: 50%;
+	background-color: black;
+	width: 60px;
+	height: 60px;
 }
 /*
 * Individual Components CSS
@@ -372,7 +422,6 @@ a.thickBlock:hover div {
 .galleryFilters li {
     float: left;
     list-style-type: none;
-    margin-right: 1.5em;
     font-size: 1.12em;
     color: rgb(125,125,125);
 }
