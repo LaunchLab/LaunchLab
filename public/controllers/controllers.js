@@ -15,35 +15,6 @@ var controllers = {},
             }
         };
     };
-controllers.topNav = function ($scope, $window, socket) {
-	$scope.modalWindowEnterEventHandler = function(){
-    	$(".md-modal").addClass( "md-show" );
-    };
-	$scope.var0 = 0;
-	  var menuUp = false;
-  $(".topnavOptionsMenu").hide();
-  $(".topnavOptionsButton").hover( function() {
-    $(".topnavOptionsMenu").css("top", "40px");
-    $(".topnavOptionsMenu").css("left", $(this).offset().left);
-    $(".topnavOptionsMenu").show();
-  }, function() {
-    $(".topnavOptionsMenu").hide();
-  })
-
-  $(".topnavOptionsMenu").hover( function() {
-    $(".topnavOptionsMenu").show();
-  },function() {
-    $(this).hide();
-  });
-
-  socket.emit('request topNav');
-  socket.on('recieve topNav',function(data) {
-    console.log(data);
-    $scope.users = data.users;
-    $scope.$digest();
-  });
-
-};
 
 controllers.market = function ($scope, $window, socket) {
   socket.emit('request market');
@@ -152,6 +123,36 @@ controllers.creativesView = function ($scope, $window, socket) {
   });
 
 };
+
+controllers.topNav = function ($scope, $window, socket) {
+	$scope.modalWindowEnterEventHandler = function(){
+    	$(".md-modal").addClass( "md-show" );
+    };
+	$scope.var0 = 0;
+	  var menuUp = false;
+  $(".topnavOptionsMenu").hide();
+  $(".topnavOptionsButton").hover( function() {
+    $(".topnavOptionsMenu").css("top", "40px");
+    $(".topnavOptionsMenu").css("left", $(this).offset().left);
+    $(".topnavOptionsMenu").show();
+  }, function() {
+    $(".topnavOptionsMenu").hide();
+  })
+
+  $(".topnavOptionsMenu").hover( function() {
+    $(".topnavOptionsMenu").show();
+  },function() {
+    $(this).hide();
+  });
+
+  socket.emit('request topNav');
+  socket.on('recieve topNav',function(data) {
+    console.log(data);
+    $scope.users = data.users;
+    $scope.$digest();
+  });
+
+};
 */
 
 controllers.topNav = function ($scope, $window, socket) {
@@ -174,7 +175,7 @@ controllers.topNav = function ($scope, $window, socket) {
   };
 
 controllers.loginModalWindowSubmit = function ($scope, socket, $timeout, $rootScope) {
-	$scope.loginModalWindowSubmit = function() {
+	$scope.submit = function() {
     	alert();
     };
     
@@ -189,29 +190,38 @@ controllers.loginModalWindowSubmit = function ($scope, socket, $timeout, $rootSc
      }; 
 };
 
-controllers.registerModalWindowSubmit = function ($scope, $document, socket, $timeout) {
+controllers.registerModalWindowSubmit = function ($scope, $location, socket, $timeout) {
+	$scope.newuser= {
+		username : '',
+		email : '',
+		password1 : '',
+		password2 : '',
+		levelAuthority : ''
+	};
 	$scope.hideLevelAuthority = false;
 	$scope.showLevelAuthority = false;
-	$scope.levelAuthority;
-	$scope.error;
+	$scope.error=false;
+	$scope.submit = function() {
+		console.log($scope.newuser);
+		socket.emit('request register user', $scope.newuser);
+	};
 	$scope.registerModalWindowSubmit = function() {
-    	//socket.emit('request topNav');
-		socket.on('recieve register user successful',function(data) {
-			if(){
-				$location.path('/projects');
-			}else if(){
-				$location.path('/projects');
-			}else {
-				$location.path('/projects');
-			};
-		});
-		socket.on('recieve register user rejected',function(data) {
-			console.log('rejected'+ data);
-			$scope.error = data;
-			$scope.$digest();
-		});
+		
     };
-
+	socket.on('recieve register user successful', function(newuser) {
+		if(newuser.levelAuthority === 'client'){
+			$location.path('/clients/dashboard');
+			$scope.$apply();
+		}else {
+			$location.path('/:' + newuser.username);
+			$scope.$apply();
+		};
+	});
+	socket.on('recieve register user rejected',function(data) {
+		console.log('rejected'+ data);
+		$scope.error = data;
+		$scope.$digest();
+	});
     $scope.showLevelAuthorityDiv = function() {
     	$scope.hideLevelAuthority = true;
     	$scope.showLevelAuthority = true;
@@ -219,9 +229,6 @@ controllers.registerModalWindowSubmit = function ($scope, $document, socket, $ti
     $scope.hideLevelAuthorityDiv = function() {
     	$scope.hideLevelAuthority = false;
     	$scope.showLevelAuthority = false;
-    };
-    $scope.updateLevelAuthority = function(levelAuthority) {
-    	alert();
     };
 };
 
@@ -233,12 +240,12 @@ controllers.forgotResetModalWindowSubmit = function ($scope, $window, socket) {
 
 controllers.dashboard = function ($scope, $window, socket) {
 	$scope.loginModalWindow = {
-      html: '<form ng-submit="loginModalWindowSubmit()" ng-controller="loginModalWindowSubmit"><span >Username:</span><br /><input type="text" placeholder="Username"/><br /><span >Password:</span><br /><input type="password" placeholder="Password"/><br/><input type="submit" value="Submit"/><br /><span ng-click="forgotReset()" class="forgotReset">Forgot / Reset Password</span><br/><span ng-click="register()" class="register">Need an account? Go register.</span></form>',
+      html: '<form ng-submit="submit()" ng-controller="loginModalWindowSubmit"><span >Username:</span><br /><input type="text" placeholder="Username"/><br /><span >Password:</span><br /><input type="password" placeholder="Password"/><br/><input type="submit" value="Submit"/><br /><span ng-click="forgotReset()" class="forgotReset">Forgot / Reset Password</span><br/><span ng-click="register()" class="register">Need an account? Go register.</span></form>',
       title:'Login',
       use : 'loginModalWindow'
     };
     $scope.registerModalWindow = {
-      html: '<form class="registerForm" ng-submit="registerModalWindowSubmit()" ng-controller="registerModalWindowSubmit"> <div class="animate-hide" ng-hide="hideLevelAuthority"><br/><label for="usernameText">Username</label><input type="text" id="usernameText" placeholder="Username"/><br /><label for="emailAddressEmail">Email Address</label><input type="email" id="emailAddressEmail" placeholder="Email Address"/><br/><label for="passwordPassword">Password</label><input type="password" id="passwordPassword" placeholder="Password"/><br/><input type="button" ng-click="showLevelAuthorityDiv()"/> </div> <div class="animate-show" ng-show="showLevelAuthority"> <input type="button" ng-click="hideLevelAuthorityDiv()"/><br /><label for="clientRadio">Client</label><input type="radio" id="clientRadio" ng-model="levelAuthority" value="client" ng-change="updateLevelAuthority(levelAuthority)">	<label for="mentorRadio">Mentor</label><input type="radio" id="mentorRadio" ng-model="levelAuthority" value="mentor" ng-change="updateLevelAuthority(levelAuthority)">	<label for="creativeRadio">Creative</label><input type="radio" id="creativeRadio" ng-model="levelAuthority" value="creative" ng-change="updateLevelAuthority(levelAuthority)"><br/><input type="submit" value="Submit"/> </div></form>',
+      html: '<form class="registerForm" ng-submit="submit()" ng-controller="registerModalWindowSubmit"> <div class="animate-hide" ng-hide="hideLevelAuthority"> <br/> <label for="usernameText">Username</label> <input type="text" ng-model="newuser.username" id="usernameText" placeholder="Username"/> <br/> <label for="emailAddressEmail">Email Address</label> <input type="email" ng-model="newuser.email" id="emailAddressEmail" placeholder="Email Address"/> <br/> <label for="passwordPassword1">Password</label> <input type="password" ng-model="newuser.password1" id="passwordPassword1" placeholder="Password"/> <br/> <label for="passwordPassword2">Password</label> <input type="password" ng-model="newuser.password2" id="passwordPassword2" placeholder="Password"/> <br/> <input type="button" ng-click="showLevelAuthorityDiv()"/> </div> <div class="animate-show" ng-show="showLevelAuthority"> <input type="button" ng-click="hideLevelAuthorityDiv()"/> <br/> <label for="clientRadio">Client</label> <input type="radio" id="clientRadio" ng-model="newuser.levelAuthority" value="client" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="mentorRadio">Mentor</label> <input type="radio" id="mentorRadio" ng-model="newuser.levelAuthority" value="mentor" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="creativeRadio">Creative</label> <input type="radio" id="creativeRadio" ng-model="newuser.levelAuthority" value="creative" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <br/> <input type="submit" value="Submit"/> </div> </form>',
       title:'Register',
       use : 'registerModalWindow'
     };

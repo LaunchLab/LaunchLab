@@ -7,11 +7,6 @@ app.config(function($routeProvider, $locationProvider){
 			controller:'dashboard',
 			templateUrl:'views/home_loggedin.html'
 		})
-		.when('/market',
-		{
-			controller:'market',
-			templateUrl:'views/market.html'
-		})
 		/*
 		.when('/users/:user_id', 
                 {   
@@ -20,27 +15,7 @@ app.config(function($routeProvider, $locationProvider){
                 }
             )
 		*/
-		.when('/user/:id',
-		{
-			controller:'userView',
-			templateUrl:'views/user.html'
-		})
 		.when('/:username',
-		{
-			controller:'usernameView',
-			templateUrl:'views/user.html'
-		})
-		.when('/profile',
-		{
-			controller:'profileView',
-			templateUrl:'views/profile.html'
-		})
-		.when('/creatives',
-		{
-			controller:'creativesView',
-			templateUrl:'views/creatives.html'
-		})
-		.when('/profile',
 		{
 			controller:'profileView',
 			templateUrl:'views/profile.html'
@@ -49,11 +24,6 @@ app.config(function($routeProvider, $locationProvider){
 		{
 			controller:'projectView',
 			templateUrl:'views/project.html'
-		})
-		.when('/projects',
-		{
-			controller:'projectsView',
-			templateUrl:'views/projects.html'
 		})
 		.when('/projects/new',
 		{

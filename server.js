@@ -1,6 +1,8 @@
 var express = require('express'),
 	app = express(),
 	http = require('http'),
+	scrypt = require("./lib/scrypt.js"),
+	mailbot = require('./lib/email.js'),
 	server = http.createServer(app),
 	databaseUrl = "mydb",
 	collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders", "invoices"],
@@ -9,7 +11,8 @@ var express = require('express'),
 	io = require('socket.io').listen(server),
 	tempUsername = "Dagan",
 	tempPassword = "Pass123",
-	tempEmail = "daganread@gmail.com";
+	tempEmail = "daganread@gmail.com",
+	enableEmail = true
 
 
 /* Start the server */
@@ -26,6 +29,99 @@ var express = require('express'),
 
   io.sockets.on('connection', function(socket) {
 /*
+*	Register
+*/
+socket.on('request register user', function(newuser) {
+	console.log(newuser);
+	  var minute = 60 * 1000;
+	  console.log("new login/register:");
+	  console.log("-----");
+	  //do login
+	  // app.js
+	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(newuser.username), scrypt.encode_utf8(newuser.password1), 128, 8, 1, 32);
+	var encryptedhex = scrypt.to_hex(encrypted);		
+
+	//finds users in the database that have the same username already
+	db.users.find({username: newuser.username}, function(err, users) 
+	{
+		if ( err || !users) { 
+			console.log("DB error"); 
+			io.sockets.emit('request error');
+		} else {
+			console.log(users)
+
+
+			if (users.length == 0) {
+				//new username
+					newuser.companyname = "";
+					newuser.address = "";
+					newuser.phonenumber = "";
+					newuser.mobile = "";
+					newuser.website = "";
+
+				//newuser.level = 0;
+
+
+
+				db.users.save( newuser, function(err, saved) 
+				{
+
+				  if( err || !saved ) { console.log("User not saved. DB error"); }
+				  else { 
+				  	//new user registered.
+				  	console.log("User saved"); 
+				  	console.log(saved); 
+				  	tempUsername = newuser.username;
+					tempPassword = newuser.password1;
+					tempEmail = newuser.email;
+				  	/////////////////////////
+
+				  	//SEND EMAIL WHEN THERES A NEW USER
+
+				  	//start email
+				  	if (enableEmail) 
+				  	{
+		  				var email = {}
+						email.from = "noreply@launchlabapp.com";
+						email.fromname = "Launch Lab Signups";
+						email.rcpt = "rouan@8bo.org";
+						email.rcptname = "Rouan van der Ende";
+						email.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
+						email.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+
+						mailbot.sendemail(email, function (data) 
+						{
+							console.log("EMAIL SENT")
+							
+							var emailK = {}
+							emailK.from = "noreply@launchlabapp.com";
+							emailK.fromname = "Launch Lab Signups";
+							emailK.rcpt = "kevin@openwindow.co.za";
+							emailK.rcptname = "Kevin Lawrie";
+							emailK.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
+							emailK.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+
+							mailbot.sendemail(emailK, function (data) 
+							{
+								console.log("EMAIL SENT");
+							})
+						})
+					} 
+					// end email
+					io.sockets.emit('recieve register user successful', newuser);
+				  }
+
+
+				});
+			}else if (users.length == 1) {
+				io.sockets.emit('recieve register user rejected', 'username already taken.');
+			};
+
+		}
+	});
+    
+});
+/*
 *	Get Responses
 */
   	socket.on('request topnav', function() {
@@ -34,46 +130,6 @@ var express = require('express'),
 	    			password: tempPassword
 	    		};
 		io.sockets.emit('recieve topnav', data);
-	});
-
-	socket.on('request market', function() {
-  		var data = {
-	    			username: tempUsername,
-	    			password: tempPassword,
-	    			socketserver: socketconnect,
-	    			offerings: null
-	    		};
-
-  	 	db.offerings.find({}, function(err, results) {
-			for (var x in results) {
-				results[x].offering_id = results[x]._id.toHexString();
-			}
-			data.offerings = results;
-		});//end find
-		io.sockets.emit('recieve market', data);
-	});
-
-	socket.on('request attendance', function(data) {
-		var data = {
-			socketserver : socketconnect,
-			students : [],
-			studentcounttotal : 15,
-			studentcountpresent : 0,
-			studentcountabsent : 0,
-			studentcountexempt : 0,
-			studentcountwork : 0	
-		};
-
-		for (var a = 0; a < data.studentcounttotal; a++) {
-		  var student = {
-		  	name : "Name",
-			surname : "Surname",
-			count : a+1,
-			number : 46400 + Math.round(Math.random()*500)	
-		  }
-		  data.students.push(student);
-		}
-		io.sockets.emit('recieve attendance', data);
 	});
 /*
 
