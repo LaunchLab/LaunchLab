@@ -50,25 +50,154 @@ div.galleryFilters ul li input[type=radio] {
   visibility: hidden;
   width:60px;
 }
-form label {
+/*
+* Individual Components CSS
+*******************************************************/
+/*
+* Register Modal Window
+*/
+modalwindow[use*="register"] div.md-content md-title{
+	text-align:center!important;
+}
+form.registerForm label {
     position: absolute;
     margin-top: -30px;
     color:white;
 }
 
-form label + input[type=radio] {
-  visibility: hidden;
-  width:60px;
+form.registerForm label[for*="Radio"] {
+    margin-top: 0px;
 }
-label[for=clientRadio], label[for=mentorRadio], label[for=creativeRadio] {
+
+form.registerForm input[type=radio] {
+	display: none;
+	width:60px;
+}
+form.registerForm .register-levelAuthority{
+	height: 335px;
+	width: 335px;
+	position: relative;
+}
+form.registerForm label[for*="Radio"]{
+	text-align: center;
+	height: inherit;
+	width: 33.3333%;
+	position: absolute;
+	transition: all 0.3s ease 0.2s;
+}
+
+form.registerForm div.levelAuthority-item {
+    width: 69%;
+    height: 23%;
+    margin: 0px 15.5%;
     border-radius: 50%;
-	background-color: black;
-	width: 60px;
-	height: 60px;
+    position: relative;
+    cursor: default;
+    vertical-align: middle;
+    background-color: #EF5A28;
+    transition: all 0.3s ease 0s;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+form.registerForm input[type=radio]:checked + label[for*="Radio"] div.levelAuthority-item div.persona-info h3 {
+	padding: 83px 0px 0px;
+	font-weight: bold;
+	letter-spacing: 1px;
+}
+
+form.registerForm input[type=radio]:checked + label[for*="Radio"] div.levelAuthority-item{
+	width: 84%;
+	height: 28%;
+	margin: 0px 8%;
+}
+
+form.registerForm input[type=radio]:checked + label {
+    margin-top: -25px;
+}
+form.registerForm label[for=mentorRadio] {
+	left:33%;
+}
+
+form.registerForm label[for=creativeRadio] {
+	left:66%;
+}
+form.registerForm .client-avatar {
+    background-image: url("../images/client_avatar.png");
+}
+ 
+form.registerForm .mentor-avatar {
+    background-image: url("../images/mentor_avatar.png");
+}
+ 
+form.registerForm .creative-avatar {
+    background-image: url("../images/creative_avatar.png");
+}
+
+form.registerForm .persona-info {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    -webkit-transition: all 0.3s;
+  	-moz-transition: all 0.3s;
+  	transition: all 0.3s;
+    backface-visibility: hidden;
+}
+
+form.registerForm .persona-info h3 {
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+    font-size: medium;
+    padding: 80px 0 0 0;
+    height: 110px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    text-shadow:
+        0 0 1px #fff,
+        0 1px 2px rgba(0,0,0,0.3);
+}
+ 
+form.registerForm label p {
+	opacity: 0;
+	color: #FFF;
+	padding: 10px 5px;
+	font-style: italic;
+	margin: 30px auto;
+	font-size: 12px;
+	border-top: 1px solid rgba(255, 255, 255, 0.5);
+	-webkit-transition: all 0.3s;
+  	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+form.registerForm input[type=radio]:checked + label .levelAuthority-item {
+    box-shadow:
+        inset 0 0 0 3px rgba(255,255,255,0.8),
+        0 1px 2px rgba(0,0,0,0.1);
 }
 /*
-* Individual Components CSS
-*******************************************************/
+.registerForm label:not(label:hover) .levelAuthority-item {
+    box-shadow:
+        inset 0 0 0 5px rgba(255,255,255,0.8),
+        0 1px 2px rgba(0,0,0,0.1);
+}
+*/
+form.registerForm input[type=radio]:checked + label .levelAuthority-item .persona-info {
+    opacity: 1;
+    transform: scale(1);   
+}
+form.registerForm input[type=radio]:checked + label p {
+    opacity: 1;
+    transform: scale(1);   
+}
+form.registerForm input[type=submit] {
+    position: absolute;
+    width: 150px;
+    top: calc(100% - 65px);
+    left: calc(50% - 75px);
+}
+
 /*
 * Top Nav
 */
@@ -640,12 +769,12 @@ span.forgotReset, span.register{
   font-size: 1.15em;
   display: block;
 }
-
+/*
 .md-content > md-view p {
   margin: 0;
   padding: 10px 0;
 }
-
+*/
 .md-content > md-view ul {
   margin: 0;
   padding: 0 0 30px 20px;
@@ -669,7 +798,32 @@ span.forgotReset, span.register{
   background-position: center;
   z-index:2001; 
 }
-md-footer {
+.md-content form input[type=submit] {
+    background-color: #e14c07;
+    color: white;
+    border: none;
+    padding: 10px 30px 10px 30px;
+    border-radius: 0px;
+}
+.md-content md-next {
+	background-color: #e14c07;
+    padding: 10px 30px 10px 30px;
+}
+.md-content md-prev {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 42px;
+    height: 41px;
+	background-image: url("../images/md-prev.jpg");
+	background-repeat: no-repeat;
+	background-size: contain;
+	-moz-background-size: contain;  /* Firefox 3.6 */
+	background-position: center;
+    border: none;
+    border-radius: 0px;
+}
+.md-content md-footer {
   position:relative;
   display: block;
   width:100%;

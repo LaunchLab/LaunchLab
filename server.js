@@ -12,7 +12,23 @@ var express = require('express'),
 	tempUsername = "Dagan",
 	tempPassword = "Pass123",
 	tempEmail = "daganread@gmail.com",
-	enableEmail = true
+	enableEmail = true,
+	makeSealer = function () {
+        var users = [], passwords = [];
+
+        return {
+            sealer: function (username, password) {
+                var i = users.length,
+                    user = {username: username};
+                users[i] = user;
+                passwords[i] = password;
+                return user;
+            },
+            unsealer: function (user, password) {
+                return passwords[users.indexOf(user)] === password;
+            }
+        };
+    };
 
 
 /* Start the server */
@@ -27,100 +43,190 @@ var express = require('express'),
     res.sendfile(__dirname + '/index.html');
   });
 
+/* Socket.io Namespaces*/
+/*
+*	Private Communication Chanels
+*/
+/* Project */
+//console.log(process.env);
+var restricted = io.of('/restricted')
+	.authorization(function (handshakeData, callback) {
+		handshakeData.levelAuthority = 'client';
+		console.dir(handshakeData);
+		callback(null, true);
+	})
+	.on('connect_failed', function (reason) {
+    	console.error('unable to connect to namespace', reason);
+  	})
+  	.on('connection', function(socket){
+  		socket.emit('recieve handshakeData', socket.handshake);
+		socket.on('request login', function() {
+			var data = { 
+				loginpage : true
+			};
+			console.log("Recieved login details on server");
+			restricted.emit('recieve login', data); 
+		});
+		socket.on('request offeringsEdit', function(offering_id) {
+			//bugfix chop to correct length
+			var mongoid = offering_id;
+			var ObjectId = mongojs.ObjectId;
+		  	var data = { 
+				username: tempUsername,
+				password: tempPassword,
+				socketserver: socketconnect
+			};
+
+			db.offerings.findOne({"_id": ObjectId(offering_id)}, function(err, result) {
+
+		    result.offering_id = result._id.toHexString();
+		    
+		    if (result) {
+		      var editbool = 0;
+		      if (result.creator == tempUsername) { editbool = 1}
+		      if (tempUsername == "rouan") {editbool = 1} 
+		      data.offering = result;
+
+		      console.log(result)
+
+		      data.editable = editbool;
+		      restricted.emit('recieve offeringsEdit', data); 
+		    } else {
+		    	restricted.emit('request error'); 
+		    }
+		  });
+		});
+
+		socket.on('request offeringsDelete', function(offering_id) {		  
+			//bugfix chop to correct length
+			var mongoid = offering_id;
+			var ObjectId = mongojs.ObjectId;
+
+		  	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
+		      console.log(result)
+		      
+		      if ((tempUsername == "rouan") || (result.creator == tempUsername)) {
+		        //start del
+		          
+		          db.offerings.remove({"_id": ObjectId(mongoid)}, function(err, result) {
+		              console.log("REMOVED");
+		              restricted.emit('recieve offeringsDelete'); 
+		          });
+		        //end del
+		      }
+		  	});
+		
+		/* END Restricted section*/
+	});
+  console.log('someone connected');
+});
+
+/*
+*Public Communication Chanels
+*/
   io.sockets.on('connection', function(socket) {
+ /*
+ *	Login
+ */
+ 	socket.on('request login', function(data) {
+		console.log("Recieved login details on server " + data);
+
+		io.sockets.emit('executecommand', { commandName: 'log' });
+		//io.sockets.emit('recieve login successful', data); 
+	});
 /*
 *	Register
 */
-socket.on('request register user', function(newuser) {
-	console.log(newuser);
-	  var minute = 60 * 1000;
-	  console.log("new login/register:");
-	  console.log("-----");
-	  //do login
-	  // app.js
-	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(newuser.username), scrypt.encode_utf8(newuser.password1), 128, 8, 1, 32);
-	var encryptedhex = scrypt.to_hex(encrypted);		
+	socket.on('request register user', function(newuser) {
+		console.log(newuser);
+		  var minute = 60 * 1000;
+		  console.log("new login/register:");
+		  console.log("-----");
+		  //do login
+		  // app.js
+		var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(newuser.username), scrypt.encode_utf8(newuser.password1), 128, 8, 1, 32);
+		var encryptedhex = scrypt.to_hex(encrypted);		
 
-	//finds users in the database that have the same username already
-	db.users.find({username: newuser.username}, function(err, users) 
-	{
-		if ( err || !users) { 
-			console.log("DB error"); 
-			io.sockets.emit('request error');
-		} else {
-			console.log(users)
-
-
-			if (users.length == 0) {
-				//new username
-					newuser.companyname = "";
-					newuser.address = "";
-					newuser.phonenumber = "";
-					newuser.mobile = "";
-					newuser.website = "";
-
-				//newuser.level = 0;
+		//finds users in the database that have the same username already
+		db.users.find({username: newuser.username}, function(err, users) 
+		{
+			if ( err || !users) { 
+				console.log("DB error"); 
+				io.sockets.emit('request error');
+			} else {
+				console.log(users)
 
 
+				if (users.length == 0) {
+					//new username
+						newuser.companyname = "";
+						newuser.address = "";
+						newuser.phonenumber = "";
+						newuser.mobile = "";
+						newuser.website = "";
 
-				db.users.save( newuser, function(err, saved) 
-				{
+					//newuser.level = 0;
 
-				  if( err || !saved ) { console.log("User not saved. DB error"); }
-				  else { 
-				  	//new user registered.
-				  	console.log("User saved"); 
-				  	console.log(saved); 
-				  	tempUsername = newuser.username;
-					tempPassword = newuser.password1;
-					tempEmail = newuser.email;
-				  	/////////////////////////
 
-				  	//SEND EMAIL WHEN THERES A NEW USER
 
-				  	//start email
-				  	if (enableEmail) 
-				  	{
-		  				var email = {}
-						email.from = "noreply@launchlabapp.com";
-						email.fromname = "Launch Lab Signups";
-						email.rcpt = "rouan@8bo.org";
-						email.rcptname = "Rouan van der Ende";
-						email.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
-						email.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+					db.users.save( newuser, function(err, saved) 
+					{
 
-						mailbot.sendemail(email, function (data) 
-						{
-							console.log("EMAIL SENT")
-							
-							var emailK = {}
-							emailK.from = "noreply@launchlabapp.com";
-							emailK.fromname = "Launch Lab Signups";
-							emailK.rcpt = "kevin@openwindow.co.za";
-							emailK.rcptname = "Kevin Lawrie";
-							emailK.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
-							emailK.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+					  if( err || !saved ) { console.log("User not saved. DB error"); }
+					  else { 
+					  	//new user registered.
+					  	console.log("User saved"); 
+					  	console.log(saved); 
+					  	tempUsername = newuser.username;
+						tempPassword = newuser.password1;
+						tempEmail = newuser.email;
+					  	/////////////////////////
 
-							mailbot.sendemail(emailK, function (data) 
+					  	//SEND EMAIL WHEN THERES A NEW USER
+
+					  	//start email
+					  	if (enableEmail) 
+					  	{
+			  				var email = {}
+							email.from = "noreply@launchlabapp.com";
+							email.fromname = "Launch Lab Signups";
+							email.rcpt = "rouan@8bo.org";
+							email.rcptname = "Rouan van der Ende";
+							email.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
+							email.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+
+							mailbot.sendemail(email, function (data) 
 							{
-								console.log("EMAIL SENT");
+								console.log("EMAIL SENT")
+								
+								var emailK = {}
+								emailK.from = "noreply@launchlabapp.com";
+								emailK.fromname = "Launch Lab Signups";
+								emailK.rcpt = "kevin@openwindow.co.za";
+								emailK.rcptname = "Kevin Lawrie";
+								emailK.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
+								emailK.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+
+								mailbot.sendemail(emailK, function (data) 
+								{
+									console.log("EMAIL SENT");
+								})
 							})
-						})
-					} 
-					// end email
-					io.sockets.emit('recieve register user successful', newuser);
-				  }
+						} 
+						// end email
+						io.sockets.emit('recieve register user successful', newuser);
+					  }
 
 
-				});
-			}else if (users.length == 1) {
-				io.sockets.emit('recieve register user rejected', 'username already taken.');
-			};
+					});
+				}else if (users.length == 1) {
+					io.sockets.emit('recieve register user rejected', 'username already taken.');
+				};
 
-		}
+			}
+		});
+	    
 	});
-    
-});
 /*
 *	Get Responses
 */
@@ -215,13 +321,6 @@ socket.on('request register user', function(newuser) {
 		    }
 		    
 		  });
-	});
-
-	socket.on('request login', function() {
-		var data = { 
-			loginpage : true
-		};
-		io.sockets.emit('recieve login', data); 
 	});
 
 	socket.on('request logout', function() {
@@ -381,64 +480,6 @@ socket.on('request register user', function(newuser) {
 	        };
 	    });
 
-	});
-
-	socket.on('request offeringsEdit', function(offering_id) {
-		//bugfix chop to correct length
-		  var mongoid = offering_id;
-
-		  var ObjectId = mongojs.ObjectId;
-
-		  var data = { 
-			username: tempUsername,
-			password: tempPassword,
-			socketserver: socketconnect
-		};
-
-		  db.offerings.findOne({"_id": ObjectId(offering_id)}, function(err, result) {
-
-		    result.offering_id = result._id.toHexString();
-		    
-		    if (result) {
-		      var editbool = 0;
-		      if (result.creator == tempUsername) { editbool = 1}
-		      if (tempUsername == "rouan") {editbool = 1} 
-		      data.offering = result;
-
-		      console.log(result)
-
-		      data.editable = editbool;
-		      io.sockets.emit('recieve offeringsEdit', data); 
-		    } else {
-		    	io.sockets.emit('request error'); 
-		    }
-		  });
-	});
-
-	socket.on('request offeringsDelete', function(offering_id) {		  
-		  //bugfix chop to correct length
-		  var mongoid = offering_id;
-		  var ObjectId = mongojs.ObjectId;
-
-		  //////////
-		  db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		      console.log(result)
-		      
-		      if ((tempUsername == "rouan") || (result.creator == tempUsername)) {
-		        //start del
-		          
-		          db.offerings.remove({"_id": ObjectId(mongoid)}, function(err, result) {
-		              console.log("REMOVED");
-		              io.sockets.emit('recieve offeringsDelete'); 
-		          });
-		          
-
-		        //end del
-		      }
-		    
-		  });
-		
-		
 	});
 
 

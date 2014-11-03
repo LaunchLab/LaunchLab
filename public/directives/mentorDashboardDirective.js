@@ -1,11 +1,11 @@
 /*
 *	Marketplace directive
 */
-app.directive('marketPlace', function(socket, $filter){
+app.directive('mentorDashboard', function(socket, $filter){
   return {
     restrict: 'E',
     replace: true,
-    templateUrl: '/directives/templates/marketPlaceDirective.html',
+    templateUrl: '/directives/templates/mentorDashboardDirective.html',
     scope : {
     	tagFilter : "&"
     },
@@ -14,8 +14,8 @@ app.directive('marketPlace', function(socket, $filter){
   			tagFilter = value;
   			console.log(tagFilter);
   		}
-		socket.emit('public', 'request dashboard');
-		socket.on('public', 'recieve dashboard', function(data) {
+		socket.emit('public', 'request mentorDashboard');
+		socket.on('public', 'recieve mentorDashboard', function(data) {
 		    scope.offerings = data.offerings;
 		    //scope.$digest();
 		});

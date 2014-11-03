@@ -2,7 +2,7 @@
 
     		<div class="l-box pure-u-1 pure-u-md-1-2">
     			<div style="margin-top: 1em;">
-							<a data-ng-repeat="image in offering.samplefiles"  href="/offerings/{{ image }}">
+							<a data-ng-repeat="image in offering.samplefiles"  href="/projects/{{ image }}">
 								<img src="/offerings/{{ image }}" style="width:100%;">
 							</a>
 				</div>
@@ -21,10 +21,10 @@
     				</div>
 
     				<div class="pure-u-1 pure-u-md-1-2" style="text-align:right">
-    				<a  ng-if="editable == 1" class="animate-if" href="/offerings/edit/{{ offering.offering_id }}" ><i class="fa fa-fw fa-edit"></i> Edit this </a><br>
-    				<a  ng-if="editable == 1" class="animate-if" href="/offerings/delete/{{ offering.offering_id }}" ><i class="fa fa-fw fa-times"></i> Delete</a><br>
+    				<a  ng-if="editable == 1" class="animate-if" href="/projects/edit/{{ offering.offering_id }}" ><i class="fa fa-fw fa-edit"></i> Edit this </a><br>
+    				<a  ng-if="editable == 1" class="animate-if" href="/projects/delete/{{ offering.offering_id }}" ><i class="fa fa-fw fa-times"></i> Delete</a><br>
                     
-    				<a href="/offerings/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Contact</a><br>
+    				<a href="/projects/order/{{ offering.offering_id }}" ><i class="fa fa-fw fa-envelope"></i> Contact</a><br>
     				</div>
 
     			 	<div class="pure-u-1">

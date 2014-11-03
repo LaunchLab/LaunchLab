@@ -1,73 +1,8 @@
-var controllers = {},
-    makeSealer = function () {
-        var users = [], passwords = [];
-
-        return {
-            sealer: function (username, password) {
-                var i = users.length,
-                    user = {username: username};
-                users[i] = user;
-                passwords[i] = password;
-                return user;
-            },
-            unsealer: function (user, password) {
-                return passwords[users.indexOf(user)] === password;
-            }
-        };
-    };
-
-controllers.market = function ($scope, $window, socket) {
-  socket.emit('request market');
-  socket.on('recieve market',function(data) {
-    console.log(data);
-    $scope.offerings = {
-      price : data.price,
-      samplefiles : data.samplefiles,
-      title : data.title
-    };
-    $scope.$digest();
-  });
-
-};
-
-controllers.userView = function ($scope, $window, socket, $routeParams) {
-  socket.emit('request user', $routeParams.id);
-
-  socket.on('recieve user',function(data) {
-    $scope.offerings = {
-      _id : data.offerings.id,
-      creator : data.offerings.creator,
-      samplefiles : data.offerings.samplefiles,
-      title : data.offerings.title
-    };
-    $scope.user ={
-      username : data.user.username,
-      fullname : data.user.fullname,
-      shortbio : data.user.shortbio,
-      location : data.user.location,
-      email : data.user.email,
-      phonenumber : data.user.phonenumber,
-      website : data.user.website,
-    };
-    $scope.avatar;
-
-    $scope.$digest();
-  });
-
-};
-
-controllers.usernameView = function ($scope, $window, socket, $routeParams) {
-  socket.emit('request username', $routeParams.username);
-  socket.on('recieve username',function(data) {
-    $scope.room = data.room;
-    $scope.$digest();
-  });
-
-};
+var controllers = {};
 
 controllers.profileView = function ($scope, $window, socket) {
   socket.emit('request profile');
-  socket.on('recieve profile',function(data) {
+  socket.on('public', 'recieve profile',function(data) {
     $scope.message;
     $scope.user ={
       username : data.user.username,
@@ -78,84 +13,12 @@ controllers.profileView = function ($scope, $window, socket) {
       phonenumber : data.user.phonenumber,
       website : data.user.website,
     };
-    $scope.$digest();
-  });
-
-};
-/*
-controllers.creativesView = function ($scope, $window, socket) {
-
-      $('.briefbutton').click( function() {
-
-        $('.skillschecklist').each(function(){ 
-          if (this.checked == true) {
-            console.log( $(this).prop('value') );
-            console.log( $(this).prop('checked') );
-            entry["skills"].push( $(this).prop('value') )
-          }
-            
-        });
-
-        briefdata.entry["coding"] = $("input:radio[name ='coding']:checked").val();
-
-        console.log(briefdata.entry)
-        socket.emit('request projectsNew', briefdata);
-         
-      });
-  socket.on('recieve creatives',function(data) {
-    $scope.briefdata = {
-      entry = {
-        companyname : ,
-        companyurl : ,
-        companydescription : ,
-        companylocation : ,
-        projecttitle : ,
-        projectsummary : ,
-        designertype : ,
-        budgetrange : ,
-        projectdetails : ,
-        projectinspiration : ,
-        projecttimeframe:,
-        skills : []
-      }
-    };
-    //$location.path('/project/'+data.entry.projectid);
+    //$scope.$digest();
   });
 
 };
 
-controllers.topNav = function ($scope, $window, socket) {
-	$scope.modalWindowEnterEventHandler = function(){
-    	$(".md-modal").addClass( "md-show" );
-    };
-	$scope.var0 = 0;
-	  var menuUp = false;
-  $(".topnavOptionsMenu").hide();
-  $(".topnavOptionsButton").hover( function() {
-    $(".topnavOptionsMenu").css("top", "40px");
-    $(".topnavOptionsMenu").css("left", $(this).offset().left);
-    $(".topnavOptionsMenu").show();
-  }, function() {
-    $(".topnavOptionsMenu").hide();
-  })
-
-  $(".topnavOptionsMenu").hover( function() {
-    $(".topnavOptionsMenu").show();
-  },function() {
-    $(this).hide();
-  });
-
-  socket.emit('request topNav');
-  socket.on('recieve topNav',function(data) {
-    console.log(data);
-    $scope.users = data.users;
-    $scope.$digest();
-  });
-
-};
-*/
-
-controllers.topNav = function ($scope, $window, socket) {
+controllers.topNav = function ($scope, $window, socket, handshakeConstant) {
 	$scope.var0 = 0;
 	  var menuUp = false;
   $(".topnavOptionsMenu").hide();
@@ -174,23 +37,58 @@ controllers.topNav = function ($scope, $window, socket) {
   });
   };
 
-controllers.loginModalWindowSubmit = function ($scope, socket, $timeout, $rootScope) {
+controllers.AdminUserCtrl = function ($scope, $location, $window, UserService, AuthenticationService){
+	//Admin User Controller (login, logout)
+    $scope.logIn = function logIn(username, password) {
+        if (username !== undefined && password !== undefined) {
+ 
+            UserService.logIn(username, password).success(function(data) {
+                AuthenticationService.isLogged = true;
+                $window.sessionStorage.token = data.token;
+                $location.path("/admin");
+            }).error(function(status, data) {
+                console.log(status);
+                console.log(data);
+            });
+        }
+    }
+ 
+    $scope.logout = function logout() {
+        if (AuthenticationService.isLogged) {
+            AuthenticationService.isLogged = false;
+            delete $window.sessionStorage.token;
+            $location.path("/");
+        }
+    }
+};
+
+controllers.loginModalWindow = function ($scope, socket, $timeout) {
+	$scope.login = {
+		username : '',
+		password : ''
+	};
+
+	socket.on('public', 'recieve login successful',function(data) {
+		console.log(data);
+		
+	});
 	$scope.submit = function() {
-    	alert();
+		// server-side
+
     };
     
     $scope.forgotReset = function() {
-
-    	$rootScope.$broadcast('loginModalWindowSwap');
-    	$timeout(function() {$rootScope.$broadcast('forgotResetModalWindowOpen');}, 300);
+    	$scope.$root.$broadcast('loginModalWindowSwap');
+    	$timeout(function() {$scope.$root.$broadcast('forgotResetModalWindowOpen');}, 300);
      };
 
      $scope.register = function() {
-     	$timeout(function() {$rootScope.$broadcast('registerModalWindowOpen');}, 300);
+     	$scope.$root.$broadcast('loginModalWindowSwap');
+    	$timeout(function() {$scope.$root.$broadcast('registerModalWindowOpen');}, 300);
      }; 
 };
 
-controllers.registerModalWindowSubmit = function ($scope, $location, socket, $timeout) {
+controllers.registerModalWindow = function ($scope, $location, socket, $timeout) {
 	$scope.newuser= {
 		username : '',
 		email : '',
@@ -201,14 +99,13 @@ controllers.registerModalWindowSubmit = function ($scope, $location, socket, $ti
 	$scope.hideLevelAuthority = false;
 	$scope.showLevelAuthority = false;
 	$scope.error=false;
+
 	$scope.submit = function() {
 		console.log($scope.newuser);
-		socket.emit('request register user', $scope.newuser);
+		socket.emit('public', 'request register user', $scope.newuser);
 	};
-	$scope.registerModalWindowSubmit = function() {
-		
-    };
-	socket.on('recieve register user successful', function(newuser) {
+
+	socket.on('public', 'recieve register user successful', function(newuser) {
 		if(newuser.levelAuthority === 'client'){
 			$location.path('/clients/dashboard');
 			$scope.$apply();
@@ -217,7 +114,7 @@ controllers.registerModalWindowSubmit = function ($scope, $location, socket, $ti
 			$scope.$apply();
 		};
 	});
-	socket.on('recieve register user rejected',function(data) {
+	socket.on('public', 'recieve register user rejected',function(data) {
 		console.log('rejected'+ data);
 		$scope.error = data;
 		$scope.$digest();
@@ -232,25 +129,29 @@ controllers.registerModalWindowSubmit = function ($scope, $location, socket, $ti
     };
 };
 
-controllers.forgotResetModalWindowSubmit = function ($scope, $window, socket) {
-	$scope.forgotResetModalWindowSubmit = function() {
-      		alert();
-      	};
+controllers.forgotResetModalWindow = function ($scope, $window, socket, $timeout) {
+	 $scope.login = function() {
+    	$scope.$root.$broadcast('forgotResetModalWindowSwap');
+    	$timeout(function() {$scope.$root.$broadcast('loginModalWindowOpen');}, 300);
+    };
+	$scope.submit = function() {
+    	alert();
+    };
 };
 
-controllers.dashboard = function ($scope, $window, socket) {
+controllers.home = function ($scope, $window, socket) {
 	$scope.loginModalWindow = {
-      html: '<form ng-submit="submit()" ng-controller="loginModalWindowSubmit"><span >Username:</span><br /><input type="text" placeholder="Username"/><br /><span >Password:</span><br /><input type="password" placeholder="Password"/><br/><input type="submit" value="Submit"/><br /><span ng-click="forgotReset()" class="forgotReset">Forgot / Reset Password</span><br/><span ng-click="register()" class="register">Need an account? Go register.</span></form>',
+      html: '<form ng-submit="submit()" ng-controller="loginModalWindow"><span>Username:</span> <br/> <input type="text" ng-model="login.username" placeholder="Username"/> <br/><span>Password:</span> <br/> <input type="password" ng-model="login.password" placeholder="Password"/> <br/> <input type="submit" value="Submit"/> <br/><span ng-click="forgotReset()" class="forgotReset">Forgot / Reset Password</span> <br/><span ng-click="register()" class="register">Need an account? Go register.</span></form>',
       title:'Login',
       use : 'loginModalWindow'
     };
     $scope.registerModalWindow = {
-      html: '<form class="registerForm" ng-submit="submit()" ng-controller="registerModalWindowSubmit"> <div class="animate-hide" ng-hide="hideLevelAuthority"> <br/> <label for="usernameText">Username</label> <input type="text" ng-model="newuser.username" id="usernameText" placeholder="Username"/> <br/> <label for="emailAddressEmail">Email Address</label> <input type="email" ng-model="newuser.email" id="emailAddressEmail" placeholder="Email Address"/> <br/> <label for="passwordPassword1">Password</label> <input type="password" ng-model="newuser.password1" id="passwordPassword1" placeholder="Password"/> <br/> <label for="passwordPassword2">Password</label> <input type="password" ng-model="newuser.password2" id="passwordPassword2" placeholder="Password"/> <br/> <input type="button" ng-click="showLevelAuthorityDiv()"/> </div> <div class="animate-show" ng-show="showLevelAuthority"> <input type="button" ng-click="hideLevelAuthorityDiv()"/> <br/> <label for="clientRadio">Client</label> <input type="radio" id="clientRadio" ng-model="newuser.levelAuthority" value="client" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="mentorRadio">Mentor</label> <input type="radio" id="mentorRadio" ng-model="newuser.levelAuthority" value="mentor" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="creativeRadio">Creative</label> <input type="radio" id="creativeRadio" ng-model="newuser.levelAuthority" value="creative" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <br/> <input type="submit" value="Submit"/> </div> </form>',
+      html: '<form class="registerForm" ng-submit="submit()" ng-controller="registerModalWindow"> <div class="animate-hide register-basic" ng-hide="hideLevelAuthority"> <br/> <label for="usernameText">Username</label> <input type="text" ng-model="newuser.username" id="usernameText" placeholder="Username"/> <br/> <label for="emailAddressEmail">Email Address</label> <input type="email" ng-model="newuser.email" id="emailAddressEmail" placeholder="Email Address"/> <br/> <label for="passwordPassword1">Password</label> <input type="password" ng-model="newuser.password1" id="passwordPassword1" placeholder="Password"/> <br/> <label for="passwordPassword2">Password</label> <input type="password" ng-model="newuser.password2" id="passwordPassword2" placeholder="Password"/> <br/> <md-next ng-click="showLevelAuthorityDiv()">Next</md-next></div><div class="register-levelAuthority animate-show" ng-show="showLevelAuthority"> <md-prev ng-click="hideLevelAuthorityDiv()"></md-prev> <br/> <input type="radio" id="clientRadio" ng-model="newuser.levelAuthority" value="client" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="clientRadio"> <div class="levelAuthority-item client-avatar"> <div class="persona-info"> <h3>Client</h3> </div> </div> <p>Do business with us.</p> </label> <input type="radio" id="mentorRadio" ng-model="newuser.levelAuthority" value="mentor" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="mentorRadio"> <div class="levelAuthority-item mentor-avatar"> <div class="persona-info"> <h3>Mentor</h3> </div> </div> <p>Apply to lead teams of creatives on projects.</p> </label> <input type="radio" id="creativeRadio" ng-model="newuser.levelAuthority" value="creative" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="creativeRadio"> <div class="levelAuthority-item creative-avatar"> <div class="persona-info"> <h3>Creative</h3> </div> </div> <p>Take on creative projects.</p> </label> <br/> <input type="submit" value="Submit"/> </div><br/></form>',
       title:'Register',
       use : 'registerModalWindow'
     };
     $scope.forgotResetModalWindow = {
-      html: '<form ng-submit="forgotResetModalWindowSubmit()" ng-controller="forgotResetModalWindowSubmit"><span >Username:</span><br /><input type="text" placeholder="Username"/><br/><span>Or<span><br/><span >Email:</span><br /><input type="email" placeholder="Email Address"/><br /><br /><input type="submit" value="Submit"/></form>',
+      html: '<form ng-submit="submit()" ng-controller="forgotResetModalWindow"><md-prev ng-click="login()"></md-prev><span >Username:</span><br /><input type="text" placeholder="Username"/><br/>Or<br/><span >Email:</span><br /><input type="email" placeholder="Email Address"/><br /><br /><input type="submit" value="Submit"/></form>',
       title:'Reset your password',
       use : 'forgotResetModalWindow'
     };
@@ -269,17 +170,9 @@ controllers.dashboard = function ($scope, $window, socket) {
 
 */
 controllers.projectView = function ($scope, $window, socket) { //bugfix
-  socket.emit('request project');
-  socket.on('recieve project',function(data) {
+  socket.emit('public', 'request project');
+  socket.on('public', 'recieve project',function(data) {
     $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
-
-};
-
-controllers.projectsView = function ($scope, $window, socket) {
-  //socket.emit('request projects');
-  socket.on('recieve projects',function(data) {
     $scope.$digest();
   });
 
@@ -294,8 +187,8 @@ controllers.projectsView = function ($scope, $window, socket) {
  #######  ##       ##       ######## ##     ##  ######  
 */
 controllers.offeringsView = function ($scope, $window, socket, $routeParams) {
-  socket.emit('request offeringsView', $routeParams.id);
-  socket.on('recieve offeringsView',function(data) {
+  socket.emit('public', 'request offeringsView', $routeParams.id);
+  socket.on('public', 'recieve offeringsView',function(data) {
     $scope.image;
     console.log(data);
     $scope.offering = data.offering;
@@ -304,16 +197,16 @@ controllers.offeringsView = function ($scope, $window, socket, $routeParams) {
 };
 
 controllers.offeringsNew = function ($scope, $window, socket) {
-  socket.emit('request offeringsNew');
-  socket.on('recieve offeringsNew',function(data) {
+  socket.emit('public', 'request offeringsNew');
+  socket.on('public', 'recieve offeringsNew',function(data) {
     $window.location = $window.location.href + "/offerings/edit/" + data;//this should redirect to the new blank offering once we have a database entry
     //$scope.$digest();
   });
 };
 
 controllers.offeringsEdit = function ($scope, $window, socket, $routeParams) {
-  socket.emit('request offeringsEdit', $routeParams.id);
-  socket.on('recieve offeringsEdit', function(data) {
+  socket.emit('public', 'request offeringsEdit', $routeParams.id);
+  socket.on('public', 'recieve offeringsEdit', function(data) {
     $scope.image;
     $scope.offerings = {
       _id : data.offerings.id,
@@ -331,23 +224,23 @@ controllers.offeringsEdit = function ($scope, $window, socket, $routeParams) {
      * expose the event object to the scope
      */
     $scope.delImageEventHandler = function(clickEvent) {
-      socket.emit('request offering imageDelete', clickEvent.target.data('imagename'));
+      socket.emit('public', 'request offering imageDelete', clickEvent.target.data('imagename'));
     };
     $scope.offeringEditEventHandler = function(offering_id) {
-      socket.emit('request offering edit form', offering_id);
+      socket.emit('public', 'request offering edit form', offering_id);
     };
     $scope.offeringImageUploadEventHandler = function(offering_id) {
       socket.emit('request offering imageUpload', offering_id);
     };
     //
-    socket.on('recieve offering imageDelete',function() {
+    socket.on('public', 'recieve offering imageDelete',function() {
       $scope.$digest();
     });
-    socket.on('recieve offering edit form',function(data) {
+    socket.on('public', 'recieve offering edit form',function(data) {
       $scope.loginpage = data.loginpage;
       $scope.$digest();
     });
-    socket.on('recieve offering imageUpload',function(offering_id) {
+    socket.on('public', 'recieve offering imageUpload',function(offering_id) {
       $location.path('/offerings/view/' + offering_id );
     });
     //
@@ -373,35 +266,35 @@ controllers.offeringsEdit = function ($scope, $window, socket, $routeParams) {
 };
 
 controllers.offeringsConfirm = function ($scope, $window, socket, $routeParams) {
-  socket.emit('request offeringsConfirm', $routeParams.id);
-  socket.on('recieve offeringsConfirm',function() {
+  socket.emit('public', 'request offeringsConfirm', $routeParams.id);
+  socket.on('public', 'recieve offeringsConfirm',function() {
     $location.path('/projects');
   });
 
 };
 
 controllers.offeringsDelete = function ($scope, $window, socket) {
-  socket.emit('request offeringsDelete');
-  socket.on('recieve offeringsDelete',function(offering_id) {
+  socket.emit('public', 'request offeringsDelete');
+  socket.on('public', 'recieve offeringsDelete',function(offering_id) {
     $location.path('/projects');
   });
 };
 
 controllers.talk = function ($scope, $window, socket) {
-  socket.emit('request talk');
-  socket.on('recieve talk',function(data) {
+  socket.emit('public', 'request talk');
+  socket.on('public', 'recieve talk',function(data) {
     $scope.loginpage = data.loginpage;
     $scope.user = {
       username : '{{ username }}',
       password : '{{ password }}'
     };
-    socket.on('connect', function() {
+    socket.on('public', 'connect', function() {
        // Connected, let's authenticate over sockets.
        console.log("AUTH")
-       socket.emit('authenticate', {username: user.username, password: user.password });
+       socket.emit('public', 'authenticate', {username: user.username, password: user.password });
     });
 
-    socket.on('message', function (data) {
+    socket.on('public', 'message', function (data) {
       //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.
       console.log(data)
       var htmlperson = 
@@ -451,14 +344,14 @@ controllers.talk = function ($scope, $window, socket) {
     $("#roomconnect").click( function() {
       user.roomname = $("#roomname").val();
       console.log("Connecting to room " + user.roomname )
-      socket.emit('room', {room:user.roomname});
+      socket.emit('public', 'room', {room:user.roomname});
     });
 
     $("#chatsend").click( function(data) {
       data.preventDefault();
       console.log("Sending "+ $("#chatmessage").val() +" to "+ $("#roomname").val() )
       var messagetextinput = $("#chatmessage").val();
-      socket.emit('message', {messagetext: messagetextinput} );
+      socket.emit('public', 'message', {messagetext: messagetextinput} );
     })
 
     $scope.$digest();
@@ -466,18 +359,9 @@ controllers.talk = function ($scope, $window, socket) {
 
 };
 
-controllers.external = function ($scope, $window, socket) {
-  socket.emit('request external');
-  socket.on('recieve external',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
-
-};
-
 controllers.workView = function ($scope, $window, socket) {
-  socket.emit('request work');
-  socket.on('recieve work',function(data) {
+  socket.emit('public', 'request work');
+  socket.on('public', 'recieve work',function(data) {
     $scope.loginpage = data.loginpage;
     $scope.$digest();
   });
@@ -485,8 +369,8 @@ controllers.workView = function ($scope, $window, socket) {
 };
 
 controllers.workInvoicesView = function ($scope, $window, socket) {
-  socket.emit('request workInvoices');
-  socket.on('recieve workInvoices',function(data) {
+  socket.emit('public', 'request workInvoices');
+  socket.on('public', 'recieve workInvoices',function(data) {
     $scope.loginpage = data.loginpage;
     $scope.$digest();
   });
@@ -494,8 +378,8 @@ controllers.workInvoicesView = function ($scope, $window, socket) {
 };
 
 controllers.workInvoicesNew = function ($scope, $window, socket) {
-  socket.emit('request workInvoicesNew');
-  socket.on('recieve workInvoicesNew',function(data) {
+  socket.emit('public', 'request workInvoicesNew');
+  socket.on('public', 'recieve workInvoicesNew',function(data) {
     $window.location = "/work/invoices/edit/"+data; //takes us to the new blank invoice
     //$scope.$digest();
   });
@@ -503,8 +387,8 @@ controllers.workInvoicesNew = function ($scope, $window, socket) {
 };
 
 controllers.workInvoicesEdit = function ($scope, $window, socket) {
-  socket.emit('request workInvoicesEdit');
-  socket.on('recieve workInvoicesEdit',function(data) {
+  socket.emit('public', 'request workInvoicesEdit');
+  socket.on('public', 'recieve workInvoicesEdit',function(data) {
     $scope.loginpage = data.loginpage;
     $scope.$digest();
   });
@@ -512,28 +396,19 @@ controllers.workInvoicesEdit = function ($scope, $window, socket) {
 };
 
 
-controllers.admin = function ($scope, $window, socket) {
-  socket.emit('request admin');
-  socket.on('recieve admin',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
+controllers.adminDashboard = function ($scope, $window, socket) {
+
+};
+controllers.creativeDashboard = function ($scope, $window, socket) {
 
 };
 
-
-controllers.adminUsers = function ($scope, $window, socket) {
-  socket.emit('request adminUsers');
-  socket.on('recieve adminUsers',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
+controllers.mentorDashboard = function ($scope, $window, socket) {
 
 };
-
 controllers.error = function ($scope, $window, socket) {
-  socket.emit('request error');
-  socket.on('recieve error',function(data) {
+  socket.emit('public', 'request error');
+  socket.on('public', 'recieve error',function(data) {
     $scope.loginpage = data.loginpage;
     $scope.$digest();
   });

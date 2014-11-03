@@ -10,8 +10,8 @@ app.directive('featuredMarketPlace', function(socket){
     	//data: '=data'
     },
   link: function(scope, element, attrs) {
-	socket.emit('request dashboard');
-	socket.on('recieve dashboard', function(data) {
+	socket.emit('public', 'request dashboard');
+	socket.on('public', 'recieve dashboard', function(data) {
 	    console.log(data.offerings);
 	    scope.currentProject = 0;
 	    scope.featured = data.offerings[scope.currentProject];
@@ -96,7 +96,7 @@ app.directive('featuredMarketPlace', function(socket){
 	    window.addEventListener('resize', resizeBanner, false);
 
 	    scope.loginpage = data.loginpage;
-	    scope.$digest();
+	    //scope.$digest();
 	});
 
       scope.$watch('data', function (newVal, oldVal) {

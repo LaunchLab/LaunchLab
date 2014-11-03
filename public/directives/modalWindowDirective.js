@@ -30,13 +30,13 @@ app.directive("modalWindow", function($compile, $timeout, $location) {
     	scope.modalWindowClose = function() {
     		elements.find('modalWindow').prevObject[0].classList.remove("md-show");
     		$('.md-overlay').css('opacity', '0');
-    		$interval(function(){$('.md-overlay').css('display', 'none');},'3000' );
+    		$timeout(function(){$('.md-overlay').css('display', 'none');},'3000' );
     	};
 
     	scope.modalWindowFooter = function() {
     		elements.find('modalWindow').prevObject[0].classList.remove("md-show");
     		$('.md-overlay').css('opacity', '0');
-    		$interval(function(){$('.md-overlay').css('display', 'none');$location.path('/');},'3000' );
+    		$timeout(function(){$('.md-overlay').css('display', 'none');$location.path('/');},'3000' );
     	};
 
       	scope.$watch('rawHtml', function(value) {
