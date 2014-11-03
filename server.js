@@ -13,27 +13,25 @@ var express = require('express'),
 	tempPassword = "Pass123",
 	tempEmail = "daganread@gmail.com",
 	enableEmail = true,
-	makeSealer = function () {
-        var users = [], passwords = [];
+	dbUser = process.env.OPENSHIFT_MONGODB_DB_USERNAME,
+	dbPass = process.env.OPENSHIFT_MONGODB_DB_PASSWORD,
+	dbHost = process.env.OPENSHIFT_MONGODB_DB_HOST,
+	dbPort = process.env.OPENSHIFT_MONGODB_DB_PORT,
+	ip  = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+	port    = parseInt(process.env.OPENSHIFT_NODEJS_PORT) || 8000,
+	developement = false;
 
-        return {
-            sealer: function (username, password) {
-                var i = users.length,
-                    user = {username: username};
-                users[i] = user;
-                passwords[i] = password;
-                return user;
-            },
-            unsealer: function (user, password) {
-                return passwords[users.indexOf(user)] === password;
-            }
-        };
-    };
-
+	if (typeof ip === "undefined") {
+    	console.log('No OPENSHIFT_NODEJS_IP environment variable');
+  	};
 
 /* Start the server */
 
-    server.listen(8080);
+    if (developement) {
+		server.listen(8000);
+	} else{
+		server.listen(port, ip);	
+	};
 
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/content'));
