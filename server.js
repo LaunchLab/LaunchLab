@@ -1311,17 +1311,12 @@ app.post('/project/upload/:id', function (req, res) {
 			var a = req.multipartparse.files.file[f].originalFilename;
 			var aext = a.slice(a.length-4, a.length)
 			console.log(aext)
-			if (aext == ".jpg") { console.log("correct")} else {
-				alert("test");
-				console.log("block");
-				res.send("/error");
-				return;
-			}
+
 
 			var newfilename = Date.now()+req.multipartparse.files.file[f].originalFilename
-			var dest = fs.createWriteStream(__dirname+'/content/projects/'+newfilename);
+			var dest = fs.createWriteStream(__dirname+'/content/projectfiles/'+newfilename);
 
-			console.log("COPY FILE!!! IF YOU GET A CRASH MAKE SURE /content/projects folder exists")
+			console.log("COPY FILE!!! IF YOU GET A CRASH MAKE SURE /content/projectfiles folder exists")
 			uploadedFilenames.push(newfilename) 
 
 			source.pipe(dest);
@@ -1371,6 +1366,12 @@ app.post('/project/brief/:id', function (req, res) {
 	
 	//find the project
 	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, project) {
+		if (project.brief == undefined) { 
+			project.brief = req.body; 
+		} else {
+			req.body.brief.samplefiles = project.brief.samplefiles;
+		}
+
 		project.brief = req.body;
 		db.projects.update({"_id":ObjectId(req.params.id)}, project, function (err, result) {
 			res.json({"result":result})

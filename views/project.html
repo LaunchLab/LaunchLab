@@ -22,369 +22,111 @@ var project = {{ projectjson|raw }};
   <div class="projectWrap">
     <div class="pure-g">
 
-        <div class="pure-u-1 pure-u-md-2-3">
+    <!-- TOP PROJECT BAR START-->
+    <div class="pure-u-1 darkerbg" >
 
-            <div>
-                <h1 style="font-weight: 700; font-size: 2em; margin-top: 1em;">{{ project.projecttitle }}</h1>
-                <span style="font-size: 0.75em;">created by <a href="/{{ project.creator }}">{{ project.creator }}</a> <span class="timeago" title="{{ project.createdformatted }}">{{ project.createdformatted }}</span> on {{ project.createdformatted }}</span><br>
-                <span>{{ project.projectdetails }}</span><br><br>
-            </div>
-
-            <div class="pure-g">
-                <div class="pure-u-1" id="graphwrap">
-                    <canvas id="processing"></canvas>
-                </div>                   
-            </div>
-
-
-<script>
-                var resizegraph = 0;
-                var graphheight = 500;
-                var graphwidth = 0;
-
-                  var hello = function (pr) 
-                  {
-                    pr.setup = function() 
-                    {    
-                        graphwidth = $("#graphwrap").width();
-                        pr.size( graphwidth, graphheight);
-                    }
-
-                    pr.draw = function() 
-                    {      
-                        if (resizegraph == 1) {
-                            graphwidth = $("#graphwrap").width();
-                            pr.size( graphwidth, graphheight);
-                            resizegraph = 0;
-                        }
-                        
-                        pr.background(248,248,248)
-
-
-                        //TEXT
-                        var font = pr.loadFont("Arial");
-                        pr.textFont(font,12); 
-                        pr.fill(0);         
-                        pr.textAlign(pr.CENTER);
-                        pr.text("work\nhours", 30, 15);
-
-                        //get start and end times
-                        var timeStart = 9999999999999999999;
-                        var timeEnd = 0;
-                        
-                        for (var t in project.tasks) {
-                            if (project.tasks[t].created < timeStart) { timeStart = project.tasks[t].created; }
-                            if (project.tasks[t].started > timeEnd) { timeEnd = project.tasks[t].started; } 
-                            if (project.tasks[t].done > timeEnd) { timeEnd = project.tasks[t].started; } 
-                        }
-                        console.log(timeStart)
-                        console.log(timeEnd)
-
-                        //get ranges
-                        var maxrange = 0;
-                        var range = 0;
-                        for (var t in project.tasks) {
-                            range += parseFloat(project.tasks[t].timeEstimated); //amount of work not really time
-                        }
-                            
-                        if ((range > 100000) && (range < 1000000)) { maxrange = Math.ceil(range/100000)*100000;}
-                        if ((range > 10000) && (range < 100000)) { maxrange = Math.ceil(range/10000)*10000;}
-                        if ((range > 1000) && (range < 10000)) { maxrange = Math.ceil(range/1000)*1000;}
-                        if ((range > 100) && (range < 1000)) { maxrange = Math.ceil(range/100)*100;}
-                        if ((range > 10) && (range < 100)) { maxrange = Math.ceil(range/10)*10; }
-                        if (range < 10) { maxrange = 10;}
-                        
-                        var yscale = maxrange/range;
-
-                        var graphtop = 50;
-                        var graphpaddingright = 25;
-                        var graphbottom = graphheight - 75;         //padding bottom
-                        var graphdeltaY = graphbottom - graphtop;
-                        var graphPlotLeft = 50;
-                        var divisions = 5;
-                        var graphDivDistance = graphdeltaY / divisions;
-
-
-
-                        
-
-                        //GRID LINES HORIZONTAL
-                        for (var y = 0; y <= divisions; y++) {
-                            //line
-                            pr.stroke(222);
-                            pr.strokeWeight(2);
-                            pr.line(graphPlotLeft,graphtop + (y*graphDivDistance), graphwidth-graphpaddingright, graphtop+(y*graphDivDistance))
-                            //text
-                            pr.textFont(font,14); 
-                            pr.fill(0);         
-                            pr.textAlign(pr.RIGHT);
-                            pr.text( Math.round((divisions-y)/divisions * maxrange), 45, (graphtop + (y*graphDivDistance))+3);
-                        } 
-
-                        //edge lines
-                        pr.stroke(0);
-                        pr.strokeWeight(1);
-                        pr.line(graphPlotLeft, graphtop, graphPlotLeft, graphbottom)
-                        pr.line(graphPlotLeft, graphbottom, graphwidth-graphpaddingright, graphbottom)
-
-                        //GRAPH BLOCKS
-                        pr.stroke(222);
-                        pr.strokeWeight(2);
-                        var barwidth = 15;
-
-                        var yoffsetaccum = 0;
-                        for (var t in project.tasks) {
-                            pr.strokeWeight(3);
-
-                           switch (project.tasks[t].status) {
-                                case "new":
-                                    {  
-                                        pr.stroke(0,146,255,200)
-                                        pr.fill(0,146,255,100);
-                                    }
-                                    break;
-                                case "started":
-                                    {  
-                                        pr.stroke(103,211,17,200)
-                                        pr.fill(103,211,17,100);
-                                    }
-                                    break;
-                                case "completed":
-                                    {  
-                                        pr.stroke(255,187,0,200)
-                                        pr.fill(255,187,0,100);
-                                    }
-                                    break;
-
-                            }
-
-                            var yoffset = project.tasks[t].timeEstimated / maxrange * graphdeltaY;
-                            
-                            pr.rect(graphPlotLeft, graphbottom-yoffsetaccum, barwidth, -yoffset)
-                            yoffsetaccum += yoffset;
-                        }
-            
-
-                    }//enddraw
-
-                  }
-
-        var sizegraph = function () {
-            resizegraph = 1;
-        };
-
-        window.addEventListener( 'resize', onWindowResize, false );
-
-        //When the page has loaded, start processing.
-        function onWindowResize( event ) { sizegraph(); }
-        
-        $(document).ready(function() {
-            sizegraph();
-            var canvas = document.getElementById("processing");
-            var processingInstance = new Processing(canvas, hello);
-        });
-
-
-          
-
-                </script>
-
-                <div style="margin-top: 2em;">
-                    <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Tasks</span> 
+            <div >
+                <div class="projectItemTitle">
+                  {% if project.brief.title %}
+                    {{ project.brief.title }}
+                  {% endif %}
+                  {% if project.brief.title == undefined %}
+                    {{ project.projecttitle }} 
+                  {% endif %}                  
+                                     
                 </div>
 
-<div style="margin-top: 2em;">
-                    <form class="pure-form taskform">
-                        <div class="pure-g">
-                            <div class="pure-u-2-3">
-                                <input id="taskTitle" class="backgroundinputs" data-backgroundinfo="taskTitle" type="text" name="taskTitle" placeholder="Individual task title">
-                            </div>
-                            <div class="pure-u-1-6">
-                                <input id="taskTimeEstimated" class="backgroundinputs" data-backgroundinfo="taskTimeEstimated" type="text" name="taskTimeEstimated" placeholder="Hours">
-                            </div>
-                            <div class="pure-u-1-6" style="text-align:center;margin-top: 0.5em;">
-                                <span id="btnAddTask" style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> Add</span>
-                            </div>                            
-                        </div>
-                    </form>
+                <div class="projectItemProvider">
+                     <a href="/offerings/view/{{ project.offering._id.toHexString() }}">{{ project.offering.title }}</a> BY <a href="/{{ order.offering.creator }}">{{ project.offering.creator }}</a>
+                </div>
+            </div>
+    </div>
+    <!-- TOP PROJECT BAR END-->
 
-                    <div id="taskList">
-                        <!-- taskList start -->
-                        <div id="taskListP" class="pure-g">
-                            
-                        </div>
-                        <!-- taskList end -->
-                    </div>
-
-                    <script>
-                    $("span.timeago").timeago();
-                        //TASK HANDLER
-                     $("#btnAddTask").click( function () {
-                        var newtask = {}
-                        newtask.status = "new";
-                        newtask.title = $("#taskTitle").val();
-                        if (newtask.title == "") { $("#taskTitle").focus(); return; }
-
-                        newtask.timeEstimated = $("#taskTimeEstimated").val();
-                        if (newtask.timeEstimated == "") { $("#taskTimeEstimated").focus(); return; }
-
-                        console.log(project)
-                        if (project.tasks == undefined) { project.tasks = []; }
-                        
+    <!-- STATUS PROJECT BAR START-->
+    <div class="pure-u-1 darkestbg" >
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-md-2-3">
+            <img src="/images/graph_placeholder.png" style="width: 100%; margin-top: 2em;">
+        </div>
+        <div class="pure-u-1 pure-u-md-1-3">
+            <img src="/images/flask.png" style="width: 100%">
+        </div>
+      </div>
+    </div>
 
 
 
-                        console.log(project._id);
-                        
-                        $.post( "/project/"+project._id+"/tasks/new", newtask, function( taskId ) {
-                
-                            project.tasks.push(JSON.parse(taskId));
-                            project.tasks = project.tasks.sort(function(a,b) { return b.created - a.created } );
+        <div class="pure-u-1 pure-u-md-2-3 ">
 
-                            addTask(JSON.parse(taskId))
-                            $("#taskTitle").val("");
-                            $("#taskTimeEstimated").val("");
-                        });
+            <div class="darkerbg" style="padding-top: 1em;padding-bottom: 1em;">
 
-                        
-                     })
+                <div class="projectItemTitle">
+                    JOB NAME
+                </div>
 
-                    
-                     var hoverfin = function () {
-                            //over
-                            $(this).css("opacity", "0.5");
-                            $(this).css("cursor", "pointer");
-                         }
+                <div class="projectTextBlock">
+                    <span class="darktext" >{{ project.brief.title }}</span>
+                </div>
 
-                     var hoverfout = function () {
-                            //out
-                            $(this).css("opacity", "1.0")
-                         }    
+                <div class="projectItemTitle">
+                    JOB BRIEF
+                </div>
 
-                    var clickf = function ()   {
-                            //over
-                            
+                <div class="projectTextBlock">
+                    <span class="darktext">{{ project.brief.brief }}</span>
+                </div>
 
-                            for (var t in project.tasks){
-                                //find
+                <div class="projectItemTitle">
+                    JOB DEADLINE
+                </div>        
 
-                                if (project.tasks[t].created == $(this).data("created")) {
-                                    
-                                    switch (project.tasks[t].status) {
-                                        case "new":
-                                            {  project.tasks[t].status = "started"; }
-                                            break;
-                                        case "started":
-                                            {  project.tasks[t].status = "completed";  }
-                                            break;
-                                        case "completed":
-                                            {   return; }
-                                            break;
+                <div class="projectTextBlock">
+                    <span class="darktext">{{ project.brief.deadline }}</span>
+                </div>
 
-                                    }
+                <div class="projectItemTitle">
+                    JOB FILES
+                </div>     
 
-             
-
-                                    console.log(project.tasks[t].status)
-                                    $.post( "/project/"+project._id+"/tasks/update/"+$(this).data("created"), project.tasks[t], function( taskId ) {
-                                        tasksListrender(1);
-                                    });
-                                    
-                                } //ifend
-                                
-                            } //for end
-
-         
-                         }                                        
-                     
-                     var addTask = function (task, reverse, animspeed) {
-                        var htmlrendered = ""
-                        
-                        htmlrendered += "<div data-created=\""+task.created+"\" class=\"pure-u-1\" style=\"margin-top: 0.25em; background: rgb(245,245,245);\"><div class=\"pure-g\"><div class=\"pure-u-1-2\">";
-                        htmlrendered += "<div class=\"taskicon\" style=\"width: 32px; height: 32px; font-size:1.25em; float:left; padding-top:0.25em; padding-left: 0.25em;\">";
-                        
-                        if (task.status == "new") { 
-                            htmlrendered += "<i class=\"fa fa-fw fa-exclamation-circle\" style=\"color: #0096ff;\"></i></div>";
-                        }
-                        if (task.status == "started") { 
-                            htmlrendered += "<i class=\"fa fa-fw fa-arrow-circle-right\" style=\"color: #67d311;\"></i></div>";
-                        }  
-                        if (task.status == "completed") { 
-                            htmlrendered += "<i class=\"fa fa-fw fa-check-circle\" style=\"color: #ffbb00;\"></i></div>";
-                        } 
-                        
-                        htmlrendered +='<div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">';
-                        htmlrendered +='<span style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">';
-                        htmlrendered +='<span class="timeago" title="'+task.createdformatted+'">'+task.createdformatted+'</span> by <a href="/'+ task.creator +'" >'+ task.creator +'</a></span><br>';
-                        htmlrendered +='<a href="/'+ task.creator +'" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">'+ task.title +'</a> ';
-                        htmlrendered +='</div>';
-
-                        htmlrendered += "</div><div class=\"pure-u-1-2\" style=\"text-align:right; padding: 0.25em;\">";
-                        htmlrendered += task.timeEstimated + "h";
-                        htmlrendered += "</div></div></div>";
-                        
-                        var animspeedparam = animspeed;
-                        if (animspeed == undefined) {
-                            animspeedparam = 1000;
-                        }
-
-                        if (reverse == 1) {
-                            $("#taskListP").append(htmlrendered).children(':last').hide().fadeIn(animspeedparam).hover( hoverfin , hoverfout ).click( clickf ); //clear
-                        } else {
-                            $("#taskListP").prepend(htmlrendered).children(':first').hide().fadeIn(animspeedparam).hover( hoverfin , hoverfout ).click( clickf ); //clear
-                        }
-
-                        $("span.timeago").timeago();
-                     }
-
-                    var tasksListrender = function(animspeed) {
-                        $("#taskList").html('<div id="taskListP" class="pure-g"></div>');
-                         
-                        for (var t in project.tasks) {
-                            addTask(project.tasks[t], 1, animspeed)
-                        }
-                    }
-
-                    tasksListrender();
+                <div class="projectTextBlock">
+                    {% for file in project.brief.samplefiles %}
+                        <a href="/projectfiles/{{ file }}"><i class="fa fa-file-o"></i> {{ file }}</a>
+                    {% endfor %}
+                </div>
 
 
+            </div>
 
 
-                    </script>
+            <!-- DISCUSSION START -->
+            <div>
+                <div id="talkstream"></div>
 
+                <div>
                    
-                </div><!-- END TASKS -->
+                    <div style="float:right;width:40px; ">
+                        <div id="chatsend"><i class="fa fa-send"></i></div>
+                    </div>  
+                    <div style="margin-right:40px;margin-left: 40px;">
+                        <input id="chatmessage" autocomplete="off" placeholder="type your message here.">
+                    </div>                                                           
+                </div>
+
+                
+                
+            </div>
+            <!-- DISCUSSION END -->
+
+                
+
+
 
 
 
         </div>
 
         <div class="pure-u-1 pure-u-md-1-3 rightpanel">
-
-
-
-<script>
-                /*
-                <h4>{{ created }}</h4>
-                <p>
-                    _id: <br>
-                    id: {{ project.id }}<br>
-                    created: {{ project.created }}<br>
-                    step: {{ project.step }}<br>
-                    brieftype: {{ project.brieftype }}<br>
-                    <b>backgroundinfo</b><br>
-                    companyname: {{ project.backgroundinfo.companyname }}<br>
-                    overview: {{ project.backgroundinfo.overview }}<br>
-                    objectives: {{ project.backgroundinfo.objectives }}<br>
-                    timeframe: {{ project.backgroundinfo.timeframe }}<br>
-                    budget: {{ project.backgroundinfo.budget }}<br>
-                    audience: {{ project.backgroundinfo.audience }}<br>
-                    competitors: {{ project.backgroundinfo.competitors }}<br>
-                    purpose: {{ project.backgroundinfo.purpose }}<br>
-                    tone: {{ project.backgroundinfo.tone }}<br>
-                </p>
-                */
-                </script>
 
                 <div style="margin-top: 2em;">
                     <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Members</span> 
@@ -432,39 +174,6 @@ var project = {{ projectjson|raw }};
                     
                 </div>
 
-                <div style="margin-top: 2em;">
-                    <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Discussion</span> 
-                </div>
-
-
-                <div id="talkstream">
-
-                </div><!-- END TALKSTREAM -->
-
-                <!-- START INPUT -->
-
-
-
-                <div class="pure-g-r inputbox">
-                    <div class="pure-u-1-3">
-
-                    </div>
-
-
-
-                    <div class="pure-u-1-3">
-                        <!-- message <div class="arrow-left"></div> -->     
-                            <form>              
-                                <input id="chatmessage" placeholder="type your message here."><button id="chatsend" class="pure-button">Send</button>
-                            </form>
-                        <!-- end message -->
-                    </div>
-
-                    <div class="pure-u-1-3"></div>
-                </div>
-
-                <!-- END INPUT -->
-
 
 
 
@@ -479,16 +188,20 @@ var project = {{ projectjson|raw }};
 
 
 <style>
-.rightpanel { 
-    background: rgb(32,31,32);
+#chatmessage { height: 40px; border-radius: none; border: none; width:100%; padding: 8px;}
+
+#chatsend {
+    height: 40px;
+    background-color: rgb(210,72,7);
+    width: 100%;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding-top: 5px;
+    text-align: center;
+    cursor: pointer;
 }
 
-.projectWrap {
-    background: rgb(39,37,38);
-}
-
-
-    @media (max-width: 1200px) {
+@media (max-width: 1200px) {
   .projectWrap { 
     margin-left: 20px;
     margin-right: 20px;
@@ -519,19 +232,15 @@ var messages = {{ messagearray|raw }}
 
 var rendermessage = function(data) {
     var htmlperson = 
-    '<div class="person">'
-        +'<img src="'+data.message.avatar+'" class="avatarimg">'
-        
-        +'<div class="persondata">'
-            +'<div class="personname">'+data.message.username+'</div>'
-            +'<div class="persontitle">title <span class="persontask">task</span> </div>'
-            +'<div class="persononline">online</div>'
-        +'</div>'
+    '<div >'
+        //+'<img src="'+data.message.avatar+'" style="width:40px;">'
+        +'<img src="http://www.gravatar.com/avatar/1b83c0ee23f2bbc7a37d196d1b5bbf19?s=200&r=pg&d=404" style="width:40px;">'
     +'</div>';
 
     var left = '';
     var right = '';
     var side = '';
+
     if (data.message.username == user.username) {
         //We sent this so left align
         left = htmlperson;
@@ -544,30 +253,31 @@ var rendermessage = function(data) {
     
 
     var htmlmessage = 
-     '<div class="pure-g-r">'
-        +'<div class="pure-u-1-3">'+left+'</div>'
-        
-        +'<div class="pure-u-1-3">'
-            +'<div class="message '+side+'">'
-                +'<div class="messagetext">'+data.message.text+'</div>'
-                +'<div class="timeago"><abbr class="timeago" title="'+data.message.timestamp+'">'+data.message.timeformatted+'</abbr></div>'
+     '<div>'
+        +'<div style="width:40px; float:left;">'+left+'</div>'
+        +'<div style="width:40px; float:right;">'+right+'</div>'
+        +'<div style="margin-left:40px;margin-right:40px;">'
+            +'<div class="message '+side+'">';
+
+                if (data.message.username == user.username) {
+                    htmlmessage+='<div style="color: rgb(75,75,75);  float:left;">'+data.message.username+'</div>'
+                } else {
+                    htmlmessage+='<div style="color: rgb(75,75,75); float:right;">'+data.message.username+'</div>'
+                }
+
+                htmlmessage+='<div class="messagetext" style="margin-top: 2em;">'+data.message.text+'</div>'
+                +'<div class="timeago"><span class="timeago" title="'+data.message.timestamp+'">'+data.message.timeformatted+'</span></div>'
             +'</div>'
         +'</div>'
-
-        +'<div class="pure-u-1-3">'+right+'</div>'
     +'</div>'
     
     //APPENDS INTO THE DOM
     $("#talkstream").append(htmlmessage);
-    
-    $("abbr.timeago").timeago();
-    
+    $("span.timeago").timeago();
     $("img").error(function () { 
         //$(this).hide();
         $(this).css({visibility:"hidden"}); 
     });
-
-    
 }
 
 var rendermessages = function () {
@@ -613,14 +323,16 @@ $("#chatsend").click( function(data) {
     $("#chatmessage").focus();
 })
     
-    //do first render
-    rendermessages();
-    $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
+//do first render
+rendermessages();
 
-    $("img").error(function () { 
-        //$(this).hide();
-        $(this).css({visibility:"hidden"}); 
-    });
+//uncomment to scroll to new message
+//$("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
+
+$("img").error(function () { 
+    //$(this).hide();
+    $(this).css({visibility:"hidden"}); 
+});
 
 </script>
 

@@ -21,7 +21,7 @@
             <div>
             	<div class="wrapperpad">
             		<span class="h3">JOB NAME</span>
-	             	<span class="darktext">for ease of reference
+	             	<span class="darktext">for ease of reference</span>
 	            	<br>    
 	            	<input id="formtitle" class="inputbox" value="{{ project.brief.title }}">
             	</div>
@@ -32,7 +32,7 @@
             <div>
             	<div class="wrapperpad">
             		<span class="h3">JOB BRIEF</span>
-	             	<span class="darktext">describes the project target and direction.
+	             	<span class="darktext">describes the project target and direction.</span>
 	            	<br>    
 	            	<textarea id="formbrief" class="inputbox" placeholder="{{ project.brief.brief }}">{{ project.brief.brief }}</textarea> 
             	</div>
@@ -41,16 +41,16 @@
             <div>
             	<div class="wrapperpad">
             		<span class="h3">JOB DEADLINE</span>
-	             	<span class="darktext">date when this needs to be done by.
+	             	<span class="darktext">date when this needs to be done by.</span>
 	            	<br>    
-	            	<p><input class="inputbox" type="text" id="datepicker" size="30"></p>
+	            	<p><input class="inputbox" type="text" id="datepicker" size="30" value="{{ project.brief.deadline }}"></p>
             	</div>
             </div> 
 
             <div>
             	<div class="wrapperpad">
             		<span class="h3">JOB FILES</span>
-	             	<span class="darktext">needed to complete the job.
+	             	<span class="darktext">needed to complete the job.</span>
 	            	<br>    
 	            	<form action="/project/upload/{{ project._id.toHexString() }}"
       class="dropzone"
@@ -281,34 +281,13 @@ textarea.inputbox:focus {
 	text-transform: uppercase; font-size: 1.25em; font-weight: 700; 
 }
 
-.darktext {
-	font-weight: 400;
-	color: rgb(125,125,125);
-}
 
-.redtext {
-	font-weight: 400;
-	color: rgb(224,77,10);
-}
-
-.graytext {
-	font-weight: 400;
-	color: rgb(200,200,200)
-}
 
 .wrapperpad {
 	padding: 16px;
 }
 
-.redbg {
-	background: rgb(224,77,10);
-}
-.darkbg {
-  background: rgb(39,37,38);
-}
-.darkerbg {
-  background: rgb(32,32,32);
-}
+
 
 .projectItemTitle { text-transform: uppercase; font-size: 1.25em; font-weight: 700; margin-top: 16px; margin-left: 16px;}
 .projectItemProvider { text-transform: uppercase; margin-left: 16px; margin-bottom: 0.3em; }
