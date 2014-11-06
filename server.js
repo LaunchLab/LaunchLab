@@ -212,7 +212,7 @@ app.get('/logout', function (req, res) {
 });
 
 var mailbot = require('./lib/email')
-mailbot.debug = true;	
+mailbot.debug = false;	
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -2443,6 +2443,99 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('message', function (data) {
     console.log("SOCKET Message from " + socket.username + " in " + socket.room + ": " + data.messagetext);    
+    
+    db.projects.findOne({"_id": ObjectId(socket.room)}, function (err, project) {
+    	console.log(project)
+
+    	/* ---------------------------------------------------
+    	SEND EMAIL TO CLIENT */
+		if (1)//() 
+	  	{
+	    	db.users.findOne({"username":project.creator}, function (err, client) {
+	    		
+		    	/* START EMAIL */
+				var email = {}
+				email.from = "noreply@launchlabapp.com";
+				email.fromname = "Launch Lab";
+				email.rcpt = client.email;
+				email.rcptname = client.fullname;
+				email.subject = "New message in "+project.brief.title+" from "+socket.username;
+				email.body = "Hi "+client.username;
+				email.body += "\n\r"
+				email.body += "There is a new message in a project you are involved with.\n\r"
+				email.body += "http://launchlab.me/project/"+socket.room+"\n\r"
+				email.body += "\n\r"
+
+				mailbot.sendemail(email, function (data) 
+				{
+					console.log("EMAIL SENT")
+				});
+				/* END EMAIL */	    		
+	    	});// end db.users.findOne(..)	  		
+		} //end (enableEmail)
+		/* SEND EMAIL TO CLIENT 
+		---------------------------------------------------*/
+
+    	/* ---------------------------------------------------
+    	SEND EMAIL TO OFFERING OWNER */
+		if (1)//(enableEmail) 
+	  	{
+	    	db.users.findOne({"username":project.offering.creator}, function (err, offeringowner) {
+	    		
+		    	/* START EMAIL */
+				var email = {}
+				email.from = "noreply@launchlabapp.com";
+				email.fromname = "Launch Lab";
+				email.rcpt = offeringowner.email;
+				email.rcptname = offeringowner.fullname;
+				email.subject = "New message in "+project.brief.title+" from "+socket.username;
+				email.body = "Hi "+offeringowner.username;
+				email.body += "\n\r"
+				email.body += "There is a new message in a project.\n\r"
+				email.body += "http://launchlab.me/project/"+socket.room+"\n\r"
+				email.body += "\n\r"
+
+				mailbot.sendemail(email, function (data) 
+				{
+					console.log("EMAIL SENT")
+				});
+				/* END EMAIL */	    		
+	    	});// end db.users.findOne(..)	  		
+		} //end (enableEmail)
+		/* SEND EMAIL TO OFFERING OWNER 
+		---------------------------------------------------*/
+
+    	/* ---------------------------------------------------
+    	SEND EMAIL TO KEVIN */
+		if (1)//(enableEmail) 
+	  	{
+	    		
+		    	/* START EMAIL */
+				var email = {}
+				email.from = "noreply@launchlabapp.com";
+				email.fromname = "Launch Lab Admin";
+				email.rcpt = "kevin@openwindow.co.za";
+				email.rcptname = "Kevin Lawrie";
+				email.subject = "New message in "+project.brief.title+" from "+socket.username;
+				email.body = "Hi Kevin";
+				email.body += "\n\r"
+				email.body += "There is a new message in a project.\n\r"
+				email.body += "http://launchlab.me/project/"+socket.room+"\n\r"
+				email.body += "\n\r"
+
+				mailbot.sendemail(email, function (data) 
+				{
+					console.log("EMAIL SENT")
+				});
+				/* END EMAIL */	    		
+	    	  		
+		} //end (enableEmail)
+		/* SEND EMAIL TO CLIENT 
+		---------------------------------------------------*/
+
+
+    	//FIND CLIENT
+    })
     var nowdate = new Date;
     var formatteddate = formatDate(nowdate);
 
