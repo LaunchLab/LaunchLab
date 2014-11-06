@@ -2449,7 +2449,7 @@ io.sockets.on('connection', function (socket) {
 
     	/* ---------------------------------------------------
     	SEND EMAIL TO CLIENT */
-		if (1)//() 
+		if (enableEmail) 
 	  	{
 	    	db.users.findOne({"username":project.creator}, function (err, client) {
 	    		
@@ -2478,7 +2478,7 @@ io.sockets.on('connection', function (socket) {
 
     	/* ---------------------------------------------------
     	SEND EMAIL TO OFFERING OWNER */
-		if (1)//(enableEmail) 
+		if (enableEmail)
 	  	{
 	    	db.users.findOne({"username":project.offering.creator}, function (err, offeringowner) {
 	    		
@@ -2507,7 +2507,7 @@ io.sockets.on('connection', function (socket) {
 
     	/* ---------------------------------------------------
     	SEND EMAIL TO KEVIN */
-		if (1)//(enableEmail) 
+		if (enableEmail)
 	  	{
 	    		
 		    	/* START EMAIL */
