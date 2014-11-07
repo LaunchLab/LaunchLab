@@ -128,47 +128,38 @@ var project = {{ projectjson|raw }};
 
         <div class="pure-u-1 pure-u-md-1-3 rightpanel">
 
-                <div style="margin-top: 2em;">
-                    <span style="font-weight: 700; font-size: 1.25em; margin-top: 1em; color:#000;">Members</span> 
-                </div>                
+                
 
                 <div>
                     <div class="pure-g">
-                        <!-- user start -->
-                        <div class="pure-u-1" style="margin-top: 0.25em;">
-                            <div style="width: 32px; height: 32px; background: #ccc; float:left;">
-                                <a href="/rouan"><img src="http://www.gravatar.com/avatar/1b83c0ee23f2bbc7a37d196d1b5bbf19?s=32&r=pg&d=404"></a>
+                        {% for member in project.members %}
+                            <!-- user start -->
+                            <div class="pure-u-1" style="margin: 1em; ">
+                                <a href="/{{ member }}">{{ member }}</a>
                             </div>
-                            <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
-                                <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">developer</a><br>
-                                <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">Rouan van der Ende</a> 
-                            </div>
-                        </div>
-                        <!-- user end -->
+                            <!-- user end -->
+                        {% endfor %}
 
-                       <!-- user start -->
-                        <div class="pure-u-1" style="margin-top: 0.25em;">
-                            <div style="width: 32px; height: 32px; background: #ccc; float:left;">
-                                <a href="/rouan"><img src="/images/kevavatar.jpg" width="32" height="32"></a>
-                            </div>
-                            <div style="padding-left: 1em; width: 100%; margin-left: 36px; position:relative;">
-                                <a href="/rouan" style="font-size: 0.75em; margin:0; padding: 0; line-height: 0em; position: absolute; top: 0.8em; left: 3px;">designer</a><br>
-                                <a href="/rouan" style="font-size: 0.75em; height: 0em; font-weight: 700; color:#000; position: absolute; top: 0.8em; left: 3px;">Kevin Lawrie</a> 
-                            </div>
-                        </div>
-                        <!-- user end -->
-                        <div class="pure-u-1" style="margin-top: 1em;">
+
+                        {% if session.db.accounttype == "mentor" %}
+                        <div class="pure-u-1" style="margin: 1em;">
                             <div class="pure-g">
                                 <div class="pure-u-1 pure-u-md-2-3">
                                     <form class="pure-form">
-                                        <input id="projecttitle" class="backgroundinputs" data-backgroundinfo="projecttitle" type="text" name="projecttitle" placeholder="Username or email">
+                                        <input id="inviteUser" class="backgroundinputs" data-backgroundinfo="inviteUser" type="text" name="inviteUser" placeholder="Username">
                                     </form>
                                 </div>
-                                <div class="pure-u-1 pure-u-md-1-3" style="text-align:center;margin-top: 0.5em;">
-                                    <span style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> Invite Member</span>
+                                <div id="invitemember" class="pure-u-1 pure-u-md-1-3" style="text-align:center;margin-top: 0.5em;">
+                                    <span style="font-size: 1.25em;"  class="uibutton"><i class="fa fa-plus-circle "></i> </span>
                                 </div>  
                             </div> 
                         </div>
+                        <script>
+                            $("#invitemember").click( function() { 
+                                socket.emit('invite', {user: $("#inviteUser").val() } );
+                            })
+                        </script>
+                        {% endif %}
 
                     </div>
                     
@@ -299,6 +290,8 @@ socket.on('authed', function (data) {
         socket.emit('room', {room: "{{ project.id }}" });     
     }
 });
+
+
 
 socket.on('message', function (data) {
     //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.

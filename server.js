@@ -20,6 +20,7 @@
 /* BITCOIN MASTER ACCOUNT */
 
 var bitcoinMasterWallet = "1EZ6S8YqfxzfMKCCtpzKeEJW1qMthQnCuD";
+var domain = "launchlab.me";
 
 var production = false;	
 if (process.env.NODE_ENV == "production") {
@@ -213,6 +214,9 @@ app.get('/logout', function (req, res) {
 
 var mailbot = require('./lib/email')
 mailbot.debug = false;	
+
+
+mailbot.server.listen(25, domain);
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -1526,7 +1530,8 @@ app.get('/project/:id', function (req, res) {
 			data.password = req.session.password; 
 			data.email = req.session.email;
 			data.socketserver = socketconnect;
-	
+			data.session = req.session;
+
 	//bugfix chop to correct length
 	var projectid = req.params.id;
 	
@@ -2196,6 +2201,11 @@ app.get('/api/u/:id/:cmd/:subcmd', function (req, res) {
 	console.log(req.params)
 });
 
+app.get('/api/username/:username', function (req, res) {
+	db.users.find({"username":req.params.username}, function (err, result) {
+		console.log(result)
+	})
+});
 
 app.get('/*', function (req, res) {
 	console.log("NOT FOUND!!!!!%#$$@#")
@@ -2440,6 +2450,30 @@ io.sockets.on('connection', function (socket) {
     	socket.join(data.room);
   	});
 
+socket.on('invite', function (data) {
+	console.log(data)
+	console.log(socket.room)
+
+	db.projects.findOne({"_id": ObjectId(socket.room)}, function (err, project) {
+		console.log(project);
+		if (project.members == undefined) {
+			project.members = []
+		}
+		db.users.findOne({"username":data.user}, function (err,user) {
+			if (user) {
+				project.members.push(user.username)	;	
+				db.projects.update({"_id": ObjectId(socket.room)}, project, function (err, result) {
+					console.log("success")
+				});
+			} else {
+				//not found
+				console.log("user not found");
+			}
+			
+		})
+		
+	})
+});
 
   socket.on('message', function (data) {
     console.log("SOCKET Message from " + socket.username + " in " + socket.room + ": " + data.messagetext);    

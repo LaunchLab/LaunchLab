@@ -30,6 +30,15 @@
 			<div class="pure-u-1 pure-u-md-1-3 labell">Avatar</div>
 			<div class="pure-u-1 pure-u-md-2-3 profiledata"><a href="http://www.gravatar.com/"> Change</a></div>		
 
+			<div class="pure-u-1 pure-u-md-1-3 labell">Type</div>
+					     
+        	<div class="pure-u-1 pure-u-md-2-3 " id="accounttype">
+        		<input type="radio" id="accounttypeclient" name="accounttype" value="client" {% if userdb.accounttype == "client" %}checked{% endif %} > Client
+				<input type="radio" id="accounttypementor" name="accounttype" value="mentor" {% if userdb.accounttype == "mentor" %}checked{% endif %} > Mentor
+				<input type="radio" id="accounttypecreative" name="accounttype" value="creative" {% if userdb.accounttype == "creative" %}checked{% endif %} > Creative
+        	</div>
+					     
+
 			<div class="pure-u-1 pure-u-md-1-3 labell inputlabel">Full name</div>
 			<div class="pure-u-1 pure-u-md-2-3 profiledata"><input id="fullname" class="backgroundinputs" data-backgroundinfo="fullname" type="text" name="fullname" placeholder="Enter your full name here" value="{{ userdb.fullname }}"></div>	
 
@@ -49,12 +58,7 @@
 
 
 		
-			<div class="pure-u-1"><h2>Bitcoin (experimental)</h2></div>
-			<div class="pure-u-1"><p>This is so others can pay you for your services. Do not use yet unless you know what you are doing.  You can create a bitcoin wallet and withdraw funds by registering on <a href="https://bitx.co.za">https://bitx.co.za</a> </p></div>
-
 			
-			
-			<div class="pure-u-1 profiledata"><input id="bitcoinaddress" class="backgroundinputs" type="text" name="bitcoinaddress" placeholder="Paste your recieving bitcoin wallet address here" value="{{ userdb.bitcoinaddress }}"></div>	
 
 			
 	
@@ -81,6 +85,8 @@ input {
 	width: 100%;
 
 }
+
+#accounttype input {width: 20px;}
 
 .labell { color:rgb(125,125,125);}
 
