@@ -4,12 +4,36 @@
 
 {% block head %}
   {% parent %}
+    <script src="/lib/dropzoneavatar.js"></script>
 {% endblock %}
 
 {% block content %}
 
 <div class="bannerWrap" >
     <div class="pure-g" >
+
+
+            <div class="l-box pure-u-1 ">
+            	<div class="pure-g l-box" >
+
+
+			<div class="pure-u-1 pure-u-md-1-3 labell">
+                <div style="height: 128px; width: 128px; background:rgb(38,38,38); border: 1px rgb(100,100,100) solid; padding: 3px;">
+                    <img src="/avatars/{{ session.db.avatar }}" width="120" height="120" >
+                </div>
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 profiledata">
+				<div class="pure-u-1">
+					<div><form action="/profile/uploadavatar" class="dropzone" id="my-awesome-dropzone"></form></div>
+				</div>
+			</div>
+
+					
+				</div>
+            	
+            </div>
+
+
             <div class="l-box pure-u-1 ">
 				
 
@@ -21,14 +45,15 @@
 		<div class="pure-g l-box" >
 			<div class="pure-u-1"><h2>Your Account</h2></div>
 
+
+
 			<div class="pure-u-1 pure-u-md-1-3 labell">Username</div>
 			<div class="pure-u-1 pure-u-md-2-3 profiledata">{{ userdb.username }}</div>
 
 			<div class="pure-u-1 pure-u-md-1-3 labell">Email</div>
 			<div class="pure-u-1 pure-u-md-2-3 profiledata">{{ userdb.email }}</div>		
 
-			<div class="pure-u-1 pure-u-md-1-3 labell">Avatar</div>
-			<div class="pure-u-1 pure-u-md-2-3 profiledata"><a href="http://www.gravatar.com/"> Change</a></div>		
+				
 
 			<div class="pure-u-1 pure-u-md-1-3 labell">Type</div>
 					     

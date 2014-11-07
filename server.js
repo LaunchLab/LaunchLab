@@ -133,10 +133,9 @@ app.use(function(req, res, next) {
 			expectmulti = true;
 		}
 
-		if (req.url.slice(0,'/project/upload/'.length) === '/project/upload/') {
-			
-			expectmulti = true;
-		}		
+		if (req.url.slice(0,'/project/upload/'.length) === '/project/upload/') { expectmulti = true; }		
+		if (req.url == "/profile/uploadavatar") { expectmulti = true; }		
+		
 	}
 
 	
@@ -215,8 +214,10 @@ app.get('/logout', function (req, res) {
 var mailbot = require('./lib/email')
 mailbot.debug = false;	
 
+if (enableEmail) {
+	mailbot.server.listen(25, domain);	
+}
 
-mailbot.server.listen(25, domain);
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -386,6 +387,7 @@ app.get('/user/:ids', function (req, res) {
 
 app.get('/:username', function (req, res,next) {
 	var data = {username: req.session.username, password: req.session.password}
+	data.session = req.session;
 	data.socketserver = socketconnect;
 
 	db.users.find({"username": req.params.username}, function(err, users) {
@@ -393,7 +395,6 @@ app.get('/:username', function (req, res,next) {
 			res.status(404);
 			res.render('error', data)
 		} else {
-			console.log(users)
 			if (users.length != 1) {
 				next();
 			} else {
@@ -466,9 +467,7 @@ app.post('/login', function (req, res) {
 
 app.post('/', function(req, res){
 	  var minute = 60 * 1000;
-	  console.log("new login/register:")
-	  console.log(req.body)
-	  console.log("-----")
+
 	  //do login
 	  // app.js
 	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(req.body.username), scrypt.encode_utf8(req.body.password), 128, 8, 1, 32);
@@ -478,12 +477,8 @@ app.post('/', function(req, res){
 	db.users.find({username: req.body.username}, function(err, users) 
 	{
 		if ( err || !users) { 
-			console.log("DB error"); 
 			res.render('home', { foo: "Database error. Database offline?" });
 		} else {
-			console.log(users)
-
-
 			if (users.length == 0) {
 				//new username
 				var newuser = {}
@@ -784,7 +779,7 @@ function checkAuth(req, res, next) {
 				//gravatar
 				// https://github.com/emerleite/node-gravatar
 				var avatar = gravatar.url(req.session.db.email, {s: '200', r: 'pg', d: '404'});
-				req.session.avatar = avatar;
+				req.session.avatar = users[0].avatar;
 				/*
 
 					status = new     -new cart item, not paid for yet and not started on yet
@@ -792,7 +787,7 @@ function checkAuth(req, res, next) {
 
 				*/
 				db.projects.find({"creator":req.session.username, "status": "new"}, function (err, projects) {
-					console.log(projects);
+					
 					req.session.carttotal = 0;
 					for (var x in projects) {
 						if (projects[x].price) {
@@ -1091,7 +1086,48 @@ app.get('/offerings/neworder/:id', function (req, res) {
 
 
 
+app.post('/profile/uploadavatar', function (req, res) {
+	var uploadedFilenames = []
+	for (var f in req.multipartparse.files.file) {
+		if (req.multipartparse.files.file[f].size > 0) {
+			var source = fs.createReadStream(req.multipartparse.files.file[f].path);
+			
+			//extension check
+			var a = req.multipartparse.files.file[f].originalFilename;
+			var aext = a.slice(a.length-4, a.length)
+			console.log(aext)
 
+
+
+			var newfilename = Date.now()+req.multipartparse.files.file[f].originalFilename
+			var dest = fs.createWriteStream(__dirname+'/content/avatars/'+newfilename);
+
+			console.log("COPY FILE!!! IF YOU GET A CRASH MAKE SURE /content/avatars folder exists")
+			uploadedFilenames.push(newfilename) 
+
+			source.pipe(dest);
+
+			source.on('end', function() { 
+			/* copied */
+				
+			});
+			source.on('error', function(err) { /* error */ });
+		}
+	}
+
+	db.users.findOne({"username": req.session.username }, function(err, user) {
+		user.modified = Date.now();
+		user.avatar = uploadedFilenames[0]
+		db.users.update({"username": req.session.username }, user, function(err, result) {
+			console.log(result);
+			res.end("success");
+		});
+		//end update
+		
+
+	});
+	
+});
 
 
 
@@ -1104,7 +1140,9 @@ app.post('/profile', function (req,res) {
 })
 
 app.get('/profile', function (req,res) {
-	res.render('profile', { username: req.session.username, password: req.session.password, email: req.session.email, socketserver: socketconnect, userdb: req.session.db  });
+	var data = { username: req.session.username, password: req.session.password, email: req.session.email, socketserver: socketconnect, userdb: req.session.db  }
+	data.session = req.session;
+	res.render('profile', data);
 })
 
 
@@ -1218,9 +1256,10 @@ app.get('/', function (req, res) {
 						
 					}
 					data.offerings = sorted;
-					data.avatar = gravatar.url(req.session.email, {s: '100', r: 'pg', d: '404'});
+					//data.avatar = gravatar.url(req.session.email, {s: '100', r: 'pg', d: '404'});
 					data.offeringsjson = JSON.stringify(sorted);
 					data.session = req.session;
+
 					res.render('home', data);
 				})
 
@@ -1287,17 +1326,13 @@ var ObjectId = mongojs.ObjectId;
 
 
 app.post('/project/upload/:id', function (req, res) {
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
 
-    //console.log(req.body) // with multipart there is no body.
-	console.log(req.multipartparse)
 
 	//bugfix chop to correct length
 	var mongoid = req.params.id; // req.url.slice( '/offerings/edit/'.length );
 	var ObjectId = mongojs.ObjectId;
 
-	console.log("multipartfiles:")
-	console.log(req.multipartparse.files)
+
 
 	var uploadedFilenames = []
 	for (var f in req.multipartparse.files.file) {
@@ -1348,7 +1383,7 @@ app.post('/project/upload/:id', function (req, res) {
 
 	
 		db.projects.update({"_id": ObjectId(mongoid)}, project, function(err, updatedproject) {
-			console.log(updatedproject)
+			
 			if (updatedproject) {
 				res.redirect('/project/'+mongoid)
 			} else res.render('error', { username: req.session.username, password: req.session.password, socketserver: socketconnect });
@@ -1438,9 +1473,6 @@ app.get('/project/brief/:id', function (req, res) {
 
 
 app.post('/project/:id/tasks/update/:created', function (req, res) {
-	console.log(req.params)
-	console.log(req.body)
-	
 	//find the project
 	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, project) {
 		if (project.tasks == undefined) { project.tasks = []}
@@ -1475,28 +1507,17 @@ app.post('/project/:id/tasks/update/:created', function (req, res) {
 		//update task
 		//update project entry in database
 	});//endfindone
-
-
-
-
-	
 });
 
 app.post('/project/:id/tasks/new', function (req, res) {
-	console.log(req.params)
-	console.log('NEW TASK ')
-	console.log(req.body)
+
 	req.body.status = "new"
 	var ObjectId = mongojs.ObjectId;
 	db.projects.findOne({"_id":ObjectId(req.params.id)}, function (err, result) {
-		console.log(result)
 		if (result.tasks == undefined) { result.tasks = []}
 		req.body.created = Date.now();
 		req.body.creator = req.session.username;
 		result.tasks.push(req.body);
-
-
-
 		var createddate = new Date(req.body.created);
 		req.body.createdformatted = createddate.toISOString();
 
@@ -1524,26 +1545,20 @@ app.get('/paid/:id', function (req, res) {
 
 
 app.get('/project/:id', function (req, res) {
-	console.log("!!")
 	var data = {}
-			data.username = req.session.username;
-			data.password = req.session.password; 
-			data.email = req.session.email;
-			data.socketserver = socketconnect;
-			data.session = req.session;
+	data.username = req.session.username;
+	data.password = req.session.password; 
+	data.email = req.session.email;
+	data.socketserver = socketconnect;
+	data.session = req.session;
 
-	//bugfix chop to correct length
+
 	var projectid = req.params.id;
-	
-
-
 	var ObjectId = mongojs.ObjectId;
 
 	db.projects.findOne({"_id": ObjectId(projectid)}, function(err, project) {
 
 		if (project) {
-			console.log("FOUND!!")
-			console.log(project)
 			project.id = project._id.toHexString();
 			//project._id = JSON.stringify(project._id);
 
@@ -1554,24 +1569,11 @@ app.get('/project/:id', function (req, res) {
 
 			var createddate = new Date(project.created);
 			project.createdformatted = createddate.toISOString();
-
-			console.log("searching for messages")
 			db.messages.find( { "message.room" : project.id}, function (err, messages) {
-				console.log("FOUND MESSAGES:")
 				//avatars
-				for (var num in messages) {
-					if (messages[num].message.email) {
-						var avatar = gravatar.url(messages[num].message.email, {s: '200', r: 'pg', d: '404'});
-						messages[num].message.avatar = avatar;
-					} else {
-						messages[num].message.avatar = '/images/avatar_1.png';
-					}
-					
-				}
+
 
 				data.messagearray = JSON.stringify(messages);
-				console.log(messages)
-				console.log("#############")
 
 				var projectjson = JSON.stringify(project);
 				data.projectjson = projectjson
@@ -1604,14 +1606,13 @@ app.get('/projects/new', function (req, res) {
 app.post('/projects/new', function (req, res) {
 	//CREATE NEW PROJECT (MANUAL ENTRY) 
 	//USUALLY CLIENTS WOULD CLICK ADD TO CART WHICH AUTO FILLS OUT PROJECT
-	console.log(req.body)
+
 	//res.end("it worked")
 	var project = req.body;
 	project.creator = req.session.username;
 	project.created = Date.now();
 	project.status = "new"
 	project.costtodate = 0;
-	console.log(project)
 	db.projects.save( project, function(err, saved) {
 		
 		console.log("NEW PROJECT CREATED");		
@@ -2208,9 +2209,7 @@ app.get('/api/username/:username', function (req, res) {
 });
 
 app.get('/*', function (req, res) {
-	console.log("NOT FOUND!!!!!%#$$@#")
 	res.status(404);
-
 	var data = {username: req.session.username, password: req.session.password, socketserver: socketconnect}
 	data.message = "Could not find what you were looking for?! It might not exist, or your link is broken.";
 	res.render('error', data)
@@ -2479,7 +2478,7 @@ socket.on('invite', function (data) {
     console.log("SOCKET Message from " + socket.username + " in " + socket.room + ": " + data.messagetext);    
     
     db.projects.findOne({"_id": ObjectId(socket.room)}, function (err, project) {
-    	console.log(project)
+    	
 
     	/* ---------------------------------------------------
     	SEND EMAIL TO CLIENT */
@@ -2575,14 +2574,16 @@ socket.on('invite', function (data) {
 
     var messagedata = {}
 
-	var avatar = gravatar.url(socket.email, {s: '200', r: 'pg', d: '404'});
-							
+	
 
-    messagedata.message = { username: socket.username, avatar: avatar, email: socket.email, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
-    io.sockets.in(socket.room).emit('message', messagedata);
+	db.users.findOne({"username":socket.username}, function (err, user) {
+	
+		messagedata.message = { username: socket.username, avatar: user.avatar, email: socket.email, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
+	    io.sockets.in(socket.room).emit('message', messagedata);
+	    db.messages.save(messagedata)
+	});							
 
-    db.messages.save(messagedata)
-    
+        
   });
   
 });

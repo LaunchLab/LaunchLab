@@ -225,7 +225,7 @@ var rendermessage = function(data) {
     var htmlperson = 
     '<div >'
         //+'<img src="'+data.message.avatar+'" style="width:40px;">'
-        +'<img src="http://www.gravatar.com/avatar/1b83c0ee23f2bbc7a37d196d1b5bbf19?s=200&r=pg&d=404" style="width:40px;">'
+        +'<img src="/avatars/'+data.message.avatar+'" style="width:40px;">'
     +'</div>';
 
     var left = '';
@@ -286,6 +286,7 @@ socket.on('connect', function() {
 });
 
 socket.on('authed', function (data) {
+    console.log(("SUCCESS"))
     if (data.auth == true) {
         socket.emit('room', {room: "{{ project.id }}" });     
     }
@@ -296,6 +297,7 @@ socket.on('authed', function (data) {
 socket.on('message', function (data) {
     //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.
     //console.log(data)
+    console.log(data)
     messages.push(data)
     rendermessage(data);
     $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
@@ -307,13 +309,28 @@ $("#roomconnect").click( function() {
     socket.emit('room', {room: "{{ id }}" });
 });
 
-$("#chatsend").click( function(data) {
-    data.preventDefault();
-    console.log("Sending "+ $("#chatmessage").val() +" to "+ $("#roomname").val() )
-    var messagetextinput = $("#chatmessage").val();
-    socket.emit('message', {messagetext: messagetextinput} );
-    $("#chatmessage").val("")
-    $("#chatmessage").focus();
+var sendchat = function(e) {
+    e.preventDefault();
+    
+    //stop empty message
+    if ($("#chatmessage").val() == "") {
+        $("#chatmessage").focus();    
+    } else {
+        console.log("Sending message: "+ $("#chatmessage").val() )
+        var messagetextinput = $("#chatmessage").val();
+        socket.emit('message', {messagetext: messagetextinput} );
+        $("#chatmessage").val("")
+        $("#chatmessage").focus();    
+    }
+    
+}
+
+$("#chatsend").click(sendchat);
+
+$("#chatmessage").keypress( function (key) {
+    if (key.which == 13) {
+       sendchat(key);
+    }
 })
     
 //do first render
