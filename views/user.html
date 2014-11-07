@@ -21,7 +21,7 @@
 
             <div class="l-box pure-u-1 pure-u-md-1-2" style="color: #666; margin-top: 1em; ">
                 <div style="height: 128px; width: 128px; background:rgb(38,38,38); border: 1px rgb(100,100,100) solid; padding: 3px;">
-                    <img src="/avatars/{{ session.db.avatar }}" width="120" height="120" >
+                    <img src="/avatars/{{ session.db.avatar }}" width="120" height="120" onError="this.onerror=null;this.src='/images/avatar.jpg';">
                 </div>
                 
                     <div style="font-weight: 700; font-size: 1.25em; color: white; line-height: 0em; margin-top: 1em;text-transform: uppercase;">{{ user.fullname }}</div>
