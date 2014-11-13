@@ -7,6 +7,7 @@
   <script src="/lib/scrypt.js"></script>
   <script src="/lib/socket.io.min.js"></script>
   <script src="/lib/processing.min.js"></script>
+  <script src="/lib/dropzoneproject.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -91,7 +92,7 @@ var project = {{ projectjson|raw }};
 
                 <div class="projectTextBlock">
                     {% for file in project.brief.samplefiles %}
-                        <a href="/projectfiles/{{ file }}"><i class="fa fa-file-o"></i> {{ file }}</a>
+                        <a href="/projectfiles/{{ file }}"><i class="fa fa-file-o"></i> {{ file }}</a><br>
                     {% endfor %}
                 </div>
 
@@ -104,16 +105,16 @@ var project = {{ projectjson|raw }};
                 <div id="talkstream"></div>
 
                 <div>
-                   
+                  
                     <div style="float:right;width:40px; ">
                         <div id="chatsend"><i class="fa fa-send"></i></div>
                     </div>  
-                    <div style="margin-right:40px;margin-left: 40px;">
+                    <div style="margin-right:40px;">
                         <input id="chatmessage" autocomplete="off" placeholder="type your message here.">
                     </div>                                                           
                 </div>
 
-                
+                <form action="/project/upload/{{ project._id.toHexString() }}" class="dropzone" id="my-awesome-dropzone"></form>
                 
             </div>
             <!-- DISCUSSION END -->
@@ -181,15 +182,39 @@ var project = {{ projectjson|raw }};
 <style>
 #chatmessage { height: 40px; border-radius: none; border: none; width:100%; padding: 8px;}
 
-#chatsend {
+.messagetext img {max-width: 100%;}
+
+#chatattachment {
     height: 40px;
-    background-color: rgb(210,72,7);
     width: 100%;
     text-transform: uppercase;
     font-weight: 700;
     padding-top: 5px;
     text-align: center;
     cursor: pointer;
+    color: rgb(155,155,155);
+    background: rgb(255,255,255);
+}
+
+#chatattachment:hover {
+    color: rgb(210,72,7); 
+}
+
+#chatsend {
+    background-color: rgb(255,255,255);
+    color: rgb(155,155,155);    
+    height: 40px;
+    
+    width: 100%;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding-top: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#chatsend:hover {
+    color: rgb(210,72,7); 
 }
 
 @media (max-width: 1200px) {

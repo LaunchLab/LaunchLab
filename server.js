@@ -1372,14 +1372,26 @@ app.post('/project/upload/:id', function (req, res) {
 		project.modified = Date.now();
 		if (project.brief == undefined) { project.brief = {}; }
 
+		if (project.brief.samplefiles) { /* do nada */ } else { project.brief.samplefiles = []; }
+
 		for (var file in uploadedFilenames) {
-			if (project.brief.samplefiles) { 
-				project.brief.samplefiles.push(uploadedFilenames[file]) 
-			} else {
-				project.brief.samplefiles = []
-				project.brief.samplefiles.push(uploadedFilenames[file]) 
-			}
+			var curfile = uploadedFilenames[file];
+			project.brief.samplefiles.push(curfile) 
+			/* sockets */
+
+			db.users.findOne({"username":req.session.username}, function (err, user) {
+				var nowdate = new Date;
+			    var formatteddate = formatDate(nowdate);
+			    var messagedata = {}
+				messagedata.message = { username: req.session.username, avatar: user.avatar, email: user.email, room: req.params.id, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
+			    messagedata.message.text = '<img src="/projectfiles/'+curfile+'">'+curfile;
+			    //messagedata.message.text = 'new upload';
+			    io.sockets.in(req.params.id).emit('message', messagedata);
+			    db.messages.save(messagedata)
+			});	
+			/* end sockets */			
 		}
+
 
 	
 		db.projects.update({"_id": ObjectId(mongoid)}, project, function(err, updatedproject) {
@@ -2577,7 +2589,6 @@ socket.on('invite', function (data) {
 	
 
 	db.users.findOne({"username":socket.username}, function (err, user) {
-	
 		messagedata.message = { username: socket.username, avatar: user.avatar, email: socket.email, room: socket.room, text: data.messagetext, timestamp: nowdate.toISOString(), timeformatted: formatteddate }
 	    io.sockets.in(socket.room).emit('message', messagedata);
 	    db.messages.save(messagedata)
