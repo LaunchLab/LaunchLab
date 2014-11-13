@@ -2495,28 +2495,31 @@ socket.on('invite', function (data) {
     	/* ---------------------------------------------------
     	SEND EMAIL TO CLIENT */
 		if (enableEmail) 
-	  	{
-	    	db.users.findOne({"username":project.creator}, function (err, client) {
-	    		
-		    	/* START EMAIL */
-				var email = {}
-				email.from = "noreply@launchlabapp.com";
-				email.fromname = "Launch Lab";
-				email.rcpt = client.email;
-				email.rcptname = client.fullname;
-				email.subject = "New message in "+project.brief.title+" from "+socket.username;
-				email.body = "Hi "+client.username;
-				email.body += "\n\r"
-				email.body += "There is a new message in a project you are involved with.\n\r"
-				email.body += "http://launchlab.me/project/"+socket.room+"\n\r"
-				email.body += "\n\r"
+	  	{	
+	  		if (project.creator) {
+		    	db.users.findOne({"username":project.creator}, function (err, client) {
+		    		
+			    	/* START EMAIL */
+					var email = {}
+					email.from = "noreply@launchlabapp.com";
+					email.fromname = "Launch Lab";
+					email.rcpt = client.email;
+					email.rcptname = client.fullname;
+					email.subject = "New message in "+project.brief.title+" from "+socket.username;
+					email.body = "Hi "+client.username;
+					email.body += "\n\r"
+					email.body += "There is a new message in a project you are involved with.\n\r"
+					email.body += "http://launchlab.me/project/"+socket.room+"\n\r"
+					email.body += "\n\r"
 
-				mailbot.sendemail(email, function (data) 
-				{
-					console.log("EMAIL SENT")
-				});
-				/* END EMAIL */	    		
-	    	});// end db.users.findOne(..)	  		
+					mailbot.sendemail(email, function (data) 
+					{
+						console.log("EMAIL SENT")
+					});
+					/* END EMAIL */	    		
+		    	});// end db.users.findOne(..)	
+	  		}
+  		
 		} //end (enableEmail)
 		/* SEND EMAIL TO CLIENT 
 		---------------------------------------------------*/
