@@ -10661,41 +10661,37 @@ controllers.AdminUserCtrl = function ($scope, $location, $window, UserService, A
 };
 
 controllers.loginModalWindow = function ($scope, socket, $timeout, $http) {
-  socket.emit('restricted', 'request token');
+  socket.emit('public', 'request token');
 	$scope.login = {
 		username : '',
 		password : ''
 	};
-  /*
   var headers;
-	socket.on('public', 'recieve token', function(token) {
-    console.log(token + ' recieve token');
+	socket.on('public', 'recieve token',function(token) {
+    console.log(token);
     headers = { 'Authorization': 'Basic '+ token};
   });
 
-  socket.on('public', 'recieve token', function() {
-    socket.auth(token);
-  });
-*/
-socket.on('restricted', 'recieve private', function() {
-    console.log('com pos');
-  });
 	$scope.submit = function() {
     // server-side
     $scope.login.password = scrypt.crypto_scrypt(scrypt.encode_utf8($scope.login.username), scrypt.encode_utf8($scope.login.password), 128, 8, 1, 32);
     $scope.login.password = scrypt.to_hex($scope.login.password);
-    
-    $http.post('/login', $scope.login).then(
-	    // success callback
-	    function(response) {
-          $location.path('/:' + $scope.login.username);
-          $scope.$apply();
-	    },
-	    // error callback
-	    function(response) {
-	    	console.debug("error http post");
-	   }
-	);
+    socket.on('public', function() {
+      socket.auth();
+    });
+    $http.post('/login', $scope.login, { headers: headers } ).
+    success(function(data, status, headers, config) {
+          // this callback will be called asynchronously
+          // when the response is available
+          console.log('attempt Restricted section');
+          
+    }).
+    error(function(data, status, headers, config) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+    });
+    //$scope.login.password = '';
+    //headers = '';
   };
     
   $scope.forgotReset = function() {

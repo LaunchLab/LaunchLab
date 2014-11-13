@@ -1,12 +1,12 @@
 var app = angular.module('app', ['ngRoute','ngSanitize']);
 app.constant('handshakeConstant', { levelAuthority : '' });
-app.config(function($routeProvider, $locationProvider, handshakeConstant, $httpProvider){
+app.config(function($routeProvider, $locationProvider, handshakeConstant){
 
 	/*	use the HTML5 History API	*/
 	$locationProvider.html5Mode(true);
 
 	/*	use token interceptors	*/
-	$httpProvider.interceptors.push('TokenInterceptor');
+	//$httpProvider.interceptors.push('TokenInterceptor');
 
 	/*	Router	*/
 	$routeProvider
@@ -137,11 +137,12 @@ app.config(function($routeProvider, $locationProvider, handshakeConstant, $httpP
 		})
 		.otherwise({ redirectTo: '/error' });
 });
-
-app.run(function($rootScope, $location, AuthenticationService) {
+/*
+app.run(function($rootScope, $location, AuthenticationService, $http) {
     $rootScope.$on("$routeChangeStart", function(event, nextRoute, currentRoute) {
         if (nextRoute.access.requiredLogin && !AuthenticationService.isLogged) {
             $location.path("/admin/login");
         }
     });
 });
+*/
