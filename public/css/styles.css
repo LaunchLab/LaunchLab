@@ -516,20 +516,6 @@ a.thickBlock:hover div {
 .bannerTextWrap h1 {
   text-transform: uppercase;
 }
-
-@media (max-width: 1200px) {
-  .bannerWrap { 
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .bannerWrap { 
-    margin-left: 152px;
-    margin-right: 152px;
-  }
-}
 /*
 *Gallery
 */
@@ -871,4 +857,35 @@ span.forgotReset, span.register{
   -ms-transform: scale(1);
   transform: scale(1);
   opacity: 1;
+}
+/*
+* Profile
+*/
+
+input {
+  width: 100%;
+
+}
+
+#accounttype input {width: 20px;}
+
+.labell { color:rgb(125,125,125);}
+
+.bannerWrap {
+  background: rgb(39,37,38); 
+  padding: 24px;
+}
+
+@media (max-width: 1200px) {
+  .bannerWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bannerWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
 }

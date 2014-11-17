@@ -1,0 +1,141 @@
+{% extends 'layout.html' %}
+
+{% block title %}LaunchLab New Project{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+ <script src="/lib/dropzone.js"></script>
+
+<div class="content-wrapper-top">
+    <div class="content">
+        <div class="pure-g" >
+ <div class="l-box pure-u-1 pure-u-md-1-2">
+                
+
+                 <div class="pure-g" >
+                    <div class="pure-u-1">
+                        <h1 style="font-weight: 700; font-size: 2em; margin-top: 1em;">{{ offering.title}}</h1>
+                    </div>
+
+                    <div class="pure-u-1">
+                        by <a href="/{{ offering.creator }}">{{ offering.creator }}</a> - views: {{ offering.views }}
+                    </div>
+
+                    <div class="pure-u-1">
+                        <div class="pure-g">
+                        {% for image in offering.samplefiles %}
+                            <div class="l-box pure-u-1-3" style="box-sizing: border-box; padding: 0.25em; ">
+                                
+                                    <a href="/offerings/{{ image }}">
+                                        <img src="/offerings/{{ image }}" style="width:100%; ">
+                                    </a>
+                                
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+
+
+                    <div class="pure-u-1">
+                        <p class="offering-view-markdown">{{ offering.descriptionmarked|raw }}</p>
+                    </div>
+
+                </div>
+
+                
+                
+                
+
+
+
+
+            </div>
+
+
+
+            <div class="l-box pure-u-1-2" style="background: #eee;">
+                    <h1 style="font-weight: 700; font-size: 3em;">{{ offering.title }} order form</h1>
+                    <!-- start FORM -->
+                    <form class="pure-form pure-form-stacked" method="post" action="/offerings/contact/{{ offering.offering_id }}">
+
+                        <fieldset>
+
+                            <!-- {% if loggedout %} --> <!-- {% endif %} -->
+
+
+                            <div class="pure-control-group" {% if userdb.email != "" %} style="display:none;"  {% endif %} >
+                                <label for="description">Your email address</label>
+                                <input id="email" type="email" name="email" placeholder="Your email address" autocomplete="0"
+                                value="{{ userdb.email }}">
+                            </div>
+
+
+
+                            <div class="pure-control-group" {% if userdb.phonenumber != "" %} style="display:none;"  {% endif %}>
+                                <label for="description">Your phone number</label>
+                                <input id="phonenumber" type="text" name="phonenumber" class="backgroundinputs"  placeholder="Phone number" autocomplete="off" value="{{ userdb.phonenumber }}">
+                            </div>
+                            
+
+                            <div class="pure-control-group">
+                                <label for="description">Notes to {{ offering.creator }} when processing your  order. </label>
+                                <textarea id="description" name="description" class="backgroundtextareas" rows="15" placeholder="This is the brief for this item. It should contain all the information needed for "></textarea>
+                                <p style="text-align: right;"><a href="http://daringfireball.net/projects/markdown/basics" style="text-decoration: underline;">markdown</a> syntax is allowed.</p>
+                            </div>
+
+                      
+
+                            <div class="pure-controls">
+                                <button type="submit" class="pure-button pure-button-primary" style="float:right;"><i class="fa fa-send "></i> Send</button> 
+
+                            </div>
+                            
+                        </fieldset>
+
+
+                        </form>     
+                        <!-- end form -->
+
+
+                        <div>
+
+                            <div class="uploadimgblock" style="margin: 1em; ">
+                            <form action="/offerings/imageupload/{{ offering.offering_id }}"
+                            class="dropzone"
+                            id="my-awesome-dropzone"></form>
+
+                            <p class="result">
+                            </p>
+                            </div>
+
+                        </div>
+                
+            </div>
+
+
+
+
+
+
+            
+  
+
+                
+
+
+
+        </div>
+    </div>
+
+    {% include "./footer.html" %}
+</div>
+
+
+
+
+
+
+{% endblock %}

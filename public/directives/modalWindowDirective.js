@@ -24,8 +24,14 @@ app.directive("modalWindow", function($compile, $timeout, $location) {
 		});
 
 		scope.$root.$on(scope.use+'Swap', function() {
-    		elements.find('modalWindow').prevObject[0].classList.remove("md-show");
-    	});
+        elements.find('modalWindow').prevObject[0].classList.remove("md-show");
+      });
+
+    scope.$root.$on(scope.use+'Close', function() {
+        elements.find('modalWindow').prevObject[0].classList.remove("md-show");
+        $('.md-overlay').css('opacity', '0');
+        $timeout(function(){$('.md-overlay').css('display', 'none');},'3000' );
+    });
 
     	scope.modalWindowClose = function() {
     		elements.find('modalWindow').prevObject[0].classList.remove("md-show");

@@ -1,0 +1,356 @@
+{% extends 'layoutv2.html' %}
+
+{% block title %}{{ offering.title}} by {{ offering.creator }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+
+<!-- BANNER START -->
+<!-- BANNER START -->
+<div class="banner container">
+  <div class="bannerWrap">
+    <div class="pure-g">
+        
+        <div class="pure-u-1 pure-u-md-2-3">
+           <a id="bannerLink" href="/offerings/view/{{ offering._id.toHexString() }}"> 
+            <div id="bannerImage" class="bannerImage" style='background-image: url("/offerings/{{ offering.samplefiles[0] }}");' ></div>
+           </a>
+         </div>
+
+        <div class="pure-u-1 pure-u-md-1-3 bannerText">
+          <div class="bannerTextWrap">
+            <h1 id="bannerTitle">{{ offering.title }}</h1>
+            <p id="bannerDescription">
+              {{ offering.views }} views<br>
+              {% if offering.saleoption == "price" %} 
+              PRICE R {{ offering.price.toFixed(2) }}
+              {% endif %}
+            </p>
+          </div>
+            
+          <div class="creatorBlock" id="bannerCreator">
+            BY <a href="/{{ offering.creator }}">{{ offering.creator }}</a> 
+          </div>
+
+
+
+
+                    {% if offering.saleoption == "price" %} 
+
+                          <a id="bannerLinkButton" class="thickBlock" href="/offerings/order/{{ offering.offering_id }}">
+                            <div>
+                                <i class="fa fa-fw fa-shopping-cart"></i> BUY THIS FOR R {{ offering.price.toFixed(2) }}
+                            </div>
+                          </a>
+
+                    {% endif %}
+
+
+                    {% if offering.saleoption == "quote" %} 
+                          <a id="bannerLinkButton" class="thickBlock" href="/offerings/quote/{{ offering.offering_id }}">
+                            <div>
+                                <i class="fa fa-fw fa-shopping-cart"></i>  GET A QUOTE
+                            </div>
+                          </a> 
+                    {% endif %}
+
+
+                    {% if offering.saleoption == "nosale" %} 
+                        {% if offering.creator != username %}
+                          <a id="bannerLinkButton" class="thickBlock" href="/offerings/order/{{ offering.offering_id }}">
+                            <div>
+                                <i class="fa fa-fw fa-envelope"></i> Contact
+                            </div>
+                          </a>
+                        {% endif %}
+                    {% endif %}
+
+
+
+
+      </div>
+
+    </div>
+  </div>
+</div> 
+
+<div class="bannerNav" id="bannerLeft">
+    <i class="fa fa-flip-horizontal fa-play"></i>
+</div>
+
+<div class="bannerNav right" id="bannerRight">
+    <i class="fa fa-play"></i>
+</div>
+
+<script>
+  var images = {{ jsonimages|safe }};
+  var displayedId = 0;
+  
+  var leftBanner = function () {
+    displayedId -= 1;
+    if (displayedId < 0) { displayedId = images.length-1 }
+    updateBanner();
+  };
+
+  var rightBanner = function () {
+    displayedId += 1;
+    if (displayedId > images.length-1 ) { displayedId = 0 }
+    updateBanner();
+  };
+
+  $("#bannerLeft").mousedown( leftBanner )
+
+  $("#bannerRight").mousedown( rightBanner )
+
+  var updateBanner = function () {
+      $("#bannerImage").css("background-image", 'url("/offerings/'+images[displayedId]+'")');
+      $("#bannerLink").attr("href", '/offerings/'+images[displayedId] );
+      if (images.length == 1) {
+        $("#bannerLeft").hide();
+        $("#bannerRight").hide();
+      }
+      renderThumbnails();
+  }
+
+  var renderThumbnails = function () {
+    var thmbhtml = ""
+    for (var i in images) {
+      var imgurl = "/offerings/"+images[i];
+      thmbhtml += "<div data-id=\""+i+"\" class=\"thumbnail\" style=\"background-image: url(\'"+imgurl+"\');\"></div>";
+      console.log(thmbhtml)
+    }
+
+    if (images.length == 1) { thmbhtml = ""; }
+    $("#thumbnails").html(thmbhtml);
+
+    $(".thumbnail").click( function () {
+      console.log( $(this).data("id") );
+      displayedId = $(this).data("id");
+      updateBanner();
+    })
+  }
+
+  function keyDown( event ) {
+    if (event.keyCode == 37) {  leftBanner(); }      
+    if (event.keyCode == 39) {  rightBanner(); }
+  }
+
+  $( document ).ready(function() { 
+    renderThumbnails();
+    updateBanner();    
+  } );
+
+  document.addEventListener( 'keydown', keyDown, false );
+
+</script>
+
+<style>
+
+#bannerDescription {text-transform: uppercase;}
+
+.right {
+  right: 0;
+}
+
+.bannerNav {
+  background: rgb(39,37,38);
+  width: 47px;
+  position: absolute;
+  top: 0;
+  text-align: center;
+  opacity: 0.2;
+}
+
+.bannerNav:hover {
+  background: rgb(59,59,59);
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.bannerNav i {
+
+}
+
+.creatorBlock {
+  height: 47px;
+  bottom: 47px;
+  position: absolute;  
+  width: 100%;
+  text-align: center;  
+  color: rgb(125,125,125);
+  text-transform: uppercase;
+}
+
+.creatorBlock a{
+}
+
+a.thickBlock div {
+  background: rgb(225,76,7);
+  height: 47px;
+  text-transform: uppercase;
+  text-align: center;
+  bottom:0;
+  position: absolute;
+  width: 100%;
+  padding-top: 10px;
+  font-weight: 700;
+  color: rgb(255,255,255);
+}
+
+a.thickBlock:hover div {
+  background: rgb(255,255,255);
+  color: rgb(225,76,7);
+}
+
+.bannerImage { 
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    overflow: hidden;
+    height: 300px;
+}
+.bannerText { 
+  background: rgb(39,37,38); 
+  
+  height: 300px; 
+  position: relative;}
+
+.bannerTextWrap {
+  text-align: center;
+  padding: 2em;
+  font-size: 1em;
+
+}  
+
+
+
+.bannerTextWrap h1 {
+  text-transform: uppercase;
+}
+
+@media (max-width: 1200px) {
+  .bannerWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bannerWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+</style>
+
+<script type="text/javascript">
+  var resizeBanner = function () {
+    var bannerheight = $(".bannerWrap").width()*0.375;
+    
+    if (window.innerWidth < 768) {
+      $(".bannerWrap").height(bannerheight*3);
+      $(".bannerImage").height(bannerheight*2);
+      $(".bannerText").height(bannerheight);
+      $(".bannerNav").height(bannerheight*2);      
+    } else {
+      $(".bannerWrap").height(bannerheight);  
+      $(".bannerImage").height(bannerheight);
+      $(".bannerText").height(bannerheight);
+      $(".bannerNav").height(bannerheight);
+    }
+
+    
+    var postop = 128; //$(".bannerWrap").offset().top;
+    console.log(postop)
+    $(".bannerNav").css("top", postop );
+    $(".bannerNav i").css("margin-top",  (bannerheight/2)-10  );
+    $(".bannerTextWrap").css("font-size", Math.round($(".bannerWrap").width()*0.015));
+  }
+  resizeBanner();
+
+  window.addEventListener( 'resize', resizeBanner, false );
+</script>
+<!-- BANNER END -->
+<!-- BANNER END -->
+
+
+
+<!-- ARTICLE START -->
+<div class="article container">
+  <div class="articleWrap">
+    <div class="pure-g">
+        <div class="pure-u-1" id="thumbnails">
+      
+        </div>
+        <div class="pure-u-2-3 articleContent">
+
+        
+
+            <p class="offering-view-markdown">{{ offering.descriptionmarked|raw }}</p>
+        </div>
+        <div class="pure-u-1-3 articleSidebar">
+            <p class="offering-view-markdown">
+
+                    {% if editable == 1 %} 
+                    <a href="/offerings/edit/{{ offering.offering_id }}" style="color: rgba(200,200,200, 0.5);"><i class="fa fa-fw fa-edit"></i> Edit </a> &nbsp;&nbsp;&nbsp;
+                    <a href="/offerings/delete/{{ offering.offering_id }}" style="color: rgba(200,200,200, 0.5);"><i class="fa fa-fw fa-times"></i> Delete</a><br>
+                    {% endif %}
+
+
+
+
+            </p>
+        </div>        
+    </div>
+  </div>    
+</div>
+
+<style>
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  float:left;
+
+    overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+
+
+}
+.articleContent {
+    padding: 1.5em;
+    color: rgb(169,167,168); 
+    background: rgb(39,37,38); 
+}
+
+.articleSidebar {
+    padding: 1.5em;
+}
+
+
+    
+@media (max-width: 1200px) {
+  .articleWrap { 
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .articleWrap { 
+    margin-left: 152px;
+    margin-right: 152px;
+  }
+}
+
+</style>
+
+
+
+
+{% endblock %}

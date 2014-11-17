@@ -5,16 +5,12 @@ app.config(function($routeProvider, $locationProvider, handshakeConstant){
 	/*	use the HTML5 History API	*/
 	$locationProvider.html5Mode(true);
 
-	/*	use token interceptors	*/
-	//$httpProvider.interceptors.push('TokenInterceptor');
-
 	/*	Router	*/
 	$routeProvider
 		.when('/',
 		{
 			controller:'home',
-			templateUrl:'views/home.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/home.html'
 		})
 		/*
 		.when('/:username', 
@@ -40,109 +36,84 @@ app.config(function($routeProvider, $locationProvider, handshakeConstant){
 						  default:
 						    return 'views/home_loggedin.html';
 						}
-                    },
-                    access: { requiredLogin: false }
+                    }
                 }
             )
 		*/
 		.when('/:username',
 		{
 			controller:'profileView',
-			templateUrl:'views/profile.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/profile.html'
 		})
 		.when('/projects/view/:id',
 		{
 			controller:'offeringsView',
-			templateUrl:'views/projects/view.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/projects/view.html'
 		})
 		.when('/projects/new',
 		{
 			controller:'offeringsEdit',
-			templateUrl:'views/projects/edit.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/projects/edit.html'
 		})
 		.when('/projects/order/:id',
 		{
 			controller:'offeringsOrder',
-			templateUrl:'views/projects/order.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/projects/order.html'
 		})
 		.when('/projects/edit/:id',
 		{
 			controller:'offeringsEdit',
-			templateUrl:'views/projects/edit.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/projects/edit.html'
 		})
 		.when('/projects/confirm:id',
 		{
 			controller:'offeringsConfirm',
-			templateUrl:'views/projects/confirm.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/projects/confirm.html'
 		})
 		.when('/projects/delete/:id',
 		{
 			controller:'offeringsDelete',
-			templateUrl:'views/projects/delete.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/projects/delete.html'
 		})
 		.when('/work',
 		{
 			controller:'workView',
-			templateUrl:'views/work/work.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/work/work.html'
 		})
 		.when('/work/invoices',
 		{
 			controller:'workInvoicesView',
-			templateUrl:'views/work/work_invoices.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/work/work_invoices.html'
 		})
 		.when('/work/invoices/new',
 		{
 			controller:'workInvoicesNew',
-			templateUrl:'views/work/work.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/work/work.html'
 		})
 		.when('/work/invoices/edit/:id',
 		{
 			controller:'workView',
-			templateUrl:'views/work/work_invoices_edit.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/work/work_invoices_edit.html'
 		})
 		.when('/admin/dashboard',
 		{
 			controller:'adminDashboard',
-			templateUrl:'views/admin/dashboard.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/admin/dashboard.html'
 		})
 		.when('/mentor/dashboard',
 		{
 			controller:'mentorDashboard',
-			templateUrl:'views/mentor/dashboard.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/mentor/dashboard.html'
 		})
 		.when('/creative/dashboard',
 		{
 			controller:'creativeDashboard',
-			templateUrl:'views/mentor/dashboard.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/mentor/dashboard.html'
 		})
 		.when('/error',
 		{
 			controller:'error',
-			templateUrl:'views/error.html',
-			access: { requiredLogin: false }
+			templateUrl:'views/error.html'
 		})
 		.otherwise({ redirectTo: '/error' });
 });
-/*
-app.run(function($rootScope, $location, AuthenticationService, $http) {
-    $rootScope.$on("$routeChangeStart", function(event, nextRoute, currentRoute) {
-        if (nextRoute.access.requiredLogin && !AuthenticationService.isLogged) {
-            $location.path("/admin/login");
-        }
-    });
-});
-*/

@@ -3,6 +3,8 @@ var express = require('express'),
 	http = require('http'),
 	scrypt = require("./lib/scrypt.js"),
 	mailbot = require('./lib/email.js'),
+	tokenGenerator = require('./public/js/createToken.js'),
+	tokenGetter = require('./public/js/getDataFromToken.js'),
 	server = http.createServer(app),
 	databaseUrl = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" +  process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +  process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +  process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +  process.env.OPENSHIFT_APP_NAME,
 	collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders", "invoices"],
@@ -16,11 +18,14 @@ var express = require('express'),
 	ip  = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
 	port    = parseInt(process.env.OPENSHIFT_NODEJS_PORT) || 8000,
 	redisCloud = {
-	  'host' : process.env.REDISCLOUD_URL,
-	  'port' : process.env.REDISCLOUD_PORT,
-	  'password' : process.env.REDISCLOUD_PASSWORD
+	  'host' : process.env.OPENSHIFT_REDIS_HOST,
+	  'port' : process.env.OPENSHIFT_REDIS_PORT,
+	  'password' : process.env.REDIS_PASSWORD
 	},
 	redis = require("redis"),
+	login,
+	run = 0,
+	secret = 'longasshashtobeusedassalt',
 	developement = false;
 
 	if(typeof(redisCloud.host) !== "undefined"){
@@ -29,6 +34,9 @@ var express = require('express'),
 	      redisCloud.host, {
 	        auth_pass: redisCloud.password
 	  });
+	  client.on("error", function (err) {
+		  console.log("Error " + err);
+		});
 	};
  
 	if (typeof ip === "undefined") {
@@ -42,138 +50,90 @@ var express = require('express'),
 	} else{
 		server.listen(port, ip);	
 	};
-
-  app.use(express.static(__dirname + '/public'));
-  app.use(express.static(__dirname + '/content'));
-  app.use(express.static(__dirname + '/bower_components'));
+	app.use(express.static(__dirname + '/public'));
+	app.use(express.static(__dirname + '/content'));
+	app.use(express.static(__dirname + '/bower_components'));
 
   app.get('/', function(req,res) {
     res.sendfile(__dirname + '/index.html');
   });
 
-/* Socket.io Namespaces*/
+/*	Socket.io Namespaces	*/
 /*
-*	Private Communication Chanels
+*	Public Communication Chanels
 */
-/* Project */
-//console.log(process.env);
-var restricted = io.of('/restricted')
-	.authorization(function (handshakeData, callback) {
-		console.dir(handshakeData);
-		if (handshakeData.headers.common.Authorization == null) {
-			console.dir(handshakeData.headers);
-			callback(null, false);
-		}else{
-			handshakeData.levelAuthority = 'client';
-			console.dir(handshakeData.headers);
-			callback(null, true);
-		};
-	})
-	.on('connect_failed', function (reason) {
-    	console.error('unable to connect to namespace', reason);
-  	})
-  	.on('connection', function(socket){
-	  	io.enable('browser client minification');  // send minified client
-	    io.enable('browser client etag');          // apply etag caching logic based on version number
-	    io.enable('browser client gzip');          // gzip the file
-	    io.set('log level', 1);                    // reduce logging
-
-	    io.set('transports', [
-	    	'websocket'
-	    ]);
-  		socket.emit('recieve handshakeData', socket.handshake);
-		socket.on('request login', function() {
-			var data = { 
-				loginpage : true
-			};
-			console.log("Recieved login details on server");
-			restricted.emit('recieve login', data); 
-		});
-		socket.on('request offeringsEdit', function(offering_id) {
-			//bugfix chop to correct length
-			var mongoid = offering_id;
-			var ObjectId = mongojs.ObjectId;
-		  	var data = { 
-				username: tempUsername,
-				password: tempPassword,
-				socketserver: socketconnect
-			};
-
-			db.offerings.findOne({"_id": ObjectId(offering_id)}, function(err, result) {
-
-		    result.offering_id = result._id.toHexString();
-		    
-		    if (result) {
-		      var editbool = 0;
-		      if (result.creator == tempUsername) { editbool = 1}
-		      if (tempUsername == "rouan") {editbool = 1} 
-		      data.offering = result;
-
-		      console.log(result)
-
-		      data.editable = editbool;
-		      restricted.emit('recieve offeringsEdit', data); 
-		    } else {
-		    	restricted.emit('request error'); 
-		    }
-		  });
-		});
-
-		socket.on('request offeringsDelete', function(offering_id) {		  
-			//bugfix chop to correct length
-			var mongoid = offering_id;
-			var ObjectId = mongojs.ObjectId;
-
-		  	db.offerings.findOne({"_id": ObjectId(mongoid)}, function(err, result) {
-		      console.log(result)
-		      
-		      if ((tempUsername == "rouan") || (result.creator == tempUsername)) {
-		        //start del
-		          
-		          db.offerings.remove({"_id": ObjectId(mongoid)}, function(err, result) {
-		              console.log("REMOVED");
-		              restricted.emit('recieve offeringsDelete'); 
-		          });
-		        //end del
-		      }
-		  	});
-		
-		/* END Restricted section*/
-	});
-  console.log('someone connected');
-});
-
-/*
-*Public Communication Chanels
-*/
-  io.sockets.on('connection', function(socket) {
-  	io.enable('browser client minification');  // send minified client
-    io.enable('browser client etag');          // apply etag caching logic based on version number
-    io.enable('browser client gzip');          // gzip the file
-    io.set('log level', 1);                    // reduce logging
-
-    io.set('transports', [
-    	'websocket'
-    ]);
-    socket.emit('recieve handshakeData', socket.handshake);
+var public = io
+  .of('/public')
+  .on('connection', function (socket) {
  /*
  *	Login
  */
- 	socket.on('request login', function(data) {
-		console.log("Recieved login details on server " + data);
+ socket.on('request login', function(newuser) {
+ 	var encrypted = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(newuser.password), 128, 8, 1, 32);
+	var encryptedhex = scrypt.to_hex(encrypted);		
+  	//finds users in the database that have the same username already
+	db.users.find({username: newuser.username}, function(err, users){
+		if ( err || !users) { 
+			console.log("DB error"); 
+			public.emit('request error');
+		} else {
+			console.log(users);
 
-		io.sockets.emit('executecommand', { commandName: 'log' });
-		//io.sockets.emit('recieve login successful', data); 
+			if (users.length == 1) {
+				console.log("DB User Found.");
+				
+				if (users[0].password == encryptedhex) {
+					//match!
+					console.log("User matched");
+					tokenGenerator.createToken(function (error, token) {
+						if (error === null) {
+							var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
+							var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+
+						    client.set(encryptedTokenhex, newuser.username, function(err, reply) {
+						        if (err) {
+						        	console.log('token not sent or stored!'+err);
+						        }else if (reply) {
+						            client.expire(encryptedTokenhex, 86400, function(error, success) {
+						                if (error) {
+						                	console.log('token not sent or ttl set!');
+
+						                }else if (success) {
+						                    console.log('token sent and stored!');
+						                    public.emit('recieve token', token);
+						                }
+						                else {
+						                    console.log(new Error('Expiration not set on redis'));
+						                }
+						            });
+						        }else {
+						            console.log(new Error('Token not set in redis'));
+						        }
+						    });
+						}else{
+							console.log('requested eroor token');
+							public.emit('request error');
+						}
+					});
+				} else {
+					//username exists
+					//password wrong
+					public.emit('request error');
+				}
+
+
+			} else {
+			//ERROR NOT FOUND
+			public.emit('request error');
+			}
+		}
 	});
+});
 /*
 *	Register
 */
 	socket.on('request register user', function(newuser) {
-		console.log(newuser);
-		var minute = 60 * 1000;
-		console.log("new login/register:");
-			console.log("-----");
-		newuser.password = scrypt.crypto_scrypt(scrypt.encode_utf8(newuser.username), scrypt.encode_utf8(newuser.password), 128, 8, 1, 32);
+		newuser.password = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(newuser.password), 128, 8, 1, 32);
     	newuser.password = scrypt.to_hex(newuser.password);
 		//finds users in the database that have the same username already
 		db.users.find({username: newuser.username}, function(err, users) 
@@ -213,8 +173,7 @@ var restricted = io.of('/restricted')
 					  	//SEND EMAIL WHEN THERES A NEW USER
 
 					  	//start email
-					  	if (enableEmail) 
-					  	{
+					  	if (enableEmail) {
 			  				var email = {}
 							email.from = "noreply@launchlabapp.com";
 							email.fromname = "Launch Lab Signups";
@@ -240,22 +199,37 @@ var restricted = io.of('/restricted')
 									console.log("EMAIL SENT");
 								})
 							})
-						} 
+						};
 						// end email
-						var tokenGenerator = require('./public/js/createToken.js');
 						tokenGenerator.createToken(function (error, token) {
 							if (error === null) {
-								console.log(token);
-								var data = {
-									token: token,
-									username: newuser.username
-								};
-								io.sockets.emit('recieve register user successful', data);
+								var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
+								var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+
+							    client.set(encryptedTokenhex, newuser.username, function(err, reply) {
+							        if (err) {
+							        	console.log('token not sent or stored!'+err);
+							        }else if (reply) {
+							            client.expire(encryptedTokenhex, 86400, function(error, success) {
+							                if (error) {
+							                	console.log('token not sent or ttl set!');
+
+							                }else if (success) {
+							                    console.log('token sent and stored!');
+							                    public.emit('recieve register user successful', token);
+							                }
+							                else {
+							                    console.log(new Error('Expiration not set on redis'));
+							                }
+							            });
+							        }else {
+							            console.log(new Error('Token not set in redis'));
+							        }
+							    });
 							}else{
-								io.sockets.emit('request error');
+								console.log('requested eroor token');
+								public.emit('request error');
 							}
-						    // error returns error message if either first or last name are null or undefined   
-						    // result returns "John Doe"
 						});
 					  }
 
@@ -270,124 +244,38 @@ var restricted = io.of('/restricted')
     				
 	    
 	});
+	console.log('new connection on public:8000');
+	socket.on('disconnect', function(){
+		console.log('user disconnected');
+	});
+  });
 /*
-*	Get Responses
+*	Private Communication Chanels
 */
-  	socket.on('request topnav', function() {
-  		var data = {
-	    			username: tempUsername,
-	    			password: tempPassword
-	    		};
-		io.sockets.emit('recieve topnav', data);
-	});
-/*
+var restricted = io
+	.of('/restricted')
+	.on('connection', function (socket) {
+		/*	Restrict communication	*/
+		socket.auth = false;
+		delete restricted.connected[socket.id];
 
+		socket.on('authenticate', function(token){
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+					restricted.connected[socket.id] = socket;
+					restricted.emit('recieve login', userData);
+	        		console.log('new connection on restricted:8000');
+		    	};
+		    });
+		});
 
-##     ##  ######  ######## ########  
-##     ## ##    ## ##       ##     ## 
-##     ## ##       ##       ##     ## 
-##     ##  ######  ######   ########  
-##     ##       ## ##       ##   ##   
-##     ## ##    ## ##       ##    ##  
- #######   ######  ######## ##     ## 
-
-
-*/
-	socket.on('request user', function(userId) {
-		  var ObjectId = mongojs.ObjectId;
-
-		  var data = {username: tempUsername, password: tempPassword}
-		  data.socketserver = socketconnect;
-
-		  db.users.find({"_ids": ObjectId(userId)}, function(err, users) {
-		    if (err) {
-		      //res.status(404);
-		      //res.render('error', data)
-		      //console.log('error event triggered');
-		      io.sockets.emit('request error'); 
-		    } else {
-		      console.log(users)
-		      if (users.length != 1) {
-		        //res.status(404);
-		        //res.render('error', data)
-		        //console.log('error event triggered');
-		        io.sockets.emit('request error'); 
-		      } else {
-		        console.log("FOUND")
-		        data.user = users[0];
-
-		        db.offerings.find({"creator":data.user.username, title: {"$ne": ""}}, function (err, offerings) {
-		          data.offerings = offerings;
-		          io.sockets.emit('recieve user', data);      
-		        })
-
-		        
-		      }
-		      
-		    }
-		    
-		  });
-	});
-
-	socket.on('request username', function(username) {
-		  var data = {
-		  	username: tempUsername,
-		  	password: tempPassword
-		  };
-
-		  //data.socketserver = socketconnect;
-
-		  db.users.find({username: username}, function(err, users) {
-		    if (err) {
-		      //res.status(404);
-		      //res.render('error', data)
-		      console.log('error event triggered');
-		    } else {
-		      console.log(users)
-		      if (users.length != 1) {
-		        next();
-		      } else {
-
-		        console.log("FOUND")
-		        data.user = users[0];
-
-		        //data.avatar = gravatar.url(users[0].email, {s: '100', r: 'pg', d: '404'});
-		        //, title: {"$ne": ""}
-		        db.offerings.find({creator:data.user.username}, function (err, offerings) {
-		          data.offerings = offerings;
-		          io.sockets.emit('recieve username', data);      
-		        })
-
-		        
-		      }
-		      
-		    }
-		    
-		  });
-	});
-
-	socket.on('request logout', function() {
-		var data = { 
-			loginpage : true
-		};
-		io.sockets.emit('recieve logout', data); 
-	});
-
-	socket.on('request profile', function() {
-		var data = { 
-			username: tempUsername,
-			password: tempPassword,
-			email: tempEmail,
-			socketserver: socketconnect,
-			userdb: req.session.db
-		};
-		io.sockets.emit('recieve profile', data); 
-	});
-
-	socket.on('request creatives', function(data) {
-		io.sockets.emit('recieve creatives', data); 
-	});
-
+/**************************************************************************************************************************************/
 /*
 
 
@@ -1045,17 +933,8 @@ tasks 		/work/tasks
 		}); 
 	});
 
-
-/*
-*	Notification responses
-*/
-	socket.on('request error', function() {
-		console.log("NOT FOUND!!!!!%#$$@#");
-		  //res.status(404);
-		  var data = {username: tempUsername, password: tempPassword, socketserver: socketconnect}
-		  data.message = "Could not find what you were looking for?! It might not exist, or your link is broken.";
-		io.sockets.emit('recieve error', data); 
+/**************************************************************************************************************************************/
+		socket.on('disconnect', function(){
+			console.log('user disconnected');
+		});
 	});
-
-    console.log('new connection on 8000');
-  });

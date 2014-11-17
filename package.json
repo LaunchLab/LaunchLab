@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "express": "4.x",
+    "body-parser":"1.9.x",
     "socket.io": "1.2.x",
     "underscore": "1.7.x",
     "bower": "1.2.x",

@@ -10619,6 +10619,10 @@ controllers.profileView = function ($scope, $window, socket) {
 controllers.topNav = function ($scope, $window, socket, handshakeConstant) {
 	$scope.var0 = 0;
 	  var menuUp = false;
+  socket.on('restricted', 'recieve login', function() {
+    console.log('Called recieve login');
+    $scope.var0 = 1;      
+  });
   $(".topnavOptionsMenu").hide();
   $(".topnavOptionsButton").hover( function() {
     $(".topnavOptionsMenu").css("top", "40px");
@@ -10660,42 +10664,27 @@ controllers.AdminUserCtrl = function ($scope, $location, $window, UserService, A
     }
 };
 
-controllers.loginModalWindow = function ($scope, socket, $timeout, $http) {
-  socket.emit('restricted', 'request token');
+controllers.loginModalWindow = function ($scope, socket, $timeout, $http, $location) {
 	$scope.login = {
 		username : '',
 		password : ''
 	};
-  /*
-  var headers;
-	socket.on('public', 'recieve token', function(token) {
-    console.log(token + ' recieve token');
-    headers = { 'Authorization': 'Basic '+ token};
+
+  socket.on('public', 'recieve token', function(token) {
+    socket.emit('restricted', 'authenticate', token);
+    localStorage["token"] = token;
+    $scope.$root.$broadcast('loginModalWindowClose');
+    $location.path('/:' + $scope.login.username);   
   });
 
-  socket.on('public', 'recieve token', function() {
-    socket.auth(token);
-  });
-*/
-socket.on('restricted', 'recieve private', function() {
-    console.log('com pos');
-  });
+
 	$scope.submit = function() {
     // server-side
     $scope.login.password = scrypt.crypto_scrypt(scrypt.encode_utf8($scope.login.username), scrypt.encode_utf8($scope.login.password), 128, 8, 1, 32);
     $scope.login.password = scrypt.to_hex($scope.login.password);
-    
-    $http.post('/login', $scope.login).then(
-	    // success callback
-	    function(response) {
-          $location.path('/:' + $scope.login.username);
-          $scope.$apply();
-	    },
-	    // error callback
-	    function(response) {
-	    	console.debug("error http post");
-	   }
-	);
+    console.log($scope.login);
+    socket.emit('public', 'request login', $scope.login);
+
   };
     
   $scope.forgotReset = function() {
@@ -10723,10 +10712,6 @@ controllers.registerModalWindow = function ($scope, $location, socket, $timeout,
 	$scope.error=false;
 
 	$scope.submit = function() {
-    /*
-    //Add headers with in your request
-    $http.post('http://localhost/api/validate',user, { headers: headers } ).success(function()
-    */
     if ($scope.newuser.password === $scope.newuser.password2) {
         $scope.newuser.password = scrypt.crypto_scrypt(scrypt.encode_utf8($scope.newuser.username), scrypt.encode_utf8($scope.newuser.password), 128, 8, 1, 32);
         $scope.newuser.password = scrypt.to_hex($scope.newuser.password);
@@ -10738,26 +10723,8 @@ controllers.registerModalWindow = function ($scope, $location, socket, $timeout,
 
 	socket.on('public', 'recieve register user successful', function(token) {
     //store the header data in a variable 
-    var headers = { 'Authorization': token };
-    $http.post('/login', $scope.login, { headers: headers } ).
-    success(function(data, status, headers, config) {
-          // this callback will be called asynchronously
-          // when the response is available
-          socket.auth();
-    }).
-    error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-    });
-    /*
-		if(newuser.levelAuthority === 'client'){
-			$location.path('/clients/dashboard');
-			$scope.$apply();
-		}else {
-			$location.path('/:' + newuser.username);
-			$scope.$apply();
-		};
-    */
+    localStorage["token"] = token;
+
 	});
 	socket.on('public', 'recieve register user rejected',function(data) {
 		console.log('rejected'+ data);
