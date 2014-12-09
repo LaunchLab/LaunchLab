@@ -1,1 +1,16 @@
-HTML Here
+<form class="profile" ng-submit="submit()">
+	<figure id="avatar"><img id="avatarOverlay" src="../images/add_button_dark.svg"/><img ng-src="{{ user.avatar }}"/></figure>
+    <h2>{{ user.username }}</h2>
+    <span id="name">Name:</span><input type="text" ng-model="user.name" placeholder="{{ user.name }}" /><br/>
+    <span id="surname" >Surname:</span><input type="text" ng-model="user.surname" placeholder="{{ user.surname }}" /><br />
+    <span id="avatarAddBtn">Avatar:</span>
+    <label id="avatar_drop_zone2" for="avatar_drop2">
+    	<span><img ng-src="../../images/avatar_add_button.svg" /></span>
+    </label>
+    <input id="avatar_drop2" type="file" /><br/>
+    <span id="bio">Bio:</span><textarea ng-model="user.bio" placeholder="{{ user.bio }}"></textarea><br/>
+    <span id="location">Location:</span><input type="text" ng-model="user.location" placeholder="{{ user.location }}" /><br/>
+    <span id="email">Email:</span><input type="email" ng-model="user.email" placeholder="{{ user.email }}" /><br />
+    <span id="website">Website:</span><input type="text" ng-model="user.website" placeholder="{{ user.website }}" /><br/>
+    <input type="submit" value="Submit" class="orangeActionBannerButton" />
+</form>

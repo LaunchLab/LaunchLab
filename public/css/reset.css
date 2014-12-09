@@ -41,24 +41,12 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-/**************** Structural ***************/
 html, body{
-	height: 100%;
 	width: 100%;
 	padding: 0;
 	margin: 0;
 	/*overflow: hidden;*/
 }
-/* CSS RESET DONE */
-#tempControlbox{
-	position: fixed;
-	height: 150px;
-	width: 250px;
-	top: calc(100% - 150px);
-	left: calc(100% - 250px);
-	background-color: white;
-	outline: 5px dashed red;
-}
-.header{
-	height: 71px;
+summary::-webkit-details-marker {
+    display: none;
 }

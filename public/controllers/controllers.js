@@ -10597,93 +10597,101 @@ module.exports = scrypt_module_factory();
 },{"_process":3,"fs":1,"path":2}],5:[function(require,module,exports){
 var scrypt = require("../../lib/scrypt.js");
 var controllers = {};
-
-controllers.profileView = function ($scope, $window, socket) {
-  socket.emit('request profile');
-  socket.on('public', 'recieve profile',function(data) {
-    $scope.message;
-    $scope.user ={
-      username : data.user.username,
-      fullname : data.user.fullname,
-      shortbio : data.user.shortbio,
-      location : data.user.location,
-      email : data.user.email,
-      phonenumber : data.user.phonenumber,
-      website : data.user.website,
+/*
+ _______          _   _             
+|__   __|        | \ | |            
+   | | ___  _ __ |  \| | __ ___   __
+   | |/ _ \| '_ \| . ` |/ _` \ \ / /
+   | | (_) | |_) | |\  | (_| |\ V / 
+   |_|\___/| .__/|_| \_|\__,_| \_/  
+           | |                      
+           |_|                      
+*/
+controllers.topNav = function ($scope, $window, socket, $location, levelAuthorisation) {
+	if (localStorage['token']) {
+		var data = {
+			token : localStorage['token'],
+			redirect : true
+		}
+		socket.emit('restricted', 'authenticate', data);
+	} else{
+		$scope.user = {
+			authed : false,
+			username : '',
+			notifications : 0,
+			avatar : 'default.svg'
+		};
+	};
+	socket.on('restricted', 'recieve avatarSaved',function(fileName) {
+        $scope.user.avatar = fileName;
+  });
+	socket.on('restricted', 'recieve login', function(userData) {
+		$scope.user = {
+			authed : true,
+			username : userData.username,
+			notifications : 0,
+			avatar : userData.avatar
+		};
+		levelAuthorisation.levelAuthority = userData.levelAuthority;
+		$scope.$root.$broadcast('registerModalWindowClose');
+		$scope.$root.$broadcast('loginModalWindowClose');
+    if (userData.redirect) {
+			$location.path('/:' + userData.username); 
+		};     
+	});
+	$scope.loginModalWindow = {
+      html: '<form ng-submit="submit()" ng-controller="loginModalWindow"><span>Username:</span> <br/> <input type="text" ng-model="login.username" placeholder="Username"/> <br/><span>Password:</span> <br/> <input type="password" ng-model="login.password" placeholder="Password"/> <br/> <input type="submit" value="Submit"/> <br/><span ng-click="forgotReset()" class="forgotReset">Forgot / Reset Password</span> <br/><span ng-click="register()" class="register">Need an account? Go register.</span></form>',
+      title:'Login',
+      use : 'loginModalWindow'
     };
-    //$scope.$digest();
-  });
-
-};
-
-controllers.topNav = function ($scope, $window, socket, handshakeConstant) {
-	$scope.var0 = 0;
-	  var menuUp = false;
-  socket.on('restricted', 'recieve login', function() {
-    console.log('Called recieve login');
-    $scope.var0 = 1;      
-  });
-  $(".topnavOptionsMenu").hide();
-  $(".topnavOptionsButton").hover( function() {
-    $(".topnavOptionsMenu").css("top", "40px");
-    $(".topnavOptionsMenu").css("left", $(this).offset().left);
-    $(".topnavOptionsMenu").show();
-  }, function() {
-    $(".topnavOptionsMenu").hide();
-  })
-
-  $(".topnavOptionsMenu").hover( function() {
-    $(".topnavOptionsMenu").show();
-  },function() {
-    $(this).hide();
-  });
+    $scope.settingsModalWindow = {
+      html: '<form ng-submit="submit()" ng-controller="settingsModalWindow"><h2>Notification Preferences</h2></form>',
+      title:'Preferences',
+      use : 'settingsModalWindow'
+    };
+	$scope.logoutEventHandler = function () {
+		socket.emit('restricted', 'request logout', localStorage["token"]);
+	  	$scope.user.authed = false; 
+	  	localStorage.removeItem("token");
+	  	$location.path('/');  
+	};
+  };
+/*
+ _                 _       
+| |               (_)      
+| |     ___   __ _ _ _ __  
+| |    / _ \ / _` | | '_ \ 
+| |___| (_) | (_| | | | | |
+|______\___/ \__, |_|_| |_|
+              __/ |        
+             |___/         
+*/
+controllers.loginModalWindow = function ($scope, socket, $timeout, $http, $location) {
+  $scope.login = {
+    username : '',
+    password : ''
   };
 
-controllers.AdminUserCtrl = function ($scope, $location, $window, UserService, AuthenticationService){
-	//Admin User Controller (login, logout)
-    $scope.logIn = function logIn(username, password) {
-        if (username !== undefined && password !== undefined) {
- 
-            UserService.logIn(username, password).success(function(data) {
-                AuthenticationService.isLogged = true;
-                $window.sessionStorage.token = data.token;
-                $location.path("/admin");
-            }).error(function(status, data) {
-                console.log(status);
-                console.log(data);
-            });
-        }
-    }
- 
-    $scope.logout = function logout() {
-        if (AuthenticationService.isLogged) {
-            AuthenticationService.isLogged = false;
-            delete $window.sessionStorage.token;
-            $location.path("/");
-        }
-    }
-};
-
-controllers.loginModalWindow = function ($scope, socket, $timeout, $http, $location) {
-	$scope.login = {
-		username : '',
-		password : ''
-	};
-
   socket.on('public', 'recieve token', function(token) {
-    socket.emit('restricted', 'authenticate', token);
-    localStorage["token"] = token;
-    $scope.$root.$broadcast('loginModalWindowClose');
-    $location.path('/:' + $scope.login.username);   
+  	var data = {
+			token : token,
+			redirect : true
+		};
+    socket.emit('restricted', 'authenticate', data);
+    localStorage["token"] = token; 
   });
 
 
-	$scope.submit = function() {
+  $scope.submit = function() {
     // server-side
-    $scope.login.password = scrypt.crypto_scrypt(scrypt.encode_utf8($scope.login.username), scrypt.encode_utf8($scope.login.password), 128, 8, 1, 32);
-    $scope.login.password = scrypt.to_hex($scope.login.password);
-    console.log($scope.login);
-    socket.emit('public', 'request login', $scope.login);
+    var data = $scope.login;
+    data.password = scrypt.crypto_scrypt(scrypt.encode_utf8(data.username), scrypt.encode_utf8(data.password), 128, 8, 1, 32);
+    data.password = scrypt.to_hex(data.password);
+    socket.emit('public', 'request login', data);
+    $scope.login = {
+	  username : '',
+	  password : ''
+	};
 
   };
     
@@ -10697,68 +10705,195 @@ controllers.loginModalWindow = function ($scope, socket, $timeout, $http, $locat
     $timeout(function() {$scope.$root.$broadcast('registerModalWindowOpen');}, 300);
   }; 
 };
-
-controllers.registerModalWindow = function ($scope, $location, socket, $timeout, $http) {
-	$scope.newuser= {
+/*
+ _____            _     _            
+|  __ \          (_)   | |           
+| |__) |___  __ _ _ ___| |_ ___ _ __ 
+|  _  // _ \/ _` | / __| __/ _ \ '__|
+| | \ \  __/ (_| | \__ \ ||  __/ |   
+|_|  \_\___|\__, |_|___/\__\___|_|   
+             __/ |                   
+            |___/                    
+*/
+controllers.registerModalWindow = function ($scope, $location, socket, $timeout, $http, levelAuthorisation) {
+	$scope.newuser = {
 		username : '',
-		email : '',
-		password : '',
-		password2 : '',
-		levelAuthority : ''
-	};
+    	email : '',
+    	password : '',
+    	password2 : '',
+    	levelAuthority : ''
+  	};
+  	$scope.$root.$on('updateLevelAuthority', function() {
+  		if(levelAuthorisation.levelAuthority !== ''){
+  			$scope.hideLevelAuthority = true;
+      		$scope.showLevelAuthority = true;
+      		$scope.newuser.levelAuthority = levelAuthorisation.levelAuthority;
+  		}
+    });
 
-	$scope.hideLevelAuthority = false;
-	$scope.showLevelAuthority = false;
-	$scope.error=false;
+  $scope.hideLevelAuthority = false;
+  $scope.showLevelAuthority = false;
+  $scope.error=false;
 
-	$scope.submit = function() {
+  $scope.updateLevelAuthority = function(levelAuthority){
+  	console.log('loa: '+ $scope.newuser.levelAuthority);
+  	levelAuthorisation.levelAuthority = levelAuthority;
+  	$scope.newuser.levelAuthority = levelAuthorisation.levelAuthority;
+  };
+
+  $scope.submit = function() {
     if ($scope.newuser.password === $scope.newuser.password2) {
         $scope.newuser.password = scrypt.crypto_scrypt(scrypt.encode_utf8($scope.newuser.username), scrypt.encode_utf8($scope.newuser.password), 128, 8, 1, 32);
         $scope.newuser.password = scrypt.to_hex($scope.newuser.password);
         $scope.newuser.password2 = "";
-        socket.emit('public', 'request register user', $scope.newuser);
+        socket.emit('public', 'request register user', JSON.stringify($scope.newuser));
         $scope.newuser.password = "";
-    };		
-	}; 
+    };    
+  }; 
 
-	socket.on('public', 'recieve register user successful', function(token) {
+  socket.on('public', 'recieve register user successful', function(token) {
+  	console.log(token);
+  	var data = {
+			token : token,
+			redirect : true
+		};
     //store the header data in a variable 
     localStorage["token"] = token;
+    socket.emit('restricted', 'authenticate', data); 
 
-	});
-	socket.on('public', 'recieve register user rejected',function(data) {
-		console.log('rejected'+ data);
-		$scope.error = data;
-		$scope.$digest();
-	});
+  });
+  socket.on('public', 'recieve register user rejected',function(data) {
+    console.log('rejected'+ data);
+    $scope.error = data;
+  });
     $scope.showLevelAuthorityDiv = function() {
-    	$scope.hideLevelAuthority = true;
-    	$scope.showLevelAuthority = true;
+      $scope.hideLevelAuthority = true;
+      $scope.showLevelAuthority = true;
     };
     $scope.hideLevelAuthorityDiv = function() {
-    	$scope.hideLevelAuthority = false;
-    	$scope.showLevelAuthority = false;
+      $scope.hideLevelAuthority = false;
+      $scope.showLevelAuthority = false;
     };
 };
-
+/*
+ ______                    _   _____                _   
+|  ____|                  | | |  __ \              | |  
+| |__ ___  _ __ __ _  ___ | |_| |__) |___  ___  ___| |_ 
+|  __/ _ \| '__/ _` |/ _ \| __|  _  // _ \/ __|/ _ \ __|
+| | | (_) | | | (_| | (_) | |_| | \ \  __/\__ \  __/ |_ 
+|_|  \___/|_|  \__, |\___/ \__|_|  \_\___||___/\___|\__|
+                __/ |                                   
+               |___/                                    
+*/
 controllers.forgotResetModalWindow = function ($scope, $window, socket, $timeout) {
-	 $scope.login = function() {
-    	$scope.$root.$broadcast('forgotResetModalWindowSwap');
-    	$timeout(function() {$scope.$root.$broadcast('loginModalWindowOpen');}, 300);
+   $scope.login = function() {
+      $scope.$root.$broadcast('forgotResetModalWindowSwap');
+      $timeout(function() {$scope.$root.$broadcast('loginModalWindowOpen');}, 300);
     };
-	$scope.submit = function() {
-    	alert();
+  $scope.submit = function() {
+      alert();
     };
 };
+/*
+ _____           _           _   _   _               
+|  __ \         (_)         | | | \ | |              
+| |__) | __ ___  _  ___  ___| |_|  \| | _____      __
+|  ___/ '__/ _ \| |/ _ \/ __| __| . ` |/ _ \ \ /\ / /
+| |   | | | (_) | |  __/ (__| |_| |\  |  __/\ V  V / 
+|_|   |_|  \___/| |\___|\___|\__|_| \_|\___| \_/\_/  
+               _/ |                                  
+              |__/                                   
+*/
+controllers.projectNewModalWindow = function ($scope, $window, socket) {
 
-controllers.home = function ($scope, $window, socket) {
-	$scope.loginModalWindow = {
-      html: '<form ng-submit="submit()" ng-controller="loginModalWindow"><span>Username:</span> <br/> <input type="text" ng-model="login.username" placeholder="Username"/> <br/><span>Password:</span> <br/> <input type="password" ng-model="login.password" placeholder="Password"/> <br/> <input type="submit" value="Submit"/> <br/><span ng-click="forgotReset()" class="forgotReset">Forgot / Reset Password</span> <br/><span ng-click="register()" class="register">Need an account? Go register.</span></form>',
-      title:'Login',
-      use : 'loginModalWindow'
+};
+/*
+ _____                             _____                 
+|_   _|                           / ____|                
+  | |  _ __ ___   __ _  __ _  ___| |     _ __ ___  _ __  
+  | | | '_ ` _ \ / _` |/ _` |/ _ \ |    | '__/ _ \| '_ \ 
+ _| |_| | | | | | (_| | (_| |  __/ |____| | | (_) | |_) |
+|_____|_| |_| |_|\__,_|\__, |\___|\_____|_|  \___/| .__/ 
+                        __/ |                     | |    
+                       |___/                      |_|    
+*/
+controllers.portfolioCropModalWindow = function ($scope, socket){
+  $scope.myImage = '';
+  $scope.myCroppedImage = '';
+  $scope.title = '';
+  $scope.saveCrop = function (){
+    var data = {
+      token : localStorage['token'],
+      coverImage : $scope.myCroppedImage,
+      title : $scope.title
     };
+    socket.emit('restricted', 'request portfolioUpdate', data);
+  };
+  $scope.$root.$on('crop portfolio', function(event, uploadEvent) {
+    $scope.$root.$broadcast('portfolioCropModalWindowOpen');
+    var file = uploadEvent.dataTransfer.files[0] || uploadEvent.files[0],
+        reader = new FileReader();
+
+    reader.onload = function (event){
+      $scope.$apply(function($scope){
+        $scope.myImage = reader.result;
+        //$scope.myImage = uploadEvent.target.result;
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+};
+controllers.avatarCropModalWindow = function ($scope, socket){
+  $scope.myImage = '';
+  $scope.myCroppedImage = '';
+  $scope.saveCrop = function (){
+    var data = {
+      token : localStorage['token'],
+      avatar : $scope.myCroppedImage
+    };
+    socket.emit('restricted', 'request avatarUpdate', data);
+  };
+  $scope.$root.$on('crop avatar', function(event, uploadEvent) {
+    console.log(uploadEvent);
+    $scope.$root.$broadcast('avatarCropModalWindowOpen');
+    var file = uploadEvent.dataTransfer.files[0] || uploadEvent.files[0],
+        reader = new FileReader();
+
+    reader.onload = function (event){
+      $scope.$apply(function($scope){
+        $scope.myImage = reader.result;
+        //$scope.myImage = uploadEvent.target.result;
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+};
+/*
+  _____      _   _   _                 
+ / ____|    | | | | (_)                
+| (___   ___| |_| |_ _ _ __   __ _ ___ 
+ \___ \ / _ \ __| __| | '_ \ / _` / __|
+ ____) |  __/ |_| |_| | | | | (_| \__ \
+|_____/ \___|\__|\__|_|_| |_|\__, |___/
+                              __/ |    
+                             |___/     
+*/
+controllers.settingsModalWindow = function ($scope, $window, socket) {
+
+};
+/*
+ _                     _ _             _____                 
+| |                   | (_)           |  __ \                
+| |     __ _ _ __   __| |_ _ __   __ _| |__) |_ _  __ _  ___ 
+| |    / _` | '_ \ / _` | | '_ \ / _` |  ___/ _` |/ _` |/ _ \
+| |___| (_| | | | | (_| | | | | | (_| | |  | (_| | (_| |  __/
+|______\__,_|_| |_|\__,_|_|_| |_|\__, |_|   \__,_|\__, |\___|
+                                  __/ |            __/ |     
+                                 |___/            |___/      
+*/
+controllers.landingPage = function ($scope, $window, socket, $interval) {
     $scope.registerModalWindow = {
-      html: '<form class="registerForm" ng-submit="submit()" ng-controller="registerModalWindow"> <div class="animate-hide register-basic" ng-hide="hideLevelAuthority"> <br/> <label for="usernameText">Username</label> <input type="text" ng-model="newuser.username" id="usernameText" placeholder="Username"/> <br/> <label for="emailAddressEmail">Email Address</label> <input type="email" ng-model="newuser.email" id="emailAddressEmail" placeholder="Email Address"/> <br/> <label for="passwordPassword">Password</label> <input type="password" ng-model="newuser.password" id="passwordPassword" placeholder="Password"/> <br/> <label for="passwordPassword2">Password</label> <input type="password" ng-model="newuser.password2" id="passwordPassword2" placeholder="Password"/> <br/> <md-next ng-click="showLevelAuthorityDiv()">Next</md-next></div><div class="register-levelAuthority animate-show" ng-show="showLevelAuthority"> <md-prev ng-click="hideLevelAuthorityDiv()"></md-prev> <br/> <input type="radio" id="clientRadio" ng-model="newuser.levelAuthority" value="client" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="clientRadio"> <div class="levelAuthority-item client-avatar"> <div class="persona-info"> <h3>Client</h3> </div> </div> <p>Do business with us.</p> </label> <input type="radio" id="mentorRadio" ng-model="newuser.levelAuthority" value="mentor" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="mentorRadio"> <div class="levelAuthority-item mentor-avatar"> <div class="persona-info"> <h3>Mentor</h3> </div> </div> <p>Apply to lead teams of creatives on projects.</p> </label> <input type="radio" id="creativeRadio" ng-model="newuser.levelAuthority" value="creative" ng-change="updateLevelAuthority(newuser.levelAuthority)"> <label for="creativeRadio"> <div class="levelAuthority-item creative-avatar"> <div class="persona-info"> <h3>Creative</h3> </div> </div> <p>Take on creative projects.</p> </label> <br/> <input type="submit" value="Submit"/> </div><br/></form>',
+      html: '<form class="registerForm" ng-submit="submit()" ng-controller="registerModalWindow"> <div class="animate-hide register-levelAuthority" ng-hide="hideLevelAuthority"><input type="radio" id="mentorRadio2" ng-model="levelAuthority" value="mentor" ng-change="updateLevelAuthority(levelAuthority)"> <label for="mentorRadio2"> <article class="levelAuthority-item mentor-avatar"> <figure class="persona-info"> <span>Mentor</span> </figure> </article> <figcaption>OWI lecturers join <br/> the team. Assist <br/> creatives with <br/> LaunchLab projects</figcaption> </label> <input type="radio" id="creativeRadio2" ng-model="levelAuthority" value="creative" ng-change="updateLevelAuthority(levelAuthority)"> <label for="creativeRadio2"> <article class="levelAuthority-item creative-avatar"> <figure class="persona-info"> <span>Creative</span> </figure> </article> <figcaption>TOW students join <br/> the team. Create <br/> portfolios and attain<br/> clients</figcaption> </label> <br/> <md-next ng-click="showLevelAuthorityDiv()">Next</md-next> </div><div class="register-basic animate-show" ng-show="showLevelAuthority"> <md-prev ng-click="hideLevelAuthorityDiv()"></md-prev> <br/> <label for="usernameText">Username</label> <input type="text" ng-model="newuser.username" id="usernameText" placeholder="Username"/> <br/> <label for="emailAddressEmail">Email Address</label> <input type="email" ng-model="newuser.email" id="emailAddressEmail" placeholder="Email Address"/> <br/> <label for="passwordPassword">Password</label> <input type="password" ng-model="newuser.password" id="passwordPassword" placeholder="Password"/> <br/> <label for="passwordPassword2">Password</label> <input type="password" ng-model="newuser.password2" id="passwordPassword2" placeholder="Password"/> <br/> <input type="submit" value="Submit"/> </div><br/></form>',
       title:'Register',
       use : 'registerModalWindow'
     };
@@ -10767,247 +10902,81 @@ controllers.home = function ($scope, $window, socket) {
       title:'Reset your password',
       use : 'forgotResetModalWindow'
     };
-
+    $scope.projectNewModalWindow = {
+      html: '<form ng-submit="submit()" ng-controller="projectNewModalWindow"><fieldset><legend>Start a project</legend> <label for="title">Title</label> <br/> <input ng-model="project.title" id="title" type="text" name="title" placeholder="Project name"/> <br/> <br/> <input type="file" id="siofu_input"/> <br/> <br/> <label for="description">Description</label> <br/> <textarea ng-model="project.description" id="description" name="description" rows="15" placeholder="Project description"></textarea> <br/> <br/> <input type="submit" value="Submit"/> </fieldset></form>',
+      title:'Start a project',
+      use : 'projectNewModalWindow'
+    };
+/*
+ ____                              
+|  _ \                             
+| |_) | __ _ _ __  _ __   ___ _ __ 
+|  _ < / _` | '_ \| '_ \ / _ \ '__|
+| |_) | (_| | | | | | | |  __/ |   
+|____/ \__,_|_| |_|_| |_|\___|_|   
+*/
+	$scope.images = [{
+	    source: "../images/banner/banner_0.jpg",
+	    title: "Project Title 0"
+	}, {
+	    source: "../images/banner/banner_1.jpg",
+	    title: "Project Title 1"
+	}, {
+	    source: "../images/banner/banner_2.jpg",
+	    title: "Project Title 2"
+	}];
+	$scope.image = getRandomImage();
+	$interval(function() {$scope.image = getRandomImage()}, 15000);
+	$scope.tour = function(index) {
+	    alert("Do scroll tour of content on home page!");
+	};
+	function getRandomImage() {
+	    var imageCount = $scope.images.length;
+	    var index = Math.floor(
+	        (Math.random() * imageCount * 2) % imageCount
+	    );
+	    return ($scope.images[index]);
+	}
+/*
+ _______        _   _                       _       _     
+|__   __|      | | (_)                     (_)     | |    
+   | | ___  ___| |_ _ _ __ ___   ___  _ __  _  __ _| |___ 
+   | |/ _ \/ __| __| | '_ ` _ \ / _ \| '_ \| |/ _` | / __|
+   | |  __/\__ \ |_| | | | | | | (_) | | | | | (_| | \__ \
+   |_|\___||___/\__|_|_| |_| |_|\___/|_| |_|_|\__,_|_|___/
+*/
+	
 };
 /*
-
-
-########  ########   #######        ## ########  ######  ######## 
-##     ## ##     ## ##     ##       ## ##       ##    ##    ##    
-##     ## ##     ## ##     ##       ## ##       ##          ##    
-########  ########  ##     ##       ## ######   ##          ##    
-##        ##   ##   ##     ## ##    ## ##       ##          ##    
-##        ##    ##  ##     ## ##    ## ##       ##    ##    ##    
-##        ##     ##  #######   ######  ########  ######     ##    
-
+ _____            __ _ _      
+|  __ \          / _(_) |     
+| |__) | __ ___ | |_ _| | ___ 
+|  ___/ '__/ _ \|  _| | |/ _ \
+| |   | | | (_) | | | | |  __/
+|_|   |_|  \___/|_| |_|_|\___|
 */
-controllers.projectView = function ($scope, $window, socket) { //bugfix
-  socket.emit('public', 'request project');
-  socket.on('public', 'recieve project',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
-
+controllers.profile = function ($scope, $window, socket) {
+	$scope.portfolioCropModalWindow = {
+    html: '<section ng-controller="portfolioCropModalWindow"><input class="title" placeholder="Project Title" type="text" ng-model="title" /><figure class="project"><img ng-src="{{myCroppedImage}}"/></figure><div class="cropArea"> <img-crop image="myImage" area-min-size="200" result-image-size="300" area-type="square" result-image="myCroppedImage"></img-crop> </div><input type="button" id="saveCrop" ng-click="saveCrop()" class="orangeActionButton" value="Crop" /></section>',
+    title:"Finalise your project\'s cover image",
+    use : 'portfolioCropModalWindow'
+  };
+  $scope.avatarCropModalWindow = {
+    html: '<section ng-controller="avatarCropModalWindow"><figure class="avatar"><img ng-src="{{myCroppedImage}}"/></figure><div class="cropArea"> <img-crop image="myImage" result-image="myCroppedImage"></img-crop> </div><input type="button" id="saveCrop" ng-click="saveCrop()" class="orangeActionButton" value="Crop" /></section>',
+    title:'Finalise your avatar',
+    use : 'avatarCropModalWindow'
+  };
 };
 /*
- #######  ######## ######## ######## ########   ######  
-##     ## ##       ##       ##       ##     ## ##    ## 
-##     ## ##       ##       ##       ##     ## ##       
-##     ## ######   ######   ######   ########   ######  
-##     ## ##       ##       ##       ##   ##         ## 
-##     ## ##       ##       ##       ##    ##  ##    ## 
- #######  ##       ##       ######## ##     ##  ######  
+ _____           _           _       
+|  __ \         (_)         | |      
+| |__) | __ ___  _  ___  ___| |_ ___ 
+|  ___/ '__/ _ \| |/ _ \/ __| __/ __|
+| |   | | | (_) | |  __/ (__| |_\__ \
+|_|   |_|  \___/| |\___|\___|\__|___/
+               _/ |                  
+              |__/                   
 */
-controllers.offeringsView = function ($scope, $window, socket, $routeParams) {
-  socket.emit('public', 'request offeringsView', $routeParams.id);
-  socket.on('public', 'recieve offeringsView',function(data) {
-    $scope.image;
-    console.log(data);
-    $scope.offering = data.offering;
-    $scope.$digest();
-  });
-};
-
-controllers.offeringsNew = function ($scope, $window, socket) {
-  socket.emit('public', 'request offeringsNew');
-  socket.on('public', 'recieve offeringsNew',function(data) {
-    $window.location = $window.location.href + "/offerings/edit/" + data;//this should redirect to the new blank offering once we have a database entry
-    //$scope.$digest();
-  });
-};
-
-controllers.offeringsEdit = function ($scope, $window, socket, $routeParams) {
-  socket.emit('public', 'request offeringsEdit', $routeParams.id);
-  socket.on('public', 'recieve offeringsEdit', function(data) {
-    $scope.image;
-    $scope.offerings = {
-      _id : data.offerings.id,
-      title : data.offerings.title,
-      description : data.offerings.description,
-      creator : data.offerings.creator,
-      samplefiles : data.offerings.samplefiles,
-      offering_id : data.offering_id,
-      descriptionmarked : data.descriptionmarked
-    };
-
-    //$scope.$digest();
-    //
-     /*
-     * expose the event object to the scope
-     */
-    $scope.delImageEventHandler = function(clickEvent) {
-      socket.emit('public', 'request offering imageDelete', clickEvent.target.data('imagename'));
-    };
-    $scope.offeringEditEventHandler = function(offering_id) {
-      socket.emit('public', 'request offering edit form', offering_id);
-    };
-    $scope.offeringImageUploadEventHandler = function(offering_id) {
-      socket.emit('request offering imageUpload', offering_id);
-    };
-    //
-    socket.on('public', 'recieve offering imageDelete',function() {
-      //$scope.$digest();
-    });
-    socket.on('public', 'recieve offering edit form',function(data) {
-      $scope.loginpage = data.loginpage;
-      //$scope.$digest();
-    });
-    socket.on('public', 'recieve offering imageUpload',function(offering_id) {
-      $location.path('/offerings/view/' + offering_id );
-    });
-    //
-    $(".delimage").hover( function () {
-        $(this).css("background", "rgb(225, 76, 7)");
-        $(this).css("cursor", "pointer")
-      },function () {
-        $(this).css("color", "rgb(255,255,255)")
-        $(this).css("background", "#fff")
-    });
-  var sizeblock = function () {
-    console.log( )
-    var h = parseInt($(".uploadimgblock").css("height"))
-    if (h < 10) {
-      $(".uploadimgblock").css("height", $(".uploadimgblock").css("width"))
-      $(".uploadimgblock").css("background", "rgb(240,240,240)");
-      $(".uploadimgblock").css("border", "2px #ccc dashed");
-    }
-  }();
-    //end
-  });
-
-};
-
-controllers.offeringsConfirm = function ($scope, $window, socket, $routeParams) {
-  socket.emit('public', 'request offeringsConfirm', $routeParams.id);
-  socket.on('public', 'recieve offeringsConfirm',function() {
-    $location.path('/projects');
-  });
-
-};
-
-controllers.offeringsDelete = function ($scope, $window, socket) {
-  socket.emit('public', 'request offeringsDelete');
-  socket.on('public', 'recieve offeringsDelete',function(offering_id) {
-    $location.path('/projects');
-  });
-};
-
-controllers.talk = function ($scope, $window, socket) {
-  socket.emit('public', 'request talk');
-  socket.on('public', 'recieve talk',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.user = {
-      username : '{{ username }}',
-      password : '{{ password }}'
-    };
-    socket.on('public', 'connect', function() {
-       // Connected, let's authenticate over sockets.
-       console.log("AUTH")
-       socket.emit('public', 'authenticate', {username: user.username, password: user.password });
-    });
-
-    socket.on('public', 'message', function (data) {
-      //BUILDS THE HTML WHEN A MESSAGE IS CREATED/RECIEVED. THIS CAN BE FROM OTHERS, OR WHAT WE SENT OURSELVES.
-      console.log(data)
-      var htmlperson = 
-      '<div class="person">'
-        +'<img src="/images/avatar_1.png" class="avatarimg">'
-        
-        +'<div class="persondata">'
-          +'<div class="personname">'+data.message.username+'</div>'
-          +'<div class="persontitle">title <span class="persontask">task</span> </div>'
-          +'<div class="persononline">online</div>'
-        +'</div>'
-      +'</div>';
-
-      var left = '';
-      var right = '';
-      var side = '';
-      if (data.message.username == user.username) {
-        //We sent this so left align
-        left = htmlperson;
-        side = 'message_l';
-      } else {
-        //Someone sent this to us, so right align.
-        right = htmlperson;
-        side = 'message_r';
-      }
-      
-
-      var htmlmessage = 
-       '<div class="pure-g-r">'
-        +'<div class="pure-u-1-3">'+left+'</div>'
-        
-        +'<div class="pure-u-1-3">'
-          +'<div class="message '+side+'">'
-            +'<div class="messagetext">'+data.message.text+'</div>'
-            +'<div class="timeago"><abbr class="timeago" title="'+data.message.timestamp+'">'+data.message.timeformatted+'</abbr></div>'
-          +'</div>'
-        +'</div>'
-
-        +'<div class="pure-u-1-3">'+right+'</div>'
-      +'</div>'
-      
-      //APPENDS INTO THE DOM
-      $("#talkstream").append(htmlmessage)
-      $("abbr.timeago").timeago();
-    });
-
-    $("#roomconnect").click( function() {
-      user.roomname = $("#roomname").val();
-      console.log("Connecting to room " + user.roomname )
-      socket.emit('public', 'room', {room:user.roomname});
-    });
-
-    $("#chatsend").click( function(data) {
-      data.preventDefault();
-      console.log("Sending "+ $("#chatmessage").val() +" to "+ $("#roomname").val() )
-      var messagetextinput = $("#chatmessage").val();
-      socket.emit('public', 'message', {messagetext: messagetextinput} );
-    })
-
-    $scope.$digest();
-  });
-
-};
-
-controllers.workView = function ($scope, $window, socket) {
-  socket.emit('public', 'request work');
-  socket.on('public', 'recieve work',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
-
-};
-
-controllers.workInvoicesView = function ($scope, $window, socket) {
-  socket.emit('public', 'request workInvoices');
-  socket.on('public', 'recieve workInvoices',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
-
-};
-
-controllers.workInvoicesNew = function ($scope, $window, socket) {
-  socket.emit('public', 'request workInvoicesNew');
-  socket.on('public', 'recieve workInvoicesNew',function(data) {
-    $window.location = "/work/invoices/edit/"+data; //takes us to the new blank invoice
-    //$scope.$digest();
-  });
-
-};
-
-controllers.workInvoicesEdit = function ($scope, $window, socket) {
-  socket.emit('public', 'request workInvoicesEdit');
-  socket.on('public', 'recieve workInvoicesEdit',function(data) {
-    $scope.loginpage = data.loginpage;
-    $scope.$digest();
-  });
-
-};
-
-
 controllers.adminDashboard = function ($scope, $window, socket) {
 
 };
@@ -11022,7 +10991,6 @@ controllers.error = function ($scope, $window, socket) {
   socket.emit('public', 'request error');
   socket.on('public', 'recieve error',function(data) {
     $scope.loginpage = data.loginpage;
-    $scope.$digest();
   });
 };
 

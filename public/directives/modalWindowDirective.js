@@ -17,7 +17,7 @@ app.directive("modalWindow", function($compile, $timeout, $location) {
     		$('.md-overlay').css('display', 'none');
     		$('.md-overlay').css('opacity', '0');
     	});
-    	scope.$root.$on(scope.use+'Open', function() {
+    	scope.$root.$on(scope.use+'Open', function(data) {
 		    elements.find('modalWindow').prevObject[0].classList.add("md-show");
     		$('.md-overlay').css('display', 'initial');
     		$('.md-overlay').css('opacity', '1');

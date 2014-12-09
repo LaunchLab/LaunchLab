@@ -1,0 +1,41 @@
+<modal-window bind-compiled-html="registerModalWindow.html" bind-title="registerModalWindow.title" use="registerModalWindow.use"></modal-window>
+<modal-window bind-compiled-html="forgotResetModalWindow.html" bind-title="forgotResetModalWindow.title" use="forgotResetModalWindow.use"></modal-window>
+<modal-window bind-compiled-html="projectNewModalWindow.html" bind-title="projectNewModalWindow.title" use="projectNewModalWindow.use"></modal-window>
+
+<banner>
+	<div id="overlay">
+		<img ng-src="../images/banner/banner_overlay.png" title="" />
+		<h2><span class="orangeHighlight">LaunchLab</span> is a Creative Solutions Provider </h2>
+		<p>
+			LaunchLab is an online portfolio community of Open Window students and Alumni that have creative services to offer.
+			Use LaunchLab as a creative management system to easily track project progress and facilitate creative collaborations.
+		</p>
+		<input type="button" id="tour" ng-click="tour()" class="orangeActionButton" value="Take a tour" />
+	</div>
+	<img source="{{ image.source }}" title="{{ image.title }}" class="image" />
+</banner>
+<section class="services">
+	<h2>What we do</h2>
+	<article id="identity">
+		<figure></figure>
+		<figcaption>Identity Design</figcaption>
+		<span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eu</span>
+	</article>
+	<article id="interactive">
+		<figure></figure>
+		<figcaption>Web/App Design</figcaption>
+		<span>Pellentesque habitant morbi tristique senectus et netus et malesuada.</span>
+	</article>
+	<article id="print">
+		<figure></figure>
+		<figcaption>Print/Advertising</figcaption>
+		<span>Sed vestibulum mi quis est lacinia tempor. Praesent vitae commodo tellus. Cras eu est sem. </span>
+	</article>
+	<article id="photoFilm">
+		<figure></figure>
+		<figcaption>Photo/Film</figcaption>
+		<span>Donec tempus lacinia purut tincidunt. Nunc vel feugiat leo.</span>
+	</article>
+</section>
+<process></process>
+<testimonial data="testimonials"></testimonial>

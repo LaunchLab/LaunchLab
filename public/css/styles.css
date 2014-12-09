@@ -1,13 +1,63 @@
 /*
-* Reset
+* Fonts
 */
-
+@font-face {
+  font-family: 'Gotham-Bold';
+  src: url("../fonts/gotham/Gotham-Bold.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham-Book-Italic';
+  src: url("../fonts/gotham/Gotham-BookItalic.otf") format("opentype");
+  font-weight: normal;
+}
 /*
 * Structural
 *******************************************************/
+html{
+  background: url("../images/background_image_2.svg") 100% 100% repeat,
+              url("../images/background_image_1.png") 100% 100% repeat,
+              url("../images/background_image_0.jpg") 100% 100% repeat;
+}
 button, input, select, textarea {
-    padding: 7px;
+    padding: 12px;
+    border: none;
     margin-bottom: 40px;
+    background-color: rgba(50,50,50,0.5);
+}
+input[disabled=disabled]{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.orangeActionButton{
+  padding: 15px;
+  height: 51px;
+  background-color: #d35a31;
+  border: 0px;
+  width: auto;
+  border-bottom: 4px solid #934a30;
+  color: #FFF;
+  font-size: large;
+  line-height: 0.3;
+  font-family: Gotham-Bold, sans-serif;
+  cursor: pointer;
+}
+.orangeActionBannerButton{
+  padding: 15px;
+  height: 51px;
+  background-color: #d35a31;
+  border: 0px;
+  width: 100%;
+  border-bottom: 4px solid #934a30;
+  color: #FFF;
+  font-size: large;
+  line-height: 0.3;
+  font-family: Gotham-Bold, sans-serif;
+  cursor: pointer;
+}
+.orangeHighlight{
+  color: #d25a31;
 }
 input[type=submit] {
     background-color: #e14c07;
@@ -51,13 +101,189 @@ div.galleryFilters ul li input[type=radio] {
   width:60px;
 }
 /*
-* Individual Components CSS
+* Common Components CSS
 *******************************************************/
+/*
+* Top Nav
+*/
+section#topNav{
+  background-color: rgba(0,0,0,0.2);
+  max-width: 1200px;
+  padding: 0px calc(50% - 600px);
+  height: 120px;
+}
+section#topNav #login{
+  float: right;
+  margin:30px 60px 0px 0px;
+}
+section#topNav #notifications{
+  width: 3%;
+  float: right;
+  background-image: url('../images/notification_icon.svg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 3%;
+  margin: 2% 1%;
+}
+section#topNav #notifications span{
+  display:block;
+  color: #FFF;
+  font-family: Gotham-Bold;
+  font-size: smaller;
+  position: relative;
+  left: 37%;
+  top: 1em;
+}
+section#topNav a figure#avatar{
+  float: right;
+  margin: 21px 60px 0px 0px;
+  display: block;
+  width: 6%;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #EF5A28;
+}
+section#topNav a figure#avatar img{
+  width: calc(100% + 2px);
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  margin: -3px;
+}
+section#topNav #username{
+  float: right;
+  margin:46px 60px 0px 0px;
+  display: block;
+  font-family: Gotham-Bold;
+  font-size: medium;
+  text-align: center;
+  color: #FFF;
+}
+section#topNav #settings{
+  float: right;
+  margin:35px 60px 0px 0px;
+  background: none;
+}
+section#topNav #logout{
+  float: right;
+  margin:30px 60px 0px 0px;
+}
+section#topNav #logo{
+  float: left;
+  margin: 25px 0px 0px 80px;
+  height: 60px;
+  width: 265px;
+}
+/*
+* Footer
+*/
+footer{
+  display: block;
+  width: 100%;
+  padding: 60px 0px 80px 0px;
+  clear: both;
+
+}
+footer ul{
+  display: block;
+  width: 80%;
+  padding: 0px 10% 1%; 
+}
+footer ul li{
+  float: left;
+  position: relative;
+  width: 11%;
+  margin: 0px 0.5% 0px 0.5%;
+  font-size: large;
+  font-family: Gotham-Bold, sans-serif;
+  font-weight: bold;
+  color: #6a6a6a;
+  text-align: center;
+}
+footer ul li:first-child{
+  margin: 0px 0.5% 0px 20.5%;
+}
+footer ul li:last-child{
+  margin: 0px 20.5% 0px 0.5%;
+}
+/*
+* Banner
+*/
+banner {
+  display: block;
+}
+banner img {
+  opacity: 0;
+  height: auto;
+  width: 100%;
+  transition: opacity 1s ease-out 1s;
+}
+banner #overlay{
+  display: inline-block;
+  margin: auto;
+  height: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+}
+banner #overlay img{
+  opacity: 0.89 !important;
+}
+banner #overlay h2{
+  font-size: xx-large;
+  font-family: Gotham-Bold;
+  z-index: 4;
+  position: absolute;
+  top: 33%;
+  margin: 0% 25%;
+  text-align: center;
+  width: 50%;
+  color: white;
+}
+banner #overlay p{
+  position: absolute;
+  font-family: Gotham-Bold;
+  font-size: medium;
+  z-index: 4;
+  top: 55%;
+  width: 70%;
+  text-align: center;
+  margin: 0% 15%;
+  color: white;
+  line-height: 23px;
+}
+banner #overlay #tour{
+  position: absolute;
+  margin: 0px 44%;
+  z-index: 4;
+  top: 76%;
+  left: 0px;
+  width: 12%;
+}
+banner img.fader {
+    height: auto;
+    position: absolute;
+    width: 100%;
+    top: 120px;
+    left: 0px;
+}
+banner img.show {
+  opacity: 1 !important;
+  z-index: 2;
+}
 /*
 * Register Modal Window
 */
 modalwindow[use*="register"] div.md-content md-title{
 	text-align:center!important;
+}
+/*
+* Register Modal Window
+*/
+modalwindow[use*="register"] div.md-content md-title{
+  text-align:center!important;
 }
 form.registerForm label {
     position: absolute;
@@ -70,105 +296,110 @@ form.registerForm label[for*="Radio"] {
 }
 
 form.registerForm input[type=radio] {
-	display: none;
-	width:60px;
+  display: none;
+  width:60px;
 }
 form.registerForm .register-levelAuthority{
-	height: 335px;
-	width: 335px;
-	position: relative;
+  height: 600px;
+  width: 600px;
+  position: relative;
+  margin: 0px auto -250px;
 }
 form.registerForm label[for*="Radio"]{
-	text-align: center;
-	height: inherit;
-	width: 33.3333%;
-	position: absolute;
-	transition: all 0.3s ease 0.2s;
+  text-align: center;
+  height: inherit;
+  width: 33.3333%;
+  position: absolute;
+  transition: all 0.3s ease 0.2s;
 }
 
-form.registerForm div.levelAuthority-item {
-    width: 69%;
-    height: 23%;
-    margin: 0px 15.5%;
-    border-radius: 50%;
-    position: relative;
-    cursor: default;
-    vertical-align: middle;
-    background-color: #EF5A28;
-    transition: all 0.3s ease 0s;
-    background-size: contain;
-    background-position: center center;
-    background-repeat: no-repeat;
+form.registerForm article.levelAuthority-item {
+  width: 69%;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  background-color: #EF5A28;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  margin: 0px 15.5%;
+  height: 23%;
+  transition: all 0.3s ease 0s;
 }
-form.registerForm input[type=radio]:checked + label[for*="Radio"] div.levelAuthority-item div.persona-info h3 {
-	padding: 83px 0px 0px;
-	font-weight: bold;
-	letter-spacing: 1px;
+form.registerForm input[type=radio]:checked + label[for*="Radio"] article.levelAuthority-item figure.persona-info span {
+  display: block;
+  font-family: Gotham-Bold, sans-serif;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 112% 0px;
 }
 
-form.registerForm input[type=radio]:checked + label[for*="Radio"] div.levelAuthority-item{
-	width: 84%;
-	height: 28%;
-	margin: 0px 8%;
+form.registerForm #passwordPassword2 {
+  display: block;
+  margin-bottom: 20px;
+}
+
+form.registerForm input[type=radio]:checked + label[for*="Radio"] article.levelAuthority-item{
+  margin: 0px 8%;
+  height: 28%;
+  width: 84%;
 }
 
 form.registerForm input[type=radio]:checked + label {
-    margin-top: -25px;
+  /*margin-top: -30px;*/
 }
-form.registerForm label[for=mentorRadio] {
-	left:33%;
+form.registerForm label[for=mentorRadio2] {
+  left:8.5%;
 }
 
-form.registerForm label[for=creativeRadio] {
-	left:66%;
+form.registerForm label[for=creativeRadio2] {
+  left:58.5%;
 }
 form.registerForm .client-avatar {
-    background-image: url("../images/client_avatar.png");
+    background-image: url("../images/client_avatar.svg");
 }
  
 form.registerForm .mentor-avatar {
-    background-image: url("../images/mentor_avatar.png");
+    background-image: url("../images/mentor_avatar.svg");
 }
  
 form.registerForm .creative-avatar {
-    background-image: url("../images/creative_avatar.png");
+    background-image: url("../images/creative_avatar.svg");
 }
 
 form.registerForm .persona-info {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    -webkit-transition: all 0.3s;
-  	-moz-transition: all 0.3s;
-  	transition: all 0.3s;
-    backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  backface-visibility: hidden;
+  display: block;
+  border-radius: 50%;
+  height: 100%;
+  transform: scale(0.9);
 }
 
-form.registerForm .persona-info h3 {
-    color: #fff;
-    text-transform: uppercase;
-    position: relative;
-    font-size: medium;
-    padding: 80px 0 0 0;
-    height: 110px;
-    font-family: 'Open Sans', Arial, sans-serif;
-    text-shadow:
-        0 0 1px #fff,
-        0 1px 2px rgba(0,0,0,0.3);
+form.registerForm .persona-info span {
+  display: block;
+  color: #FFF;
+  text-transform: uppercase;
+  font-size: medium;
+  text-shadow: 0px 0px 1px #FFF, 0px 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  display: block;
+  padding-top: 114%;
+  transition: padding 0.3s linear 0.1s;
+  font-family: Gotham-Book, sans-serif;
 }
  
-form.registerForm label p {
-	opacity: 0;
-	color: #FFF;
-	padding: 10px 5px;
-	font-style: italic;
-	margin: 30px auto;
-	font-size: 12px;
-	border-top: 1px solid rgba(255, 255, 255, 0.5);
-	-webkit-transition: all 0.3s;
-  	-moz-transition: all 0.3s;
-	transition: all 0.3s;
+form.registerForm label figcaption {
+  color: #FFF;
+  font-size: 12px;
+  padding: 10px 5px;
+  margin: 39px auto;
+  transition: all 0.3s ease 0.2s;
+  font-family: Gotham-Book-Italic,sans-serif;
+  font-size: small;
+  line-height: 18px;
 }
 
 form.registerForm input[type=radio]:checked + label .levelAuthority-item {
@@ -176,518 +407,37 @@ form.registerForm input[type=radio]:checked + label .levelAuthority-item {
         inset 0 0 0 3px rgba(255,255,255,0.8),
         0 1px 2px rgba(0,0,0,0.1);
 }
-/*
-.registerForm label:not(label:hover) .levelAuthority-item {
-    box-shadow:
-        inset 0 0 0 5px rgba(255,255,255,0.8),
-        0 1px 2px rgba(0,0,0,0.1);
-}
-*/
 form.registerForm input[type=radio]:checked + label .levelAuthority-item .persona-info {
     opacity: 1;
     transform: scale(1);   
 }
-form.registerForm input[type=radio]:checked + label p {
-    opacity: 1;
-    transform: scale(1);   
+form.registerForm input[type=radio]:checked + label figcaption {
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  transform: scale(1);
+  opacity: 1;
+  margin: 42px auto;
+  font-size: medium; 
 }
 form.registerForm input[type=submit] {
     position: absolute;
     width: 150px;
-    top: calc(100% - 65px);
+    top: calc(100% - 100px);
     left: calc(50% - 75px);
 }
-
-/*
-* Top Nav
-*/
-/* LOGIN BUTTON */
-
-.topnavLogin {
-  float:right;
-  height: 40px; 
-  background-color: rgb(225,76,7);
-}
-
-.topnavLoginButton:hover {
-  background: rgb(60,60,60);
-  cursor: pointer;
-}
-
-.topnavLoginButton {
-  height: 40px;
-  font-size: 1.0em;
-  font-weight: 700;
-  color: #fff;
-  padding: 7px;
-  padding-left: 1em;  
-  padding-right: 1em; 
-  border-left: 1px solid rgb(41,41,41);
-}
-
-/* */
-/* REGISTER BUTTON */
-
-.topnavRegister {
-  float:right;
-  height: 40px; 
-}
-
-.topnavRegisterButton:hover {
-  background: rgb(60,60,60);
-  cursor: pointer;
-}
-
-.topnavRegisterButton {
-  height: 40px;
-  font-size: 1.0em;
-  font-weight: 700;
-  color: #fff;
-  padding: 7px;
-  padding-left: 1em;  
-  padding-right: 1em; 
-  border-left: 1px solid rgb(41,41,41);
-}
-
-/* */
-
-.topnavOptionsMenu{
-  z-index: 16;
-  position: fixed;
-  background: rgb(32,31,32);
-  top:0;
-  padding: 0.5em;
-}
-
-/* TOP NAVIGATION BAR */
-.spotcolour {
-  color: rgb(225,76,7);
-}
-
-.topnav { 
-  position: fixed;
-  height: 40px;
-  background: rgb(41,41,41);
-  width: 100%;
-  top:0;
-  z-index: 5;
-  opacity: 0.98;
-}
-
-/* TOP NAVIGATION AVATAR AND USERNAME BUTTON */
-
-.topnavProfile {
-  background: rgb(32,32,32);
-  height: 40px;
-}
-
-.topnavProfilePicture {
-  background: #666;
-  width: 40px;
-  height: 40px;
-  float:left;
-}
-
-.topnavProfileName {
-  float:left;
-}
-
-.topnavProfileNameButton {
-  text-transform: uppercase;
-  float:left;
-  height: 40px;
-  padding: 7px;
-  padding-left: 1em;
-  padding-right: 1em;
-  font-weight: 700;
-  color: rgb(255,255,255);
-  font-size: 0.7em;
-}
-
-.topnavProfileName a:hover div {
-  background: rgb(60,60,60);
-}
-
-div.topnavProfileNameButton {
-  border-right: 1px solid rgb(41,41,41);
-}
-
-/* TOP NAVIGATION OPTIONS GEAR BUTTON */
-
-.topnavOptions {
-  float:left;
-  height: 40px;
-  width: 40px;  
-}
-
-.topnavOptionsButton:hover {
-  background: rgb(60,60,60);
-  cursor: pointer;
-}
-
-.topnavOptionsButton {
-  height: 40px;
-  width: 40px;
-  font-size: 1.2em;
-  color: #fff;
-  padding: 7px;
-  padding-left: 11px;  
-  border-right: 1px solid rgb(41,41,41);
-}
-
-/* TOP NAVIGATION MESSAGE ENVELOPE BUTTON */
-
-.topnavMessages {
-  float:left;
-  height: 40px; 
-}
-
-.topnavMessagesButton:hover {
-  background: rgb(60,60,60);
-  cursor: pointer;
-}
-
-.topnavMessagesButton {
-  height: 40px;
-  font-size: 1.0em;
-  font-weight: 700;  
-  color: #fff;
-  padding: 7px;
-  padding-left: 11px;  
-  border-right: 1px solid rgb(41,41,41);
-}
-
-/* TOP NAVIGATION SHOPPING CART */
-
-.topnavCart {
-  float:right;
-  height: 40px; 
-}
-
-.topnavCartButton:hover {
-  background: rgb(60,60,60);
-  cursor: pointer;
-}
-
-.topnavCartButton {
-  height: 40px;
-  font-size: 1.0em;
-  font-weight: 700;
-  color: #fff;
-  padding: 7px;
-  padding-left: 1em;  
-  padding-right: 1em; 
-  border-left: 1px solid rgb(41,41,41);
-}
-
-.carticon {
-  font-size: 1.0em;
-  font-weight: 700;
-}
-
-
-
-@media (max-width: 1200px) {
-  .topnavProfile { 
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .topnavProfile { 
-    margin-left: 152px;
-    margin-right: 152px;
-  }
-}
-/*
-* Top Branding
-*/
-
-
-.topbranding {
-  margin-top: 60px;
-  margin-bottom: 20px;
-}
-
-.logobranding {
-  opacity: 0.95;
-}
-
-.logobranding:hover {
-  opacity: 1.0;
-}
-
-.topbrandingLogo { margin-left: 20px;}
-
-@media (max-width: 1200px) {
-  .topbrandingWrap { 
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .topbrandingWrap { 
-    margin-left: 152px;
-    margin-right: 152px;
-  }
-}
-/*
-* Banner
-*/
-.right {
-  right: 0;
-}
-
-.bannerNav {
-  background: rgb(39,37,38);
-  width: 47px;
-  position: absolute;
-  top: 0;
-  text-align: center;
-  opacity: 0.2;
-}
-
-.bannerNav:hover {
-  background: rgb(59,59,59);
-  cursor: pointer;
-  opacity: 0.5;
-}
-
-.bannerNav i {
-
-}
-
-.creatorBlock {
-  height: 47px;
-  bottom: 47px;
-  position: absolute;  
-  width: 100%;
-  text-align: center;  
-  color: rgb(125,125,125);
-  text-transform: uppercase;
-}
-
-.creatorBlock a{
-}
-
-a.thickBlock div {
-  background: rgb(225,76,7);
-  height: 47px;
-  text-transform: uppercase;
-  text-align: center;
-  bottom:0;
-  position: absolute;
-  width: 100%;
-  padding-top: 10px;
-  font-weight: 700;
-  color: rgb(255,255,255);
-}
-
-a.thickBlock:hover div {
-  background: rgb(255,255,255);
-  color: rgb(225,76,7);
-}
-
-.bannerImage { 
-
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    overflow: hidden;
-    height: 300px;
-}
-.bannerText { 
-  background: rgb(39,37,38); 
-  
-  height: 300px; 
-  position: relative;}
-
-.bannerTextWrap {
-  text-align: center;
-  padding: 2em;
-  font-size: 1em;
-
-}  
-
-
-
-.bannerTextWrap h1 {
-  text-transform: uppercase;
-}
-/*
-*Gallery
-*/
-
-
-
-.galleryFilters {
-    background: rgb(39,37,38);
-    padding: 1em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-
-}
-.galleryFilters ul {
-    margin: 0;
-    padding: 0;
-}
-
-.galleryFilters li {
-    float: left;
-    list-style-type: none;
-    font-size: 1.12em;
-    color: rgb(125,125,125);
-}
-
-.galleryFilters li:hover {
-    cursor: pointer;
-}
-
-.galleryFilters li.active {
-    color: rgb(255,255,255);
-}
-
-  .gallery {
-    width: 100%;
-  }
-
-@media (max-width: 1200px) {
-  .galleryWrap { 
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .galleryWrap { 
-    margin-left: 152px;
-    margin-right: 152px;
-  }
-}
-
-
-.galleryBy {
-    padding: 0.5em;
-    text-align: right;
-    position: absolute;
-    top: 285px;
-}
-
-.market-link:hover .market-container {
-    
-    background: rgba(235,235,235,1);
-
-}
-
-.market-link:hover .market-title {
-    color: rgb(80,80,80); 
-}
-
-.market-link:hover .market-creator {
-    
-    color: rgba(80,80,80,0.5); 
-}
-
-.market-title {
-    text-transform: uppercase;
-    color: #fff;
-    font-weight: 700; 
-    font-size: 1em;
-}
-
-.market-title a{   
-    font-weight: 700; 
-    font-size: 1em;
-}
-
-.market-title a:hover {   
-    color: rgb(255, 255, 255); 
-    
-    font-size: 1em;
-}
-
-a.productgallery {
-    color: #e14c07;
-}
-
-a.productgallery:hover {
-    color: #fff;
-}
-
-.market-creator {
-    font-size: 0.7em;
-    color: rgba(255,255,255,0.4); 
-}
-
-.market-creator a{
-    font-size: 1em;
-    color: rgba(255,255,255,0.5); 
-}
-
-.market-creator a:hover{
-    font-size: 1em;
-    color: rgb(225, 76, 7); 
-}
-
-.market-container-wrap {
-    margin: 0.1em;
-    position: relative;
-}
-
-.market-container {
- 
-    width: 100%;
-    height: 325px;
-    float: left;
-    overflow: hidden;
-    margin: 0px;
-
-    background: rgba(25,25,25,1);
-}
-
-.market-link:hover .market-container-imagewrap {
-    border-bottom: 5px solid rgb(225, 76, 7); 
-}
-
-.market-container-imagewrap {
-    height:225px;
-    overflow: hidden;
-    border-bottom: 5px solid rgba(255,255,255,0.1);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-}
-
-.market-container-imagewrap img {
-    height:100%;
-}
-
-.market-container img {
-    display: block;
-}
-
-.portrait img {
-    width: 100%;
-}
-
-.landscape img {
-    height: 100%;
-}
-
-/*
-* General styles for the modal
-*/
 
 /* 
 * Login Modal
 */
 span.forgotReset, span.register{
+  display: block;
   color: white;
   cursor: pointer;
   font-size: x-small;
 }
+
+/*
+* General styles for the modal
+*/
 
 .md-modal {
   position: fixed;
@@ -738,18 +488,17 @@ span.forgotReset, span.register{
 }
 
 .md-content md-title {
-  padding: 15% 15% 10% 15%;
-  text-align: left;
+  text-align: center;
   font-size: xx-large;
   font-weight: 300;
   opacity: 0.8;
   background: rgba(0,0,0,0.1);
-  margin: 0 auto 0 auto;
-  display:block;
+  display: block;
+  padding: 4% 0px 6%;
 }
 
 .md-content > md-view {
-  padding: 0% 15% 1%;;
+  padding: 0 2em 1em;
   margin: 0;
   font-weight: 300;
   font-size: 1.15em;
@@ -777,7 +526,7 @@ span.forgotReset, span.register{
   display: block;
   width:40px;
   height:39px;
-  background-image: url("../images/md-close.jpg");
+  background-image: url("../images/md-close.svg");
   background-repeat: no-repeat;
   background-size: contain;
   -moz-background-size: contain;  /* Firefox 3.6 */
@@ -792,8 +541,13 @@ span.forgotReset, span.register{
     border-radius: 0px;
 }
 .md-content md-next {
-	background-color: #e14c07;
-    padding: 10px 30px 10px 30px;
+	background-color: #E14C07;
+  top: 310px;
+  width: 51px;
+  padding: 10px 30px;
+  margin: auto;
+  position: relative;
+  left: 251px;
 }
 .md-content md-prev {
     position: fixed;
@@ -801,11 +555,11 @@ span.forgotReset, span.register{
     left: 0px;
     width: 42px;
     height: 41px;
-	background-image: url("../images/md-prev.jpg");
-	background-repeat: no-repeat;
-	background-size: contain;
-	-moz-background-size: contain;  /* Firefox 3.6 */
-	background-position: center;
+  	background-image: url("../images/md-prev.jpg");
+  	background-repeat: no-repeat;
+  	background-size: contain;
+  	-moz-background-size: contain;  /* Firefox 3.6 */
+  	background-position: center;
     border: none;
     border-radius: 0px;
 }
@@ -858,34 +612,25 @@ span.forgotReset, span.register{
   transform: scale(1);
   opacity: 1;
 }
+.md-larger{
+  width: 80%;
+}
 /*
-* Profile
+* ngImgCrop
 */
-
-input {
-  width: 100%;
-
+img-crop {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    overflow: hidden;
 }
 
-#accounttype input {width: 20px;}
-
-.labell { color:rgb(125,125,125);}
-
-.bannerWrap {
-  background: rgb(39,37,38); 
-  padding: 24px;
-}
-
-@media (max-width: 1200px) {
-  .bannerWrap { 
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .bannerWrap { 
-    margin-left: 152px;
-    margin-right: 152px;
-  }
+img-crop canvas {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    outline: 0;
+    -webkit-tap-highlight-color: transparent;
 }

@@ -5,6 +5,7 @@ var express = require('express'),
 	mailbot = require('./lib/email.js'),
 	tokenGenerator = require('./public/js/createToken.js'),
 	tokenGetter = require('./public/js/getDataFromToken.js'),
+	SocketIOFileUploader = require('socketio-file-upload'),
 	server = http.createServer(app),
 	databaseUrl = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" +  process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +  process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +  process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +  process.env.OPENSHIFT_APP_NAME,
 	collections = ["users", "projects", "messages","external", "talk", "reports", "creativeapplications", "offerings", "orders", "invoices"],
@@ -50,6 +51,7 @@ var express = require('express'),
 	} else{
 		server.listen(port, ip);	
 	};
+	app.use(SocketIOFileUploader.router);
 	app.use(express.static(__dirname + '/public'));
 	app.use(express.static(__dirname + '/content'));
 	app.use(express.static(__dirname + '/bower_components'));
@@ -75,7 +77,7 @@ var public = io
 	db.users.find({username: newuser.username}, function(err, users){
 		if ( err || !users) { 
 			console.log("DB error"); 
-			public.emit('request error');
+			public.to(socket.id).emit('request error');
 		} else {
 			console.log(users);
 
@@ -89,8 +91,10 @@ var public = io
 						if (error === null) {
 							var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
 							var encryptedTokenhex = scrypt.to_hex(encryptedToken);
-
-						    client.set(encryptedTokenhex, newuser.username, function(err, reply) {
+							var returnData = users[0];
+							delete returnData.password;
+							console.log(JSON.stringify(returnData));
+						    client.set(encryptedTokenhex, JSON.stringify(returnData), function(err, reply) {
 						        if (err) {
 						        	console.log('token not sent or stored!'+err);
 						        }else if (reply) {
@@ -100,7 +104,7 @@ var public = io
 
 						                }else if (success) {
 						                    console.log('token sent and stored!');
-						                    public.emit('recieve token', token);
+						                    public.to(socket.id).emit('recieve token', token);
 						                }
 						                else {
 						                    console.log(new Error('Expiration not set on redis'));
@@ -111,20 +115,20 @@ var public = io
 						        }
 						    });
 						}else{
-							console.log('requested eroor token');
-							public.emit('request error');
+							console.log('requested error token');
+							public.to(socket.id).emit('request error');
 						}
 					});
 				} else {
 					//username exists
 					//password wrong
-					public.emit('request error');
+					public.to(socket.id).emit('request error');
 				}
 
 
 			} else {
 			//ERROR NOT FOUND
-			public.emit('request error');
+			public.to(socket.id).emit('request error');
 			}
 		}
 	});
@@ -132,55 +136,46 @@ var public = io
 /*
 *	Register
 */
-	socket.on('request register user', function(newuser) {
+	socket.on('request register user', function(newuserdata) {
+		var newuser = JSON.parse(newuserdata);
 		newuser.password = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(newuser.password), 128, 8, 1, 32);
     	newuser.password = scrypt.to_hex(newuser.password);
+    	console.log('newuser: ' + newuser);
+    	console.log('newuser2: ' + newuser.username);
 		//finds users in the database that have the same username already
-		db.users.find({username: newuser.username}, function(err, users) 
-		{
+		db.users.find({'username': newuser.username}, function(err, users) {
 			if ( err || !users) { 
 				console.log("DB error"); 
-				io.sockets.emit('request error');
+				public.to(socket.id).to(id).emit('request error');
 			} else {
-				console.log(users)
-
-
 				if (users.length == 0) {
 					//new username
-						newuser.companyname = "";
-						newuser.address = "";
-						newuser.phonenumber = "";
-						newuser.mobile = "";
-						newuser.website = "";
+					newuser.name = "";
+					newuser.surname = "";
+					newuser.avatar = "../uploads/default.svg";
+					newuser.bio = "";
+					newuser.location = "";
+					newuser.website = "";
+					newuser.notifications = 0;
+					
 
-					//newuser.level = 0;
-
-
-
-					db.users.save( newuser, function(err, saved) 
-					{
+					db.users.save( newuser, function(err, saved){
 
 					  if( err || !saved ) { console.log("User not saved. DB error"); }
 					  else { 
 					  	//new user registered.
-					  	console.log("User saved: "+ newuser.username + newuser.password); 
-					  	console.log(saved); 
-					  	tempUsername = newuser.username;
-						tempPassword = newuser.password;
-						tempEmail = newuser.email;
-					  	/////////////////////////
-
+					  	console.log("User saved: "+ newuser.username); 
 					  	//SEND EMAIL WHEN THERES A NEW USER
 
 					  	//start email
 					  	if (enableEmail) {
 			  				var email = {}
-							email.from = "noreply@launchlabapp.com";
-							email.fromname = "Launch Lab Signups";
-							email.rcpt = "rouan@8bo.org";
-							email.rcptname = "Rouan van der Ende";
-							email.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
-							email.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
+							email.from = "noreply@OWILab.com";
+							email.fromname = newuser.username;
+							email.rcpt = newuser.email;
+							email.rcptname = newuser.name + newuser.surname;
+							email.subject = "OWI|Lab registration successful";
+							email.body = "Hello "+ newuser.name +", Thank you for signing up! The following username:"+newuser.username+" has been registered.";
 
 							mailbot.sendemail(email, function (data) 
 							{
@@ -189,8 +184,8 @@ var public = io
 								var emailK = {}
 								emailK.from = "noreply@launchlabapp.com";
 								emailK.fromname = "Launch Lab Signups";
-								emailK.rcpt = "kevin@openwindow.co.za";
-								emailK.rcptname = "Kevin Lawrie";
+								emailK.rcpt = "info@launchlabapp.com";
+								emailK.rcptname = "Admin";
 								emailK.subject = "Launch Lab Admin notice new user "+newuser.username+" registered";
 								emailK.body = "This is a notice to let you know a new user signed up. Username:"+newuser.username+" Email: "+newuser.email;
 
@@ -205,8 +200,10 @@ var public = io
 							if (error === null) {
 								var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
 								var encryptedTokenhex = scrypt.to_hex(encryptedToken);
-
-							    client.set(encryptedTokenhex, newuser.username, function(err, reply) {
+								var returnData = newuser;
+								console.log("RD: " + returnData);
+								delete returnData.password;
+							    client.set(encryptedTokenhex, JSON.stringify(returnData), function(err, reply) {
 							        if (err) {
 							        	console.log('token not sent or stored!'+err);
 							        }else if (reply) {
@@ -216,7 +213,7 @@ var public = io
 
 							                }else if (success) {
 							                    console.log('token sent and stored!');
-							                    public.emit('recieve register user successful', token);
+							                    public.to(socket.id).emit('recieve register user successful', token);
 							                }
 							                else {
 							                    console.log(new Error('Expiration not set on redis'));
@@ -228,7 +225,7 @@ var public = io
 							    });
 							}else{
 								console.log('requested eroor token');
-								public.emit('request error');
+								public.to(socket.id).emit('request error');
 							}
 						});
 					  }
@@ -236,14 +233,33 @@ var public = io
 
 					});
 				}else if (users.length == 1) {
-					io.sockets.emit('recieve register user rejected', 'username already taken.');
+					public.to(socket.id).emit('recieve register user rejected', 'username already taken.');
 				};
 
 			}
 		});
-    				
-	    
 	});
+/*
+*	Public File avatar_uploader
+*/
+// Make an instance of SocketIOFileUploader and listen on this socket:
+    var avatarServerUploader = new SocketIOFileUploader();
+    avatarServerUploader.dir = "./public/uploads/";
+    avatarServerUploader.listen(socket);
+
+    // Do something when a file is saved:
+    avatarServerUploader.on("saved", function(event){
+    	console.log(event.file.name);
+    	public.to(socket.id).emit('upload complete', event);
+    	//get clients security token and send event data to be saved
+        //public.to(socket.id).emit('recieve avatar', event.file.name);
+
+    });
+
+    // Error handler:
+    avatarServerUploader.on("error", function(event){
+        console.log("Error from avatarServerUploader", event);
+    });
 	console.log('new connection on public:8000');
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
@@ -255,11 +271,149 @@ var public = io
 var restricted = io
 	.of('/restricted')
 	.on('connection', function (socket) {
-		/*	Restrict communication	*/
+/*	Restrict communication	*/
 		socket.auth = false;
 		delete restricted.connected[socket.id];
 
-		socket.on('authenticate', function(token){
+		socket.on('authenticate', function(data){
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32),
+				encryptedTokenhex = scrypt.to_hex(encryptedToken),
+				limit = 0;
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		//restricted.to(socket.id).emit('recieve reauth');
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+					restricted.connected[socket.id] = socket;
+					var returnData  = JSON.parse(userData);
+					returnData.redirect = data.redirect;
+					console.log("RD: " + returnData);
+					restricted.to(socket.id).emit('recieve login', returnData);
+	        		console.log('new connection on restricted:8000');
+		    	};
+		    });
+		});
+		socket.on('upload avatar', function(data){
+			console.log("UP:"+data.token);
+			console.log("UP:"+data.avatar);
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+		    		var returnData = JSON.parse(userData);
+		    		console.log(returnData);
+		    		console.log(returnData.username);
+					db.users.update(
+					   {username:returnData.username},
+					   { $set: {
+					      avatar: data.avatar
+					   }},
+					   { upsert: true }
+					);
+					restricted.to(socket.id).emit('recieve login', returnData);
+	        		console.log('avatar set');
+		    	};
+		    });
+		});
+		
+		socket.on('request avatarUpdate', function(data){
+			console.log(data);
+			//var data = JSON.parse(data);
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+					var returnData = JSON.parse(userData);
+					db.users.update(
+					   {username:returnData.username},{ $set: {
+					      avatar: data.avatar
+					   }},
+					   { upsert: true }
+					);
+					//,{ upsert: true } to let users create there own profile fields
+					restricted.to(socket.id).emit('recieve avatarSaved', data.avatar);
+	        		console.log('avatar updated');
+		    	};
+		    });
+		});
+		socket.on('request portfolioUpdate', function(data){
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+					var returnData = JSON.parse(userData);
+					console.log(returnData);
+					var project = {
+			              title : data.title,
+			              coverImage : data.coverImage,
+			              commentCount : 0,
+			              viewCount : 0
+			            }; 
+			            console.log(project);
+					db.users.update(
+					   {username:returnData.username},{ $push: {
+					      projects: project
+					   }},
+					   { upsert: true }
+					);
+					//,{ upsert: true } to let users create there own profile fields
+					restricted.to(socket.id).emit('recieve portfolioUpdate', JSON.stringify(project));
+	        		console.log('portfolio updated');
+		    	};
+		    });
+		});
+		socket.on('request profileUpdate', function(data){
+			var data = JSON.parse(data);
+			console.log(data);
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+					var returnData = JSON.parse(userData);
+					db.users.update(
+					   {username:returnData.username},{ $set: {
+					      name: data.name,
+					      surname: data.surname,
+					      bio: data.bio,
+					      location: data.location,
+					      email: data.email,
+					      website: data.website
+					   }},
+					   { upsert: true }
+					);
+					//,{ upsert: true } to let users create there own profile fields
+					restricted.to(socket.id).emit('recieve profileSaved');
+	        		console.log('profile updated');
+		    	};
+		    });
+		});
+
+		socket.on('request logout', function(token){
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			client.del(token);
+			
+		});
+/*	register  */
+		socket.on('request profile', function(token) {
 			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
 			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
 			//check the auth data sent by the client
@@ -268,13 +422,29 @@ var restricted = io
 		    		console.log('Token not found. Disconnecting socket '+ socket.id);
 		    		socket.disconnect();
 		    	}else if (userData != null) {
-					restricted.connected[socket.id] = socket;
-					restricted.emit('recieve login', userData);
-	        		console.log('new connection on restricted:8000');
+					restricted.to(socket.id).emit('recieve profile', userData);
+	        		console.log('recieve profile');
 		    	};
 		    });
 		});
-
+		socket.on('request portfolio', function(token) {
+			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(token), 128, 8, 1, 32);
+			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
+			//check the auth data sent by the client
+			client.get(encryptedTokenhex, function(err, userData) {
+		    	if (err) {
+		    		console.log('Token not found. Disconnecting socket '+ socket.id);
+		    		socket.disconnect();
+		    	}else if (userData != null) {
+					restricted.to(socket.id).emit('recieve portfolio', userData);
+		    		//console.log(userData.projects);
+		    		if (userData.projects != null) {
+		    			//console.log(userData.projects);
+		    		}
+	        		console.log('recieve portfolio');
+		    	};
+		    });
+		});
 /**************************************************************************************************************************************/
 /*
 

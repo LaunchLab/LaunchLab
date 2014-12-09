@@ -1,6 +1,6 @@
-var app = angular.module('app', ['ngRoute','ngSanitize']);
-app.constant('handshakeConstant', { levelAuthority : '' });
-app.config(function($routeProvider, $locationProvider, handshakeConstant){
+var app = angular.module('app', ['ngRoute','ngSanitize', 'ngImgCrop']);
+app.constant('levelAuthorisation', { levelAuthority : '' });
+app.config(function($routeProvider, $locationProvider, levelAuthorisation){
 
 	/*	use the HTML5 History API	*/
 	$locationProvider.html5Mode(true);
@@ -9,18 +9,14 @@ app.config(function($routeProvider, $locationProvider, handshakeConstant){
 	$routeProvider
 		.when('/',
 		{
-			controller:'home',
-			templateUrl:'views/home.html'
+			controller:'landingPage',
+			templateUrl:'views/landingPage.html'
 		})
-		/*
 		.when('/:username', 
                 {   
-                    controller:profileView, 
-                    templateUrl: function(handshakeConstant){
-						switch (handshakeConstant) {
-						  case "":
-						    return 'views/home.html';
-						    break;
+                    controller:'profile', 
+                    templateUrl: function(){
+						switch (levelAuthorisation.levelAuthority) {
 						  case "admin":
 						    return 'views/admin/profile.html';
 						    break;
@@ -33,18 +29,12 @@ app.config(function($routeProvider, $locationProvider, handshakeConstant){
 						  case "creative":
 						    return 'views/creative/portfolio.html';
 						    break;
-						  default:
-						    return 'views/home_loggedin.html';
+						    default:
+						    return 'views/error.html';
 						}
                     }
                 }
             )
-		*/
-		.when('/:username',
-		{
-			controller:'profileView',
-			templateUrl:'views/profile.html'
-		})
 		.when('/projects/view/:id',
 		{
 			controller:'offeringsView',

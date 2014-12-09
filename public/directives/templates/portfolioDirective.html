@@ -1,0 +1,14 @@
+<label id="portfolioDropZone" for="portfolioDrop">
+    	<span><img ng-src="../../images/add_button.svg" /></span>
+    	<input id="portfolioDrop" type="file" value="Add project" />
+</label>
+
+<article class="project" ng-repeat="project in portfolio track by $index"><!--| filter:q as results-->
+    	<img ng-src="{{project.coverImage}}" />
+    	<aside>
+    		<figcaption>{{project.title}}</figcaption>
+    		<span ng-click="alert('go to project page')" class="comments">{{project.commentCount}}</span>
+    		<span ng-click="alert('go to project page')" class="views">{{project.viewCount}}</span>
+    		<input type="button" value="Edit project" />
+    	</aside>
+</article>

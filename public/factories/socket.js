@@ -1,5 +1,5 @@
 //var io = require('socket.io-client');
-app.factory('socket', function ($rootScope, handshakeConstant) {
+app.factory('socket', function ($rootScope) {
     var public = io('http://beta-launchlab.rhcloud.com:8000/public'),
         restricted = io('http://beta-launchlab.rhcloud.com:8000/restricted');
 
@@ -45,6 +45,6 @@ app.factory('socket', function ($rootScope, handshakeConstant) {
     disconnect: function(close) {
         return socket.disconnect(close);
     },
-    levelAuthority : handshakeConstant.levelAuthority
+    id: public.id
   };
 });

@@ -1,0 +1,56 @@
+<h2 id="userRole">Select a User Role</h2>
+<section class="levelAuthority">
+    <br/>
+    <input type="radio" id="clientRadio" ng-model="levelAuthority" value="client" ng-change="updateLevelAuthority(levelAuthority)">
+    <label for="clientRadio">
+        <article class="levelAuthority-item client-avatar">
+            <figure class="persona-info">
+                <span>Client</span>
+            </figure>
+        </article>
+        <figcaption>Start a Project.<br/> Collaboarate with <br/> Mentors and <br/> Creatives</figcaption>
+    </label>
+    <input type="radio" id="mentorRadio" ng-model="levelAuthority" value="mentor" ng-change="updateLevelAuthority(levelAuthority)">
+    <label for="mentorRadio">
+        <article class="levelAuthority-item mentor-avatar">
+            <figure class="persona-info">
+                <span>Mentor</span>
+            </figure>
+        </article>
+        <figcaption>OWI lecturers join <br/> the team. Assist <br/> creatives with <br/> LaunchLab projects</figcaption>
+    </label>
+    <input type="radio" id="creativeRadio" ng-model="levelAuthority" value="creative" ng-change="updateLevelAuthority(levelAuthority)">
+    <label for="creativeRadio">
+        <article class="levelAuthority-item creative-avatar">
+            <figure class="persona-info">
+                <span>Creative</span>
+            </figure>
+        </article>
+        <figcaption>TOW students join <br/> the team. Create <br/> portfolios and attain<br/> clients</figcaption>
+    </label>
+</section>
+<section class="getStarted">
+	<!--Client-->
+	<h2 ng-if="levelAuthority !== 'mentor' && levelAuthority !== 'creative'">Tell us about your project</h2>
+	<span ng-if="levelAuthority !== 'mentor' && levelAuthority !== 'creative'">
+		Do you have a project you think we will love?<br/>
+		Why not get started formulating a brief. Go ahead! Get started to see examples of relevant projects.
+	</span>
+	<!--Mentor/Creative-->
+	<h2 ng-if="levelAuthority === 'mentor' || levelAuthority === 'creative'">Join our creative crew and start collaborating!</h2>
+	<span ng-if="levelAuthority === 'mentor' || levelAuthority === 'creative'">
+		To get started freelancing on projects.<br/>
+		Create a profile and submit your portfolio.
+	</span>
+    <article>
+    	<!--Default-->
+    	<input type="button" ng-if="levelAuthority !== 'client' && levelAuthority !== 'mentor' && levelAuthority !== 'creative'" ng-click="newProjectModalEnterEventHandler()" class="orangeActionButton newProject" value="Start a project" />
+    	<input type="button" ng-if="levelAuthority !== 'client' && levelAuthority !== 'mentor' && levelAuthority !== 'creative'" ng-click="joinTeamModalEnterEventHandler()" class="orangeActionButton joinTeam" value="Join the team" />
+    	<!--Client-->
+    	<input type="button" ng-if="levelAuthority === 'client'" ng-click="newProjectModalEnterEventHandler()" class="orangeActionButton newProject" value="Start a project" />
+    	<input type="button" disabled="disabled" ng-if="levelAuthority === 'client'" ng-click="joinTeamModalEnterEventHandler()" class="orangeActionButton joinTeam" value="Join the team" />
+    	<!--Mentor/Creative-->
+    	<input type="button" disabled="disabled" ng-if="levelAuthority === 'mentor'|| levelAuthority === 'creative'" ng-click="newProjectModalEnterEventHandler()" class="orangeActionButton newProject" value="Start a project" />
+    	<input type="button" ng-if="levelAuthority === 'mentor'|| levelAuthority === 'creative'" ng-click="joinTeamModalEnterEventHandler()" class="orangeActionButton joinTeam" value="Join the team" />
+    </article>
+</section>
