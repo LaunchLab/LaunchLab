@@ -50,6 +50,8 @@ var express = require('express'),
 		server.listen(8000);
 	} else{
 		server.listen(port, ip);	
+		io.set('heartbeat timeout', 600);
+		io.set('transports', ['websocket']);
 	};
 	app.use(SocketIOFileUploader.router);
 	app.use(express.static(__dirname + '/public'));
@@ -289,14 +291,12 @@ var restricted = io
 					restricted.connected[socket.id] = socket;
 					var returnData  = JSON.parse(userData);
 					returnData.redirect = data.redirect;
-					console.log("RD: " + returnData);
 					restricted.to(socket.id).emit('recieve login', returnData);
 	        		console.log('new connection on restricted:8000');
 		    	};
 		    });
 		});
 		socket.on('upload avatar', function(data){
-			console.log("UP:"+data.token);
 			console.log("UP:"+data.avatar);
 			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32);
 			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
@@ -377,8 +377,7 @@ var restricted = io
 		    });
 		});
 		socket.on('request profileUpdate', function(data){
-			var data = JSON.parse(data);
-			console.log(data);
+			console.log(data.token);
 			var encryptedToken = scrypt.crypto_scrypt(scrypt.encode_utf8(secret), scrypt.encode_utf8(data.token), 128, 8, 1, 32);
 			var encryptedTokenhex = scrypt.to_hex(encryptedToken);
 			//check the auth data sent by the client
@@ -387,7 +386,10 @@ var restricted = io
 		    		console.log('Token not found. Disconnecting socket '+ socket.id);
 		    		socket.disconnect();
 		    	}else if (userData != null) {
+		    		console.log(userData);
 					var returnData = JSON.parse(userData);
+					console.log(returnData);
+
 					db.users.update(
 					   {username:returnData.username},{ $set: {
 					      name: data.name,
@@ -1105,6 +1107,6 @@ tasks 		/work/tasks
 
 /**************************************************************************************************************************************/
 		socket.on('disconnect', function(){
-			console.log('user disconnected');
+			console.log('user disconnected from restricted');
 		});
 	});
