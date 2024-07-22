@@ -156,8 +156,6 @@ Privacy Policy
 
 We value your privacy and are committed to protect it.
 
-Any questions you might have about this Privacy Policy should be addressed to kevin@openwindow.co.za
-
 1. By using LaunchLab, you agree to the collection and use of your personal data as described below:
 
 \* Upon registration you will be asked for a valid email address.
